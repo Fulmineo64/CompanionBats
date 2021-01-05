@@ -1,0 +1,15 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "dev.fulmineo.companion_bats.mixin",
+    "compatibilityLevel": "JAVA_8",
+    "mixins": [],
+    "client": [
+      "BatEntityMixin",
+      "BundleItemMixin"
+    ],
+    "server": [],
+    "injectors": {
+      "defaultRequire": 1
+    }
+  }

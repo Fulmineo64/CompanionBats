@@ -1,0 +1,36 @@
+# # # Fulmineo's Mods License # # #
+
+Copyright (c) 2021 Fulmineo64
+
+"Mod" (plural "Mods") shall refer to a game modification
+"Modpack" (plural "Modpacks") shall refer to a collection of "mods"
+
+You are allowed to                                                     You are NOT allowed to
+
+✔ Use this mod                                                         ✘ Publish the compiled version, except on curseforge.com
+✔ Add this mod to your modpacks                                        ✘ Claim this mod as yours
+✔ Add integrations for this mod                                   
+✔ Contribute to this mod (through approval)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+1. Limitations and ownership
+
+This mod is to be considered an intellectual property of Fulmineo64.
+The compiled version of this mod shall only be published to curseforge.com, exceptions can be obtained with written permission from the mod owner.
+
+2. Permissions
+
+This mod can be used in modpacks, modpacks containing this mod do not fall under the limitations of publishing expressed earlier.
+When used in a modpack it is recommended to have the included mod credited with the mod name and the curseforge link.
+
+3. Integrations and contributions
+
+Developers can integrate this mod into their own, making sure to not undermine the functionality of the integrated mod.
+Contributions are welcome, but will only be added if approved by the mod owner.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+THE MOD IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE MOD OR THE USE OR OTHER DEALINGS IN THE MOD.

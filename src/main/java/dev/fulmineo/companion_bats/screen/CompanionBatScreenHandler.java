@@ -1,6 +1,7 @@
 package dev.fulmineo.companion_bats.screen;
 
 import dev.fulmineo.companion_bats.CompanionBats;
+import dev.fulmineo.companion_bats.item.CompanionBatItem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,9 +10,11 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 
 public class CompanionBatScreenHandler extends ScreenHandler {
@@ -19,17 +22,33 @@ public class CompanionBatScreenHandler extends ScreenHandler {
     public Hand hand;
 
     public CompanionBatScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf){
-        this(syncId, playerInventory, new SimpleInventory(2));
-        this.hand = buf.readEnumConstant(Hand.class);
+        this(syncId, playerInventory, new SimpleInventory(2), buf.readEnumConstant(Hand.class));
     }
 
-    public CompanionBatScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+    public CompanionBatScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, Hand hand) {
         super(CompanionBats.BAT_SCREEN_HANDLER, syncId);
         this.inventory = inventory;
+        this.hand = hand;
         inventory.onOpen(playerInventory.player);
         this.addSlot(new Slot(inventory, 0, 8, 18) {
             public boolean canInsert(ItemStack stack) {
                 return stack.isOf(Items.BUNDLE) && !this.hasStack();
+            }
+
+            @Override
+            public void setStack(ItemStack stack) {
+                super.setStack(stack);
+                PlayerEntity player = playerInventory.player;
+                if (player.world instanceof ServerWorld){
+                    ItemStack batItemStack = player.getStackInHand(hand);
+                    if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
+                        CompoundTag tag = batItemStack.getTag();
+                        CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
+                        entityData.put("bundle", stack.toTag(new CompoundTag()));
+                        tag.put("entityData", entityData);
+                        CompanionBats.info("set tag "+tag.toString());
+                    }
+                }
             }
 
             @Environment(EnvType.CLIENT)

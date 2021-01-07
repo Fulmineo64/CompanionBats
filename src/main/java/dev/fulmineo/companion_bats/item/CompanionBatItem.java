@@ -27,8 +27,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class CompanionBatItem extends Item {
-    public SimpleInventory inventory = new SimpleInventory(2);
-
     public CompanionBatItem(Settings settings) {
         super(settings);
     }
@@ -36,10 +34,12 @@ public class CompanionBatItem extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        CompoundTag entityAttributes = getOrCreateEntityAttributes(itemStack);
         if (world instanceof ServerWorld) {
+            CompoundTag entityData = getOrCreateEntityData(itemStack);
             if (user.isSneaking()){
-                CompanionBatEntity.loadIntoInventoryFromTag(inventory, entityAttributes);
+                SimpleInventory inventory = new SimpleInventory(2);
+                CompanionBats.info("get tag"+itemStack.getTag().toString());
+                inventory.setStack(0, ItemStack.fromTag(entityData.getCompound("bundle")));
                 user.openHandledScreen(new ExtendedScreenHandlerFactory() {
                     @Override
                     public void writeScreenOpeningData(ServerPlayerEntity serverPlayerEntity, PacketByteBuf packetByteBuf) {
@@ -53,24 +53,24 @@ public class CompanionBatItem extends Item {
             
                     @Override
                     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                        return new CompanionBatScreenHandler(syncId, inv, inventory);
+                        return new CompanionBatScreenHandler(syncId, inv, inventory, hand);
                     }
                 });
             } else {
-                float entityHealth = entityAttributes.getFloat("health");
+                float entityHealth = entityData.getFloat("health");
                 if (entityHealth == 0){
                     List<ItemEntity> list = world.getEntitiesByClass(ItemEntity.class, user.getBoundingBox().expand(8.0D, 8.0D, 8.0D), CompanionBatEntity.IS_FOOD_ITEM_ENTITY);
                     if (list.size() > 0){
                         ItemEntity foodItemEntity = list.get(0);
                         ItemStack stack = foodItemEntity.getStack();
                         entityHealth += CompanionBatEntity.getItemHealAmount(stack);
-                        entityAttributes.putFloat("health",entityHealth);
+                        entityData.putFloat("health",entityHealth);
                         stack.decrement(1);
                     } 
                 }
                 if (entityHealth > 0){
                     CompanionBatEntity batEntity = (CompanionBatEntity)CompanionBats.COMPANION_BAT.spawnFromItemStack((ServerWorld)world, itemStack, user, user.getBlockPos(), SpawnReason.SPAWN_EGG, false, false);
-                    batEntity.fromItem(user, entityAttributes, inventory);
+                    batEntity.fromItem(user, entityData);
                     ItemStack fluteItemStack = new ItemStack(CompanionBats.BAT_FLUTE_ITEM);
                     fluteItemStack.getOrCreateTag().putUuid("entityUuid", batEntity.getUuid());
                     return TypedActionResult.success(fluteItemStack, world.isClient());
@@ -91,13 +91,22 @@ public class CompanionBatItem extends Item {
         return true;
     }
 
-    public static CompoundTag getOrCreateEntityAttributes(ItemStack stack) {
-        stack.getOrCreateTag(); // Assures that the tag exists
-        CompoundTag subTag = stack.getSubTag("entityAttributes");
+    public static CompoundTag getEntityData(ItemStack stack) {
+        return stack.getSubTag("entityData");
+    }
+
+    public static CompoundTag createEntityData(ItemStack stack) {
+        CompoundTag subTag = new CompoundTag();
+        stack.putSubTag("entityData", subTag);
+        CompanionBatEntity.setDefaultEntityData(subTag);
+        return subTag;
+    }
+
+    public static CompoundTag getOrCreateEntityData(ItemStack stack) {
+        stack.getOrCreateTag(); // Insures that the tag exists
+        CompoundTag subTag = getEntityData(stack);
         if (subTag == null) {
-            subTag = new CompoundTag();
-            stack.putSubTag("entityAttributes", subTag);
-            CompanionBatEntity.setDefaultAttributes(subTag);
+            subTag = createEntityData(stack);
         }
         return subTag;
     }

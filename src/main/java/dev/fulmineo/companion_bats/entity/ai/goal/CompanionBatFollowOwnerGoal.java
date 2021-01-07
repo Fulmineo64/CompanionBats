@@ -18,7 +18,6 @@ public class CompanionBatFollowOwnerGoal extends Goal {
     private int updateCountdownTicks;
     private final float maxDistance;
     private final float minDistance;
-    // private float oldWaterPathfindingPenalty;
 
     public CompanionBatFollowOwnerGoal(CompanionBatEntity tameable, double speed, float minDistance, float maxDistance) {
         this.tameable = tameable;
@@ -56,14 +55,11 @@ public class CompanionBatFollowOwnerGoal extends Goal {
   
     public void start() {
         this.updateCountdownTicks = 0;
-        // this.oldWaterPathfindingPenalty = this.tameable.getPathfindingPenalty(PathNodeType.WATER);
-        // this.tameable.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
     }
   
     public void stop() {
         this.owner = null;
         this.navigation.stop();
-        // this.tameable.setPathfindingPenalty(PathNodeType.WATER, this.oldWaterPathfindingPenalty);
     }
 
     public void tick() {

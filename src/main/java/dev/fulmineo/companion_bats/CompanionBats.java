@@ -40,12 +40,12 @@ public class CompanionBats implements ModInitializer {
         FabricEntityTypeBuilder.<CompanionBatEntity>create(SpawnGroup.CREATURE, CompanionBatEntity::new).dimensions(EntityDimensions.fixed(0.75f, 0.75f)).build()
     );
 
+    // public static final ItemGroup GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID,"group"), () -> new ItemStack(Registry.ITEM.get(new Identifier(MOD_ID,"bat_item"))));
     public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage((int)CompanionBatEntity.LEVELS[CompanionBatEntity.LEVELS.length-1].health).group(ItemGroup.COMBAT));
     public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
 
     @Override
     public void onInitialize() {
-        log(Level.INFO, "Initializing");
         FabricDefaultAttributeRegistry.register(COMPANION_BAT, CompanionBatEntity.createMobAttributes());
         Registry.register(Registry.ITEM, BAT_ITEM_IDENTIFIER, BAT_ITEM);
         Registry.register(Registry.ITEM, BAT_FLUTE_IDENTIFIER, BAT_FLUTE_ITEM);

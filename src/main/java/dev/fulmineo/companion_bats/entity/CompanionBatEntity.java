@@ -12,6 +12,7 @@ import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.ai.control.CompanionBatMoveControl;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatFollowOwnerGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatPickUpItemGoal;
+import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatTransferItemsToOwnerGoal;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -23,7 +24,6 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.AttackWithOwnerGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.TrackOwnerAttackerGoal;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
@@ -43,8 +43,6 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -87,10 +85,10 @@ public class CompanionBatEntity extends TameableEntity {
     }
 
     protected void initGoals() {
-        this.goalSelector.add(1, new PounceAtTargetGoal(this, 0.4F));
-        this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0D, true));
-        this.goalSelector.add(3, new CompanionBatPickUpItemGoal(this, 1.0D, 2.0F));
-        this.goalSelector.add(4, new CompanionBatFollowOwnerGoal(this, 1.0D, 5.0F, 2.0F));
+        this.goalSelector.add(1, new MeleeAttackGoal(this, 1.0D, true));
+        this.goalSelector.add(2, new CompanionBatPickUpItemGoal(this, 1.0D, 16.0F));
+        this.goalSelector.add(3, new CompanionBatFollowOwnerGoal(this, 1.0D, 3.0F, 2.0F));
+        this.goalSelector.add(4, new CompanionBatTransferItemsToOwnerGoal(this, 2.0F));
         this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
         this.targetSelector.add(2, new AttackWithOwnerGoal(this));
         this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge());
@@ -353,7 +351,7 @@ public class CompanionBatEntity extends TameableEntity {
     }
 
     protected void gainExp(){
-        this.addExp(1 * 100);
+        this.addExp(1);
         CompanionBats.log(Level.INFO, "total exp "+this.getExp());
     }
 
@@ -402,24 +400,22 @@ public class CompanionBatEntity extends TameableEntity {
         // Set companion bat item durability realtive to the bat health
         float percentage = 1 - (this.getHealth() / this.getMaxHealth());
         batItemStack.setDamage(Math.round(percentage * batItemStack.getMaxDamage()));
-        CompoundTag entityAttributes = CompanionBatItem.getOrCreateEntityAttributes(batItemStack);
-        entityAttributes.putFloat("health", this.getHealth());
-        entityAttributes.putInt("exp", this.getExp());
+        CompoundTag entityData = CompanionBatItem.createEntityData(batItemStack);
+        entityData.putFloat("health", this.getHealth());
+        entityData.putInt("exp", this.getExp());
+        entityData.put("bundle", this.getBundle().toTag(new CompoundTag()));
+        // entityData.put("armor", this.companionBatGetArmor().toTag(new CompoundTag()));
         return batItemStack;
     }
 
-    public void fromItem(PlayerEntity owner, CompoundTag entityAttributes, Inventory inventory){
+    public void fromItem(PlayerEntity owner, CompoundTag entityData){
         this.setOwner(owner);
-        this.exp = entityAttributes.getInt("exp");
+        this.exp = entityData.getInt("exp");
         this.level = findLevelByExp(this.exp);
         this.setLevelAttributes(this.level);
-        this.equipBundle(inventory.getStack(0));
-        this.equipArmor(inventory.getStack(1));
-        this.setHealth(entityAttributes.getFloat("health"));
-    }
-
-    public static void loadIntoInventoryFromTag(SimpleInventory inventory, CompoundTag tag){
-        // TODO!
+        this.equipBundle(ItemStack.fromTag(entityData.getCompound("bundle")));
+        // this.equipArmor(ItemStack.fromTag(entityData.getCompound("armor")));
+        this.setHealth(entityData.getFloat("health"));
     }
 
     private void equipBundle(ItemStack stack) {
@@ -436,6 +432,10 @@ public class CompanionBatEntity extends TameableEntity {
         return this.getEquippedStack(EquipmentSlot.FEET);
     }
 
+    public ItemStack companionBatGetArmor(){
+        return this.getEquippedStack(EquipmentSlot.CHEST);
+    }
+
     public static int findLevelByExp(int exp) {
         for (int i=LEVELS.length-1; i>=0; i--) { 
             if (LEVELS[i].expNeeded <= exp){
@@ -445,9 +445,9 @@ public class CompanionBatEntity extends TameableEntity {
         return LEVELS.length-1;
     }
 
-    public static void setDefaultAttributes(CompoundTag tag){
+    public static void setDefaultEntityData(CompoundTag tag){
         tag.putFloat("health", LEVELS[0].health);
-        tag.putInt("exp",0);
+        tag.putInt("exp", 0);
     }
 
     public static class CompanionBatLevel {

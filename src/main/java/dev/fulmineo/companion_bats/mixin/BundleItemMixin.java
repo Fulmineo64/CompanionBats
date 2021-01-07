@@ -1,5 +1,7 @@
 package dev.fulmineo.companion_bats.mixin;
 
+import java.util.Optional;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -12,12 +14,24 @@ import net.minecraft.item.ItemStack;
 public abstract class BundleItemMixin extends Item implements CompanionBatBundleItem {
     @Shadow
     private static int addToBundle(ItemStack bundle, ItemStack stack) { return 0; }
+    @Shadow
+    private static int getItemOccupancy(ItemStack stack) { return 0; }
+    @Shadow
+    private static Optional<ItemStack> method_32759(ItemStack stack) { return null; }
 
     public BundleItemMixin(Item.Settings settings) {
         super(settings);
     }
 
-    public int addToBundlePublic(ItemStack bundle, ItemStack stack){
+    public int companionBatsAddToBundle(ItemStack bundle, ItemStack stack){
         return addToBundle(bundle, stack);
+    }
+
+    public int companionBatsGetItemOccupancy(ItemStack stack){
+        return getItemOccupancy(stack);
+    }
+
+    public Optional<ItemStack> companionBatsGetFirstStack(ItemStack stack){
+        return method_32759(stack);
     }
 }

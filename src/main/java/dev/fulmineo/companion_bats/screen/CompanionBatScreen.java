@@ -28,14 +28,14 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
       super(handler, inventory, title);
 
       ItemStack stack = inventory.player.getStackInHand(handler.hand);
-      CompoundTag entityAttributes = CompanionBatItem.getOrCreateEntityAttributes(stack);
+      CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(stack);
 
-      this.level = CompanionBatEntity.findLevelByExp(entityAttributes.getInt("exp"));
+      this.level = CompanionBatEntity.findLevelByExp(entityData.getInt("exp"));
 
-      this.currentLevelExp = entityAttributes.getInt("exp") - CompanionBatEntity.LEVELS[this.level].expNeeded;
+      this.currentLevelExp = entityData.getInt("exp") - CompanionBatEntity.LEVELS[this.level].expNeeded;
       this.nextLevelExp = CompanionBatEntity.LEVELS[this.level+1] != null ? CompanionBatEntity.LEVELS[this.level+1].expNeeded : CompanionBatEntity.LEVELS[this.level].expNeeded;
 
-      this.currentHealth = (float)entityAttributes.getInt("health");
+      this.currentHealth = (float)entityData.getInt("health");
       this.maxHealth = CompanionBatEntity.LEVELS[this.level].health;
 
       this.attack = CompanionBatEntity.LEVELS[this.level].attack;

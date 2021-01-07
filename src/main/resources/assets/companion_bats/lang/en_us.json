@@ -1,6 +1,6 @@
 {
     "item.companion_bats.bat_item": "Companion bat",
-    "item.companion_bats.bat_item.exausted": "Your bat is too exausted to come out\nMaybe some special food item on ground could help with that",
+    "item.companion_bats.bat_item.exausted": "Your bat is too exausted to come out\nMaybe something thrown on ground could help with that",
     "item.companion_bats.bat_flute": "Bat flute",
     "entity.companion_bats.bat": "Companion bat",
     "entity.companion_bats.bat.level_up": "Your bat has reached level %d!",

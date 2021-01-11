@@ -51,7 +51,7 @@ public class CompanionBatMoveControl extends MoveControl {
                 this.entity.setNoGravity(false);
             }*/
   
-            //this.entity.setUpwardSpeed(0.0F);
+            this.entity.setUpwardSpeed(0.0F);
             this.entity.setForwardSpeed(0.0F);
         }
   

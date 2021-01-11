@@ -15,6 +15,8 @@ import net.minecraft.item.BundleItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 
 public class CompanionBatPickUpItemGoal extends Goal {
     private final CompanionBatEntity entity;
@@ -38,20 +40,18 @@ public class CompanionBatPickUpItemGoal extends Goal {
     public boolean canStart() {
         if (--this.canStartCountdownTicks <= 0) {
             // Makes sure this check isn't spammed
-            this.canStartCountdownTicks = 10;
+            this.canStartCountdownTicks = 20;
             this.bundleStack = this.entity.getBundle();
-            if (this.bundleStack != null && this.bundleStack.isOf(Items.BUNDLE) && BundleItem.getAmountFilled(this.bundleStack) != 1){
-                LivingEntity livingEntity = this.entity.getOwner();
-                if (livingEntity == null) {
-                    return false;
-                } else if (livingEntity.isSpectator()) {
-                    return false;
-                } else {
-                    this.owner = livingEntity;
-                    this.itemList = this.entity.world.getEntitiesByClass(ItemEntity.class, this.entity.getBoundingBox().expand(8.0D, 8.0D, 8.0D), (itemEntity) -> true);
-                    this.itemList.sort(new SortByProximity());
-                    return this.itemList.size() > 0;
-                }
+            LivingEntity livingEntity = this.entity.getOwner();
+            if (this.entity.isRoosting() || this.entity.isAboutToRoost()){
+                return false;
+            } else if (livingEntity == null || livingEntity.isSpectator()) {
+                return false;
+            } else if (this.isBundleAvailable()) {
+                this.owner = livingEntity;
+                this.itemList = this.entity.world.getEntitiesByClass(ItemEntity.class, this.entity.getBoundingBox().expand(12.0D, 12.0D, 12.0D), (itemEntity) -> true);
+                this.itemList.sort(new ProximityComparator());
+                return this.itemList.size() > 0;
             }
         }
         return false;
@@ -77,7 +77,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
                 ItemStack targetStack = this.targetItem.getStack();
                 int added = ((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsAddToBundle(this.bundleStack, targetStack);
                 targetStack.decrement(added);
-                // TODO white smoke particles and soft shulker sound
+                this.entity.world.playSound(null, this.entity.getBlockPos(), SoundEvents.BLOCK_WOOL_PLACE, SoundCategory.AMBIENT, 0.3F, 1F);
                 this.removeItemFromList(this.targetItem);
                 this.targetNextItem();
             } else {
@@ -86,7 +86,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
         }
     }
 
-    public void removeItemFromList(ItemEntity itemToRemove){
+    private void removeItemFromList(ItemEntity itemToRemove){
         for (Iterator<ItemEntity> iter = this.itemList.listIterator(); iter.hasNext(); ) {
             ItemEntity item = iter.next();
             if (item.equals(itemToRemove)) {
@@ -96,9 +96,9 @@ public class CompanionBatPickUpItemGoal extends Goal {
         }
     }
 
-    public void targetNextItem(){
+    private void targetNextItem(){
         for (ItemEntity item : itemList){ 
-            if (this.canItemFitInBundle(item.getStack())){
+            if (this.canItemFitInBundle(item.getStack()) && item.squaredDistanceTo(owner) < (double)(this.maxDistance * this.maxDistance)){
                 this.targetItem = item;
                 return;
             }
@@ -106,11 +106,15 @@ public class CompanionBatPickUpItemGoal extends Goal {
         this.targetItem = null;
     }
 
-    private boolean canItemFitInBundle(ItemStack itemStack) {
-        return BundleItem.getAmountFilled(this.bundleStack) + (((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsGetItemOccupancy(itemStack) / 64 * itemStack.getCount()) <= 1;
+    private boolean isBundleAvailable(){
+        return this.bundleStack != null && this.bundleStack.isOf(Items.BUNDLE) && BundleItem.getAmountFilled(this.bundleStack) != 1;
     }
 
-    class SortByProximity implements Comparator<ItemEntity> {  
+    private boolean canItemFitInBundle(ItemStack itemStack) {
+        return BundleItem.getAmountFilled(this.bundleStack) + (((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsGetItemOccupancy(itemStack) / 64 * itemStack.getCount()) <= 1;
+    } 
+
+    class ProximityComparator implements Comparator<ItemEntity> {  
         // Used for sorting in ascending order of ID  
         public int compare(ItemEntity a, ItemEntity b) {  
             return (int)(CompanionBatPickUpItemGoal.this.entity.squaredDistanceTo(a) - CompanionBatPickUpItemGoal.this.entity.squaredDistanceTo(b));  

@@ -38,19 +38,19 @@ public class CompanionBatItem extends Item {
             CompoundTag entityData = getOrCreateEntityData(itemStack);
             if (user.isSneaking()){
                 SimpleInventory inventory = new SimpleInventory(2);
-                CompanionBats.info("get tag"+itemStack.getTag().toString());
-                inventory.setStack(0, ItemStack.fromTag(entityData.getCompound("bundle")));
+				inventory.setStack(0, ItemStack.fromTag(entityData.getCompound("bundle")));
+                inventory.setStack(1, ItemStack.fromTag(entityData.getCompound("armor")));
                 user.openHandledScreen(new ExtendedScreenHandlerFactory() {
                     @Override
                     public void writeScreenOpeningData(ServerPlayerEntity serverPlayerEntity, PacketByteBuf packetByteBuf) {
                         packetByteBuf.writeEnumConstant(hand);
                     }
-            
+
                     @Override
                     public Text getDisplayName() {
                         return new TranslatableText(CompanionBatItem.this.getTranslationKey());
                     }
-            
+
                     @Override
                     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
                         return new CompanionBatScreenHandler(syncId, inv, inventory, hand);
@@ -66,7 +66,7 @@ public class CompanionBatItem extends Item {
                         entityHealth += CompanionBatEntity.getItemHealAmount(stack);
                         entityData.putFloat("health",entityHealth);
                         stack.decrement(1);
-                    } 
+                    }
                 }
                 if (entityHealth > 0){
                     CompanionBatEntity batEntity = (CompanionBatEntity)CompanionBats.COMPANION_BAT.spawnFromItemStack((ServerWorld)world, itemStack, user, user.getBlockPos(), SpawnReason.SPAWN_EGG, false, false);
@@ -112,7 +112,7 @@ public class CompanionBatItem extends Item {
     }
 
     static {
-        
+
     }
 
     /*public Rarity getRarity(ItemStack stack) {

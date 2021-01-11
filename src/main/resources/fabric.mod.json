@@ -1,30 +1,30 @@
 {
-  "schemaVersion": 1,
-  "id": "companion-bats",
-  "version": "${version}",
-  "name": "Companion bats",
-  "description": "Meet your new best friend, a companion bat!",
-  "authors": [
-    "Fulmineo"
-  ],
-  "contributors": [],
-  "contact": {},
-  "license": "MIT",
-  "icon": "assets/companion-bats/icon.png",
-  "environment": "*",
-  "entrypoints": {
-    "main": [
-      "dev.fulmineo.companion_bats.CompanionBats"
-    ],
-    "client": [
-      "dev.fulmineo.companion_bats.CompanionBatsClient"
-    ],
-    "server": []
-  },
-  "mixins": [
-    "companion_bats.mixins.json"
-  ],
-  "depends": {
-    "fabricloader": ">=0.10.8"
-  }
+	"schemaVersion": 1,
+	"id": "companion-bats",
+	"version": "${version}",
+	"name": "Companion bats",
+	"description": "Meet your new best friend, a companion bat!",
+	"authors": [
+		"Fulmineo"
+	],
+	"contributors": [],
+	"contact": {},
+	"license": "MIT",
+	"icon": "assets/companion-bats/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"dev.fulmineo.companion_bats.CompanionBats"
+		],
+		"client": [
+			"dev.fulmineo.companion_bats.CompanionBatsClient"
+		],
+		"server": []
+	},
+	"mixins": [
+		"companion_bats.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.10.8"
+	}
 }

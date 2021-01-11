@@ -1,6 +1,7 @@
 package dev.fulmineo.companion_bats.entity;
 
 import java.util.Iterator;
+import java.util.UUID;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
@@ -12,7 +13,9 @@ import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.ai.control.CompanionBatMoveControl;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatFollowOwnerGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatPickUpItemGoal;
+import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatRoostGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatTransferItemsToOwnerGoal;
+import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -30,6 +33,7 @@ import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -46,6 +50,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -62,10 +67,15 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class CompanionBatEntity extends TameableEntity {
+	private static final UUID BAT_ARMOR_BONUS_ID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
     private static final TrackedData<Byte> BAT_FLAGS;
+    private static final int HEAL_TICKS;
+    private int healTicks;
 
     public static final CompanionBatLevel[] LEVELS;
+    public static final Predicate<ItemStack> IS_FOOD_ITEM;
     public static final Predicate<ItemEntity> IS_FOOD_ITEM_ENTITY;
+    public BlockPos hangingPosition;
 
     protected int exp = 0;
     protected int level = -1;
@@ -87,45 +97,19 @@ public class CompanionBatEntity extends TameableEntity {
     protected void initGoals() {
         this.goalSelector.add(1, new MeleeAttackGoal(this, 1.0D, true));
         this.goalSelector.add(2, new CompanionBatPickUpItemGoal(this, 1.0D, 16.0F));
-        this.goalSelector.add(3, new CompanionBatFollowOwnerGoal(this, 1.0D, 3.0F, 2.0F));
+        this.goalSelector.add(3, new CompanionBatFollowOwnerGoal(this, 1.0D, 3.0F, 16.0F));
         this.goalSelector.add(4, new CompanionBatTransferItemsToOwnerGoal(this, 2.0F));
+        this.goalSelector.add(5, new CompanionBatRoostGoal(this, 0.75F, 4.0F));
         this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
         this.targetSelector.add(2, new AttackWithOwnerGoal(this));
         this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge());
     }
 
-    /*private void saveItemsToTag(CompoundTag tag){
-        if (this.items != null) {
-            if (!this.items.getStack(0).isEmpty()) {
-                tag.put("EquipmentItem", this.items.getStack(0).toTag(new CompoundTag()));
-            }
-            if (!this.items.getStack(1).isEmpty()) {
-                tag.put("BundleItem", this.items.getStack(1).toTag(new CompoundTag()));
-            }
-        }
-    }
-
-    private void loadItemsFromTag(CompoundTag tag){
-        if (tag.contains("SaddleItem", 10)) {
-            ItemStack itemStack = ItemStack.fromTag(tag.getCompound("EquipmentItem"));
-            // TODO: Check for equipment items
-            if (!itemStack.isEmpty()) {
-               this.items.setStack(0, itemStack);
-            }
-        }
-        if (tag.contains("BundleItem", 10)) {
-            ItemStack itemStack2 = ItemStack.fromTag(tag.getCompound("BundleItem"));
-            if (!itemStack2.isEmpty()) {
-               this.items.setStack(1, itemStack2);
-            }
-        }
-    }*/
-
     public void writeCustomDataToTag(CompoundTag tag) {
         super.writeCustomDataToTag(tag);
         tag.putInt("exp", this.getExp());
     }
-  
+
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
         this.setExp(tag.getInt("exp"));
@@ -165,23 +149,33 @@ public class CompanionBatEntity extends TameableEntity {
     public static DefaultAttributeContainer.Builder createMobAttributes() {
         return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, LEVELS[0].health).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, LEVELS[0].attack).add(EntityAttributes.GENERIC_FLYING_SPEED, LEVELS[0].speed).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.4D);
     }
-    
+
     /**
     * Returns whether this bat is hanging upside-down under a block.
     */
     public boolean isRoosting() {
         return ((Byte)this.dataTracker.get(BAT_FLAGS) & 1) != 0;
     }
-  
+
+    public boolean isInjured() {
+        return this.getHealth() < this.getMaxHealth();
+    }
+
+    public boolean isAboutToRoost() {
+        return this.hangingPosition != null;
+    }
+
     public void setRoosting(boolean roosting) {
         byte b = (Byte)this.dataTracker.get(BAT_FLAGS);
         if (roosting) {
            this.dataTracker.set(BAT_FLAGS, (byte)(b | 1));
+           this.healTicks = HEAL_TICKS;
         } else {
            this.dataTracker.set(BAT_FLAGS, (byte)(b & -2));
+           this.hangingPosition = null;
         }
     }
-  
+
     public void tick() {
         super.tick();
         if (this.isRoosting()) {
@@ -199,18 +193,18 @@ public class CompanionBatEntity extends TameableEntity {
     protected boolean canClimb() {
         return false;
     }
-  
+
     public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
         return false;
     }
 
     protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
     }
-  
+
     public boolean canAvoidTraps() {
         return true;
     }
-  
+
     public boolean damage(DamageSource source, float amount) {
         if (this.isInvulnerableTo(source)) {
             return false;
@@ -244,14 +238,27 @@ public class CompanionBatEntity extends TameableEntity {
 
     @Override
     protected void mobTick() {
+        if (this.isRoosting()) {
+            this.healTicks--;
+            if (this.hangingPosition == null || !this.world.getBlockState(this.hangingPosition).isSolidBlock(this.world, this.hangingPosition)) {
+                this.setRoosting(false);
+                if (!this.isSilent()) {
+                    this.world.syncWorldEvent((PlayerEntity)null, 1025, this.getBlockPos(), 0);
+                }
+            } else if (this.healTicks <= 0){
+                this.healTicks = HEAL_TICKS;
+                if (this.isInjured()){
+                    int val = Math.max(1, (int)(this.getMaxHealth() * 10 / 100));
+                    this.heal(val);
+                }
+            }
+        }
     }
 
     /*
-
     public void tickMovement() {
         super.mobTick();
     }
-
     */
 
     public CompanionBatEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
@@ -275,25 +282,39 @@ public class CompanionBatEntity extends TameableEntity {
 
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
-        if (player.isSneaking()){
-            // Apri l'inventario
-        } 
         ItemStack itemStack = player.getStackInHand(hand);
         if (this.world.isClient){
-            return itemStack.isOf(Items.PUMPKIN_PIE) /*&& !this.isTamed()*/ ? ActionResult.CONSUME : ActionResult.PASS;
+            if (this.isInjured() && IS_FOOD_ITEM.test(itemStack)){
+                for (int i = 0; i < 3; i++) {
+                    double d = this.random.nextGaussian() * 0.01D;
+                    double e = this.random.nextGaussian() * 0.01D;
+                    double f = this.random.nextGaussian() * 0.01D;
+                    this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(0.5D), this.getRandomBodyY(), this.getParticleZ(1.0D), d, e, f);
+                }
+                return ActionResult.CONSUME;
+            } else {
+                return ActionResult.PASS;
+            }
         } else {
-            return this.healWithItem(itemStack);
+            boolean res = this.healWithItem(itemStack);
+            if (res) {
+                if (!player.getAbilities().creativeMode){
+                    itemStack.decrement(1);
+                }
+                return ActionResult.SUCCESS;
+            }
         }
+        return ActionResult.PASS;
     }
 
-    public ActionResult healWithItem(ItemStack stack){
-        if (this.getHealth() == this.getMaxHealth()) return ActionResult.PASS;
+    public boolean healWithItem(ItemStack stack){
+        if (this.getHealth() == this.getMaxHealth()) return false;
         float amount = getItemHealAmount(stack);
         if (amount > 0){
             this.heal(amount);
-            return ActionResult.SUCCESS;
+            return true;
         }
-        return ActionResult.PASS;
+        return false;
     }
 
     public static float getItemHealAmount(ItemStack stack){
@@ -328,7 +349,7 @@ public class CompanionBatEntity extends TameableEntity {
                         // Get item in hand
                         this.discard();
                         defaultedList.set(i, this.toItem());
-                        world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.HOSTILE, 1F, 1F);
+                        world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.AMBIENT, 1F, 1F);
                         return true;
                     }
                 }
@@ -404,7 +425,7 @@ public class CompanionBatEntity extends TameableEntity {
         entityData.putFloat("health", this.getHealth());
         entityData.putInt("exp", this.getExp());
         entityData.put("bundle", this.getBundle().toTag(new CompoundTag()));
-        // entityData.put("armor", this.companionBatGetArmor().toTag(new CompoundTag()));
+        entityData.put("armor", this.getArmorType().toTag(new CompoundTag()));
         return batItemStack;
     }
 
@@ -414,7 +435,7 @@ public class CompanionBatEntity extends TameableEntity {
         this.level = findLevelByExp(this.exp);
         this.setLevelAttributes(this.level);
         this.equipBundle(ItemStack.fromTag(entityData.getCompound("bundle")));
-        // this.equipArmor(ItemStack.fromTag(entityData.getCompound("armor")));
+        this.setArmorTypeFromStack(ItemStack.fromTag(entityData.getCompound("armor")));
         this.setHealth(entityData.getFloat("health"));
     }
 
@@ -432,12 +453,25 @@ public class CompanionBatEntity extends TameableEntity {
         return this.getEquippedStack(EquipmentSlot.FEET);
     }
 
-    public ItemStack companionBatGetArmor(){
+    public ItemStack getArmorType() {
         return this.getEquippedStack(EquipmentSlot.CHEST);
     }
 
+   	private void setArmorTypeFromStack(ItemStack stack) {
+        this.equipArmor(stack);
+        if (!this.world.isClient) {
+			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(BAT_ARMOR_BONUS_ID);
+			if (stack.getItem() instanceof CompanionBatArmorItem) {
+				int armorToAdd = ((CompanionBatArmorItem)stack.getItem()).getProtectionAmount();
+				if (armorToAdd != 0) {
+					this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addTemporaryModifier(new EntityAttributeModifier(BAT_ARMOR_BONUS_ID, "Horse armor bonus", (double)armorToAdd, EntityAttributeModifier.Operation.ADDITION));
+				}
+			}
+        }
+    }
+
     public static int findLevelByExp(int exp) {
-        for (int i=LEVELS.length-1; i>=0; i--) { 
+        for (int i=LEVELS.length-1; i>=0; i--) {
             if (LEVELS[i].expNeeded <= exp){
                 return i;
             }
@@ -477,8 +511,8 @@ public class CompanionBatEntity extends TameableEntity {
         LEVELS[7] = new CompanionBatLevel(2800, 16.0F, 5.0F, 0.4F);
         LEVELS[8] = new CompanionBatLevel(3700, 16.0F, 6.0F, 0.4F);
         LEVELS[9] = new CompanionBatLevel(5000, 18.0F, 6.0F, 0.4F);
-        IS_FOOD_ITEM_ENTITY = (itemEntity) -> {
-            return itemEntity.getStack().isOf(Items.PUMPKIN_PIE);
-        };
+        IS_FOOD_ITEM = (itemStack) -> itemStack.isOf(Items.PUMPKIN_PIE);
+        IS_FOOD_ITEM_ENTITY = (itemEntity) -> IS_FOOD_ITEM.test(itemEntity.getStack());
+        HEAL_TICKS = 600;
     }
 }

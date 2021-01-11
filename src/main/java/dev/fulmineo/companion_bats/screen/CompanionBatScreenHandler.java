@@ -1,6 +1,7 @@
 package dev.fulmineo.companion_bats.screen;
 
 import dev.fulmineo.companion_bats.CompanionBats;
+import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -46,7 +47,6 @@ public class CompanionBatScreenHandler extends ScreenHandler {
                         CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
                         entityData.put("bundle", stack.toTag(new CompoundTag()));
                         tag.put("entityData", entityData);
-                        CompanionBats.info("set tag "+tag.toString());
                     }
                 }
             }
@@ -57,14 +57,28 @@ public class CompanionBatScreenHandler extends ScreenHandler {
             }
         });
         this.addSlot(new Slot(inventory, 1, 8, 36) {
-            // TODO: Check for equipment items
             public boolean canInsert(ItemStack stack) {
-                return true; //entity.isHorseArmor(stack);
+                return stack.getItem() instanceof CompanionBatArmorItem;
+			}
+
+			@Override
+            public void setStack(ItemStack stack) {
+                super.setStack(stack);
+                PlayerEntity player = playerInventory.player;
+                if (player.world instanceof ServerWorld){
+					ItemStack batItemStack = player.getStackInHand(hand);
+					if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
+                        CompoundTag tag = batItemStack.getTag();
+                        CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
+                        entityData.put("armor", stack.toTag(new CompoundTag()));
+                        tag.put("entityData", entityData);
+                    }
+                }
             }
 
             @Environment(EnvType.CLIENT)
             public boolean doDrawHoveringEffect() {
-                return true; // entity.hasArmorSlot();
+                return true;
             }
 
             public int getMaxItemCount() {
@@ -74,7 +88,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 
         int o;
         int n;
-        
+
         for(o = 0; o < 3; ++o) {
             for(n = 0; n < 9; ++n) {
             this.addSlot(new Slot(playerInventory, n + o * 9 + 9, 8 + n * 18, 102 + o * 18 + -18));
@@ -104,7 +118,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
                 if (!this.insertItem(itemStack2, 1, 2, false)) {
                     return ItemStack.EMPTY;
                 }
-            } 
+            }
 
             if (itemStack2.isEmpty()) {
                 slot.setStack(ItemStack.EMPTY);

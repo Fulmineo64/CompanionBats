@@ -11,7 +11,8 @@ public class CompanionBatEntityRenderer extends MobEntityRenderer<CompanionBatEn
     private static final Identifier TEXTURE = new Identifier("textures/entity/bat.png");
 
     public CompanionBatEntityRenderer(EntityRendererFactory.Context context) {
-       super(context, new CompanionBatEntityModel(context.getPart(EntityModelLayers.BAT)), 0.25F);
+        super(context, new CompanionBatEntityModel(context.getPart(EntityModelLayers.BAT)), 0.25F);
+        this.addFeature(new CompanionBatArmorFeatureRenderer(this, context.getModelLoader()));
     }
  
     public Identifier getTexture(CompanionBatEntity batEntity) {

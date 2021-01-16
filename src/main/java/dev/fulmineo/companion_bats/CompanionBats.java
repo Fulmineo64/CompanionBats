@@ -17,6 +17,8 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.util.Arrays;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +26,8 @@ import org.apache.logging.log4j.Logger;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.item.CompanionBatFluteItem;
+import dev.fulmineo.companion_bats.item.CompanionBatAbility;
+import dev.fulmineo.companion_bats.item.CompanionBatGemItem;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
 
@@ -54,9 +58,16 @@ public class CompanionBats implements ModInitializer {
     public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage((int)CompanionBatEntity.LEVELS[CompanionBatEntity.LEVELS.length-1].health).group(GROUP));
     public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
 
-    private static final Item BAT_ARMOR_IRON = new CompanionBatArmorItem(ArmorMaterials.IRON, new FabricItemSettings().group(GROUP), false);
-    private static final Item BAT_ARMOR_DIAMOND = new CompanionBatArmorItem(ArmorMaterials.DIAMOND, new FabricItemSettings().group(GROUP), false);
-    private static final Item BAT_ARMOR_NETHERITE = new CompanionBatArmorItem(ArmorMaterials.NETHERITE, new FabricItemSettings().group(GROUP), false);
+    private static final Item BAT_ARMOR_IRON = new CompanionBatArmorItem(ArmorMaterials.IRON, new FabricItemSettings().group(GROUP));
+    private static final Item BAT_ARMOR_DIAMOND = new CompanionBatArmorItem(ArmorMaterials.DIAMOND, new FabricItemSettings().group(GROUP));
+	private static final Item BAT_ARMOR_NETHERITE = new CompanionBatArmorItem(ArmorMaterials.NETHERITE, new FabricItemSettings().group(GROUP));
+
+	private static final Item GEM_SKIES_GRACE = new CompanionBatGemItem(Arrays.asList(CompanionBatAbility.LASER_BEAM), new FabricItemSettings().group(GROUP).maxCount(1));
+	private static final Item GEM_NETHERS_FURY = new CompanionBatGemItem(Arrays.asList(CompanionBatAbility.INCREASED_DAMAGE, CompanionBatAbility.FIRE_RESISTANCE), new FabricItemSettings().group(GROUP).maxCount(1));
+	private static final Item GEM_ENDS_GREED = new CompanionBatGemItem(Arrays.asList(CompanionBatAbility.LIFESTEAL), new FabricItemSettings().group(GROUP).maxCount(1));
+	private static final Item GEM_DEEP_DARK_GLOOM = new CompanionBatGemItem(Arrays.asList(CompanionBatAbility.INCREASED_SPEED, CompanionBatAbility.CANNOT_ATTACK), new FabricItemSettings().group(GROUP).maxCount(1));
+	private static final Item GEM_DEPTHS_CALM = new CompanionBatGemItem(Arrays.asList(CompanionBatAbility.DAMAGE_REDUCTION, CompanionBatAbility.WATER_BREATHING), new FabricItemSettings().group(GROUP).maxCount(1));
+
 
     @Override
     public void onInitialize() {
@@ -66,7 +77,13 @@ public class CompanionBats implements ModInitializer {
 
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "iron_bat_armor"), BAT_ARMOR_IRON);
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "diamond_bat_armor"), BAT_ARMOR_DIAMOND);
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "netherite_bat_armor"), BAT_ARMOR_NETHERITE);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "netherite_bat_armor"), BAT_ARMOR_NETHERITE);
+
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gem_skies_grace"), GEM_SKIES_GRACE);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gem_nethers_fury"), GEM_NETHERS_FURY);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gem_ends_greed"), GEM_ENDS_GREED);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gem_deep_dark_gloom"), GEM_DEEP_DARK_GLOOM);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gem_depths_calm"), GEM_DEPTHS_CALM);
     }
 
     public static void log(Level level, String message){

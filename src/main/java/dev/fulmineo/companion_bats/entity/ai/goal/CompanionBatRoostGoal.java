@@ -23,10 +23,10 @@ public class CompanionBatRoostGoal extends Goal {
         this.maxDistanceToBegin = maxDistanceToBegin;
         this.random = new Random();
      }
-  
+
     public boolean canStart() {
         LivingEntity livingEntity = this.entity.getOwner();
-        if (this.entity.age < 50 || this.entity.isRoosting() || this.entity.isLeashed() || this.entity.hasVehicle() || !this.navigation.isIdle()){
+        if (this.entity.age < 50 || this.entity.isRoosting() || this.entity.isLeashed() || this.entity.hasVehicle() || this.entity.getTarget() != null || !this.navigation.isIdle()){
             return false;
         } else if (livingEntity != null && (livingEntity.isSpectator() || this.entity.squaredDistanceTo(livingEntity) > (double)(this.maxDistanceToBegin * this.maxDistanceToBegin))) {
             return false;
@@ -34,11 +34,11 @@ public class CompanionBatRoostGoal extends Goal {
             return true;
         }
     }
-  
+
     public boolean shouldContinue() {
         return !this.entity.isRoosting() && this.entity.hangingPosition != null;
     }
-  
+
     public void start() {
         BlockPos pos = this.entity.getBlockPos();
         for (int y = 1; y <= 5; y++){
@@ -50,7 +50,7 @@ public class CompanionBatRoostGoal extends Goal {
             if (this.validateAndSetPos(pos)) return;
         }
     }
-  
+
     public void stop() {
         this.navigation.stop();
     }
@@ -84,7 +84,7 @@ public class CompanionBatRoostGoal extends Goal {
                     this.entity.yaw = (float)this.random.nextInt(360);
                     this.entity.headYaw = this.entity.yaw;
                 }
-            } 
+            }
         }
     }
 

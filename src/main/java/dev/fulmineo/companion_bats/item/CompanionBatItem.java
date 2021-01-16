@@ -23,6 +23,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
@@ -37,9 +38,10 @@ public class CompanionBatItem extends Item {
         if (world instanceof ServerWorld) {
             CompoundTag entityData = getOrCreateEntityData(itemStack);
             if (user.isSneaking()){
-                SimpleInventory inventory = new SimpleInventory(2);
-				inventory.setStack(0, ItemStack.fromTag(entityData.getCompound("bundle")));
+                SimpleInventory inventory = new SimpleInventory(3);
+				inventory.setStack(0, ItemStack.fromTag(entityData.getCompound("gem")));
                 inventory.setStack(1, ItemStack.fromTag(entityData.getCompound("armor")));
+				inventory.setStack(2, ItemStack.fromTag(entityData.getCompound("bundle")));
                 user.openHandledScreen(new ExtendedScreenHandlerFactory() {
                     @Override
                     public void writeScreenOpeningData(ServerPlayerEntity serverPlayerEntity, PacketByteBuf packetByteBuf) {
@@ -75,16 +77,12 @@ public class CompanionBatItem extends Item {
                     fluteItemStack.getOrCreateTag().putUuid("entityUuid", batEntity.getUuid());
                     return TypedActionResult.success(fluteItemStack, world.isClient());
                 } else {
-                    user.sendMessage(new TranslatableText("item.companion_bats.bat_item.exausted"), false);
+                    user.sendMessage(new TranslatableText("item.companion_bats.bat_item.exausted", itemStack.hasCustomName() ? itemStack.getName() : new TranslatableText("entity.companion_bats.bat.your_bat")), false);
                     return TypedActionResult.fail(itemStack);
                 }
             }
         }
         return TypedActionResult.success(itemStack);
-    }
-
-    public boolean hasGlint(ItemStack stack) {
-        return true;
     }
 
     public boolean isUsedOnRelease(ItemStack stack) {
@@ -115,21 +113,16 @@ public class CompanionBatItem extends Item {
 
     }
 
-    /*public Rarity getRarity(ItemStack stack) {
-        // TODO!
-        if (!stack.hasEnchantments()) {
-           return this.rarity;
-        } else {
-           switch(this.rarity) {
-           case COMMON:
-           case UNCOMMON:
-              return Rarity.RARE;
-           case RARE:
-              return Rarity.EPIC;
-           case EPIC:
-           default:
-              return this.rarity;
-           }
-        }
-    }*/
+    public Rarity getRarity(ItemStack stack) {
+		CompoundTag entityData = getOrCreateEntityData(stack);
+		int level = CompanionBatEntity.getLevelByExp(entityData.getInt("exp"));
+		float levelProgression = level / CompanionBatEntity.LEVELS.length;
+		if (levelProgression < 0.5) {
+			return Rarity.COMMON;
+		} else if (levelProgression < 1) {
+			return Rarity.RARE;
+		} else {
+			return Rarity.EPIC;
+		}
+    }
 }

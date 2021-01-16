@@ -10,13 +10,10 @@ import net.minecraft.util.Identifier;
 
 public class CompanionBatArmorItem extends Item {
     private ArmorMaterial material;
-    // private boolean hasSocket;
 	private String entityTexture;
-    public CompanionBatArmorItem(ArmorMaterial material, Item.Settings settings, boolean hasSocket) {
+    public CompanionBatArmorItem(ArmorMaterial material, Item.Settings settings) {
 		super(settings);
 		this.material = material;
-		// this.hasSocket = hasSocket;
-		// TODO: Use hasSocket
 
 		this.entityTexture = "textures/entity/bat/armor/bat_armor_" + material.getName() + ".png";
 		CompanionBats.info(this.entityTexture);

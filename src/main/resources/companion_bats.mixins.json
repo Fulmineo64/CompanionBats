@@ -6,7 +6,8 @@
     "mixins": [],
     "client": [
 		"BatEntityMixin",
-		"BundleItemMixin"
+		"BundleItemMixin",
+		"LivingEntityMixin"
     ],
     "server": [],
     "injectors": {

@@ -38,7 +38,7 @@ public abstract class BatEntityMixin extends AmbientEntity {
                     itemStack.decrement(1);
                 }
 
-                if (this.random.nextInt(3) == 0) {
+                if (this.random.nextInt(1) == 0) {
                     this.discard();
                     player.giveItemStack(new ItemStack(CompanionBats.BAT_ITEM));
                 } else {
@@ -56,7 +56,7 @@ public abstract class BatEntityMixin extends AmbientEntity {
         if (!positive) {
             particleEffect = ParticleTypes.SMOKE;
         }
-    
+
         for(int i = 0; i < 7; ++i) {
             double d = this.random.nextGaussian() * 0.01D;
             double e = this.random.nextGaussian() * 0.01D;

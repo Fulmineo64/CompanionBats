@@ -7,14 +7,12 @@ import net.minecraft.util.math.MathHelper;
 
 public class CompanionBatMoveControl extends MoveControl {
     private final int maxPitchChange;
-    // private final boolean noGravity;
 
-    public CompanionBatMoveControl(MobEntity entity, int maxPitchChange, boolean noGravity) {
+    public CompanionBatMoveControl(MobEntity entity, int maxPitchChange) {
         super(entity);
         this.maxPitchChange = maxPitchChange;
-        // this.noGravity = noGravity;
     }
-  
+
     public void tick() {
         if (this.state == MoveControl.State.MOVE_TO) {
             this.state = MoveControl.State.WAIT;
@@ -50,11 +48,11 @@ public class CompanionBatMoveControl extends MoveControl {
             /*if (!this.noGravity) {
                 this.entity.setNoGravity(false);
             }*/
-  
+
             this.entity.setUpwardSpeed(0.0F);
             this.entity.setForwardSpeed(0.0F);
         }
-  
+
     }
 
 }

@@ -25,6 +25,6 @@ public class CompanionBatArmorItem extends Item {
 	}
 
 	public int getProtectionAmount(){
-		return this.material.getProtectionAmount(EquipmentSlot.CHEST);
+		return this.material.getProtectionAmount(EquipmentSlot.CHEST) * 2;
 	}
 }

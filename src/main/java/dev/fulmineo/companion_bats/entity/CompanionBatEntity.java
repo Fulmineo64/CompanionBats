@@ -258,6 +258,7 @@ public class CompanionBatEntity extends TameableEntity {
     @Override
     protected void mobTick() {
         if (this.isRoosting()) {
+			if (this.getTarget() != null) this.setRoosting(false);
             this.healTicks--;
             if (this.hangingPosition == null || !this.world.getBlockState(this.hangingPosition).isSolidBlock(this.world, this.hangingPosition)) {
                 this.setRoosting(false);

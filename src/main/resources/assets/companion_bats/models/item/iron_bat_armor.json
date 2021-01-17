@@ -1,0 +1,6 @@
+{
+	"parent": "builtin/generated",
+	"textures": {
+	  	"layer0": "companion_bats:item/iron_bat_armor"
+	}
+  }

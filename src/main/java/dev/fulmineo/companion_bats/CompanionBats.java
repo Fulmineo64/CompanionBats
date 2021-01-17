@@ -58,16 +58,19 @@ public class CompanionBats implements ModInitializer {
     public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage((int)CompanionBatEntity.LEVELS[CompanionBatEntity.LEVELS.length-1].health).group(GROUP));
     public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
 
-    private static final Item BAT_ARMOR_IRON = new CompanionBatArmorItem(ArmorMaterials.IRON, new FabricItemSettings().group(GROUP));
+	// Todo: Leather armor
+    // private static final Item BAT_ARMOR_LEATHER = new CompanionBatArmorItem(ArmorMaterials.LEATHER, new FabricItemSettings().group(GROUP));
+	private static final Item BAT_ARMOR_IRON = new CompanionBatArmorItem(ArmorMaterials.IRON, new FabricItemSettings().group(GROUP));
+    private static final Item BAT_ARMOR_GOLD = new CompanionBatArmorItem(ArmorMaterials.GOLD, new FabricItemSettings().group(GROUP));
     private static final Item BAT_ARMOR_DIAMOND = new CompanionBatArmorItem(ArmorMaterials.DIAMOND, new FabricItemSettings().group(GROUP));
 	private static final Item BAT_ARMOR_NETHERITE = new CompanionBatArmorItem(ArmorMaterials.NETHERITE, new FabricItemSettings().group(GROUP));
 
-	private static final Item GEM_SKIES_GRACE = new CompanionBatGemItem(Arrays.asList(CompanionBatAbility.LASER_BEAM), new FabricItemSettings().group(GROUP).maxCount(1));
-	private static final Item GEM_NETHERS_FURY = new CompanionBatGemItem(Arrays.asList(CompanionBatAbility.INCREASED_DAMAGE, CompanionBatAbility.FIRE_RESISTANCE), new FabricItemSettings().group(GROUP).maxCount(1));
-	private static final Item GEM_ENDS_GREED = new CompanionBatGemItem(Arrays.asList(CompanionBatAbility.LIFESTEAL), new FabricItemSettings().group(GROUP).maxCount(1));
-	private static final Item GEM_DEEP_DARK_GLOOM = new CompanionBatGemItem(Arrays.asList(CompanionBatAbility.INCREASED_SPEED, CompanionBatAbility.CANNOT_ATTACK), new FabricItemSettings().group(GROUP).maxCount(1));
-	private static final Item GEM_DEPTHS_CALM = new CompanionBatGemItem(Arrays.asList(CompanionBatAbility.DAMAGE_REDUCTION, CompanionBatAbility.WATER_BREATHING), new FabricItemSettings().group(GROUP).maxCount(1));
-
+	// Todo: Skies' Grace
+	private static final Item GEM_SKIES_GRACE = new CompanionBatGemItem("gem_skies_grace", Arrays.asList(CompanionBatAbility.LASER_BEAM), new FabricItemSettings().group(GROUP).maxCount(1));
+	private static final Item GEM_NETHERS_FURY = new CompanionBatGemItem("gem_nethers_fury", Arrays.asList(CompanionBatAbility.INCREASED_DAMAGE, CompanionBatAbility.FIRE_RESISTANCE), new FabricItemSettings().group(GROUP).maxCount(1));
+	private static final Item GEM_ENDS_GREED = new CompanionBatGemItem("gem_ends_greed", Arrays.asList(CompanionBatAbility.LIFESTEAL), new FabricItemSettings().group(GROUP).maxCount(1));
+	private static final Item GEM_DEEP_DARK_GLOOM = new CompanionBatGemItem("gem_deep_darks_gloom", Arrays.asList(CompanionBatAbility.INCREASED_SPEED, CompanionBatAbility.CANNOT_ATTACK), new FabricItemSettings().group(GROUP).maxCount(1));
+	private static final Item GEM_DEPTHS_CALM = new CompanionBatGemItem("gem_depths_calm", Arrays.asList(CompanionBatAbility.DAMAGE_REDUCTION, CompanionBatAbility.WATER_BREATHING), new FabricItemSettings().group(GROUP).maxCount(1));
 
     @Override
     public void onInitialize() {
@@ -75,14 +78,16 @@ public class CompanionBats implements ModInitializer {
         Registry.register(Registry.ITEM, BAT_ITEM_IDENTIFIER, BAT_ITEM);
         Registry.register(Registry.ITEM, BAT_FLUTE_IDENTIFIER, BAT_FLUTE_ITEM);
 
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "iron_bat_armor"), BAT_ARMOR_IRON);
+        // Registry.register(Registry.ITEM, new Identifier(MOD_ID, "leather_bat_armor"), BAT_ARMOR_LEATHER);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "iron_bat_armor"), BAT_ARMOR_IRON);
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gold_bat_armor"), BAT_ARMOR_GOLD);
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "diamond_bat_armor"), BAT_ARMOR_DIAMOND);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "netherite_bat_armor"), BAT_ARMOR_NETHERITE);
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gem_skies_grace"), GEM_SKIES_GRACE);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gem_nethers_fury"), GEM_NETHERS_FURY);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gem_ends_greed"), GEM_ENDS_GREED);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gem_deep_dark_gloom"), GEM_DEEP_DARK_GLOOM);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gem_deep_darks_gloom"), GEM_DEEP_DARK_GLOOM);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gem_depths_calm"), GEM_DEPTHS_CALM);
     }
 

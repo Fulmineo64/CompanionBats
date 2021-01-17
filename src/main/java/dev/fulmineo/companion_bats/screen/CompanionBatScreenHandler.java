@@ -35,7 +35,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 
 		this.addSlot(new Slot(inventory, 0, 8, 18) {
             public boolean canInsert(ItemStack stack) {
-                return stack.getItem() instanceof CompanionBatGemItem && !this.hasStack();
+                return stack.getItem() instanceof CompanionBatGemItem;
             }
 
             @Override
@@ -61,7 +61,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 
         this.addSlot(new Slot(inventory, 1, 8, 36) {
             public boolean canInsert(ItemStack stack) {
-                return stack.getItem() instanceof CompanionBatArmorItem && !this.hasStack();
+                return stack.getItem() instanceof CompanionBatArmorItem;
 			}
 
 			@Override
@@ -87,7 +87,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 
         this.addSlot(new Slot(inventory, 2, 8, 54) {
             public boolean canInsert(ItemStack stack) {
-                return stack.isOf(Items.BUNDLE) && !this.hasStack();
+                return stack.isOf(Items.BUNDLE);
             }
 
             @Override
@@ -140,7 +140,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 				if (!this.insertItem(itemStack2, i, this.slots.size(), true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (this.getSlot(0).canInsert(itemStack2)) {
+			} else if (this.getSlot(0).canInsert(itemStack2) && !this.getSlot(0).hasStack()) {
 				if (!this.insertItem(itemStack2, 0, 1, false)) {
 					return ItemStack.EMPTY;
 				}

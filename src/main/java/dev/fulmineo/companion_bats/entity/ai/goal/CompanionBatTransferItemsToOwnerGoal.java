@@ -22,8 +22,8 @@ public class CompanionBatTransferItemsToOwnerGoal extends Goal {
     private int canStartCountdownTicks;
     private final float maxDistance;
     private ItemStack bundleStack;
-    private ListTag listTag;
-    private int updateCountdownTicks;
+	private int updateCountdownTicks;
+	private boolean canContinue = true;
 
     public CompanionBatTransferItemsToOwnerGoal(CompanionBatEntity entity, float maxDistance) {
         this.entity = entity;
@@ -48,31 +48,34 @@ public class CompanionBatTransferItemsToOwnerGoal extends Goal {
                 this.owner = (PlayerEntity)livingEntity;
                 CompoundTag tag = this.bundleStack.getTag();
                 if (tag == null) return false;
-                this.listTag = tag.getList("Items", 10);
-                return this.listTag.size() > 0;
+				ListTag listTag = tag.getList("Items", 10);
+				this.canContinue = listTag.size() > 0;
+                return this.canContinue;
             }
         }
         return false;
     }
 
     public boolean shouldContinue() {
-        return this.listTag != null && this.listTag.size() > 0;
+        return this.canContinue;
     }
 
     public void tick() {
         if (--this.updateCountdownTicks <= 0) {
             this.updateCountdownTicks = 5;
+			this.canContinue = false;
             Optional<ItemStack> firstStack = ((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsGetFirstStack(this.bundleStack);
-            if (firstStack.isPresent()){
+			if (firstStack.isPresent()){
                 if (owner.getInventory().insertStack(firstStack.get())){
-                    this.entity.world.playSound(null, this.entity.getBlockPos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.AMBIENT, 0.3F, 2F);
+					this.entity.world.playSound(null, this.entity.getBlockPos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.AMBIENT, 0.3F, 2F);
+					this.canContinue = true;
                 } else {
-                    ((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsAddToBundle(this.bundleStack, firstStack.get());
+					((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsAddToBundle(this.bundleStack, firstStack.get());
                 }
             }
         }
     }
-  
+
     public void stop() {
         this.owner = null;
     }

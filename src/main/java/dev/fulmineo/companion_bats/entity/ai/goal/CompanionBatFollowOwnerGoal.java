@@ -25,7 +25,7 @@ public class CompanionBatFollowOwnerGoal extends Goal {
         this.maxDistanceSquared = (double)(maxDistance * maxDistance);
         this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
      }
-  
+
     public boolean canStart() {
         LivingEntity livingEntity = this.entity.getOwner();
          if (livingEntity == null || livingEntity.isSpectator() || !this.isWithinDistanceToStart(livingEntity)) {
@@ -35,7 +35,7 @@ public class CompanionBatFollowOwnerGoal extends Goal {
            return true;
         }
     }
-  
+
     public boolean shouldContinue() {
         if (this.navigation.isIdle()) {
            return false;
@@ -43,14 +43,14 @@ public class CompanionBatFollowOwnerGoal extends Goal {
            return this.entity.squaredDistanceTo(this.owner) > (double)(this.maxDistanceSquared);
         }
     }
-  
+
     public void start() {
         if (this.entity.isRoosting()){
             this.entity.setRoosting(false);
         }
         this.updateCountdownTicks = 0;
     }
-  
+
     public void stop() {
         this.owner = null;
         this.navigation.stop();

@@ -108,8 +108,8 @@ public class CompanionBatEntity extends TameableEntity {
 
     protected void initGoals() {
         this.goalSelector.add(2, new CompanionBatPickUpItemGoal(this, 1.0D, 16.0F));
-        this.goalSelector.add(3, new CompanionBatFollowOwnerGoal(this, 1.0D, 3.0F, 16.0F));
-        this.goalSelector.add(4, new CompanionBatTransferItemsToOwnerGoal(this, 2.0F));
+        this.goalSelector.add(3, new CompanionBatFollowOwnerGoal(this, 1.0D, 2.5F, 16.0F));
+        this.goalSelector.add(4, new CompanionBatTransferItemsToOwnerGoal(this, 2.5F));
         this.goalSelector.add(5, new CompanionBatRoostGoal(this, 0.75F, 4.0F));
     }
 

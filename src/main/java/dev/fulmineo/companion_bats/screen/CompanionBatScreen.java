@@ -61,9 +61,9 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 
 		// Draws the additional slots
-		this.drawTexture(matrices, i + 7, j + 35 - 18, 18, this.backgroundHeight, 18, 18);
-		this.drawTexture(matrices, i + 7, j + 35, 0, this.backgroundHeight, 18, 18);
-		this.drawTexture(matrices, i + 7, j + 35 + 18, 0, this.backgroundHeight, 18, 18);
+		this.drawTexture(matrices, i + 7, j + 35 - 18, 0, this.backgroundHeight, 18, 18);
+		this.drawTexture(matrices, i + 7, j + 35, 18, this.backgroundHeight, 18, 18);
+		this.drawTexture(matrices, i + 7, j + 35 + 18, 36, this.backgroundHeight, 18, 18);
 
 		float x = i + 28;
 		float y = j + 20;

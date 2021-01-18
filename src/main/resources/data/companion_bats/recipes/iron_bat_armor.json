@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "# #",
+        "###",
+        " # "
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:iron"
+        }
+    },
+    "result": {
+		"item": "companion_bats:iron_bat_armor"
+	}
+}

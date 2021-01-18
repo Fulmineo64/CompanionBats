@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "#P#",
+        "PEP",
+        "#D#"
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:crying_obsidian"
+        },
+        "P": {
+            "item": "minecraft:popped_chorus_fruit"
+        },
+        "E": {
+            "item": "minecraft:end_crystal"
+        },
+        "D": {
+            "item": "minecraft:dragon_breath"
+        }
+    },
+    "result": {
+		"item": "companion_bat:gem_ends_greed"
+	}
+}

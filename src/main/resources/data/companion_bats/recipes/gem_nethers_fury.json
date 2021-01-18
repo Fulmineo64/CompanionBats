@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "#N#",
+        "/E/",
+        "#N#"
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:nether_brick"
+        },
+        "N": {
+            "item": "minecraft:nether_wart"
+        },
+        "/": {
+            "item": "minecraft:blaze_rod"
+        },
+        "E": {
+            "item": "minecraft:enchanted_golden_apple"
+        }
+    },
+    "result": {
+		"item": "companion_bats:gem_nethers_fury"
+	}
+}

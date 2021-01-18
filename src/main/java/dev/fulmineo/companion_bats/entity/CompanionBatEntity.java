@@ -82,7 +82,7 @@ public class CompanionBatEntity extends TameableEntity {
 
 	private static final int HEAL_TICKS = 600;
 	private static final float LIFESTEAL_PERCENTAGE = 0.2F;
-	private static final int DAMAGE_REDUCTION_AMOUNT = 2;
+	private static final int DAMAGE_REDUCTION_AMOUNT = 3;
 
     public static final CompanionBatLevel[] LEVELS;
     public static final Predicate<ItemStack> IS_FOOD_ITEM;

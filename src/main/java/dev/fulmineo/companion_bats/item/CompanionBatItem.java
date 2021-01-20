@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
+import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.ItemEntity;
@@ -116,7 +117,7 @@ public class CompanionBatItem extends Item {
     public Rarity getRarity(ItemStack stack) {
 		CompoundTag entityData = getOrCreateEntityData(stack);
 		int level = CompanionBatEntity.getLevelByExp(entityData.getInt("exp"));
-		float levelProgression = level / CompanionBatEntity.LEVELS.length;
+		float levelProgression = level / CompanionBatLevels.LEVELS.length;
 		if (levelProgression < 0.5) {
 			return Rarity.COMMON;
 		} else if (levelProgression < 1) {

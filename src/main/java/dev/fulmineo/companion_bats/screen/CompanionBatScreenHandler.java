@@ -2,7 +2,6 @@ package dev.fulmineo.companion_bats.screen;
 
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
-import dev.fulmineo.companion_bats.item.CompanionBatGemItem;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -35,34 +34,8 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 
 		this.addSlot(new Slot(inventory, 0, 8, 18) {
             public boolean canInsert(ItemStack stack) {
-                return stack.getItem() instanceof CompanionBatGemItem;
+				return stack.getItem() instanceof CompanionBatArmorItem;
             }
-
-            @Override
-            public void setStack(ItemStack stack) {
-                super.setStack(stack);
-                PlayerEntity player = playerInventory.player;
-                if (player.world instanceof ServerWorld){
-                    ItemStack batItemStack = player.getStackInHand(hand);
-                    if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
-                        CompoundTag tag = batItemStack.getTag();
-                        CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
-                        entityData.put("gem", stack.toTag(new CompoundTag()));
-                        tag.put("entityData", entityData);
-                    }
-                }
-			}
-
-            @Environment(EnvType.CLIENT)
-            public boolean doDrawHoveringEffect() {
-                return true;
-            }
-		});
-
-        this.addSlot(new Slot(inventory, 1, 8, 36) {
-            public boolean canInsert(ItemStack stack) {
-                return stack.getItem() instanceof CompanionBatArmorItem;
-			}
 
 			@Override
             public void setStack(ItemStack stack) {
@@ -85,7 +58,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
             }
 		});
 
-        this.addSlot(new Slot(inventory, 2, 8, 54) {
+        this.addSlot(new Slot(inventory, 1, 8, 36) {
             public boolean canInsert(ItemStack stack) {
                 return stack.isOf(Items.BUNDLE);
             }
@@ -146,10 +119,6 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 				}
 			} else if (this.getSlot(1).canInsert(itemStack2) && !this.getSlot(1).hasStack()) {
 				if (!this.insertItem(itemStack2, 1, 2, false)) {
-					return ItemStack.EMPTY;
-				}
-			} else if (this.getSlot(2).canInsert(itemStack2) && !this.getSlot(2).hasStack()) {
-				if (!this.insertItem(itemStack2, 2, 3, false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (i <= 2 || !this.insertItem(itemStack2, 2, i, false)) {

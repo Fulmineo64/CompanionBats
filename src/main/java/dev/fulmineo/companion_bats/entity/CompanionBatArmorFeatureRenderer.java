@@ -1,7 +1,6 @@
 package dev.fulmineo.companion_bats.entity;
 
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
-import dev.fulmineo.companion_bats.item.CompanionBatGemItem;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -43,30 +42,6 @@ public class CompanionBatArmorFeatureRenderer extends FeatureRenderer<CompanionB
             /*}*/
 
             VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(armorItem.getEntityTexture()));
-            this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, q, r, s, 1.0F);
-		}
-
-		ItemStack gemStack = entity.getGem();
-		if (gemStack.getItem() instanceof CompanionBatGemItem) {
-            CompanionBatGemItem gemItem = (CompanionBatGemItem)gemStack.getItem();
-            this.getContextModel().copyStateTo(this.model);
-            this.model.animateModel(entity, f, g, h);
-            this.model.setAngles(entity, f, g, j, k, l);
-            float q;
-            float r;
-            float s;
-            /*if (armorItem instanceof DyeableCompanionBatArmorItem) {
-                int m = ((DyeableCompanionBatArmorItem)armorItem).getColor(itemStack);
-                q = (float)(m >> 16 & 255) / 255.0F;
-                r = (float)(m >> 8 & 255) / 255.0F;
-                s = (float)(m & 255) / 255.0F;
-            } else /*{*/
-                q = 1.0F;
-                r = 1.0F;
-                s = 1.0F;
-            /*}*/
-
-            VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(gemItem.getEntityTexture()));
             this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, q, r, s, 1.0F);
 		}
     }

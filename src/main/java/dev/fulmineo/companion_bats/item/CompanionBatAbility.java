@@ -1,23 +1,33 @@
 package dev.fulmineo.companion_bats.item;
 
 public enum CompanionBatAbility {
-	// Unique abilities
-
-	LASER_BEAM,
-	LIFESTEAL,
-	DAMAGE_REDUCTION,
-
-	// Drawbacks
-
-	CANNOT_ATTACK,
-
-	// Buffs
+	// Inferno
 
 	INCREASED_DAMAGE,
+	FIRE_RESISTANCE,
+	BURN,
+
+	// Vampire
+
+	LIFESTEAL,
+	CRIT_IMMUNITY,
+
+	// Looter
+
+	CANNOT_ATTACK,
 	INCREASED_SPEED,
 
-	// Immunities
+	// Knight
 
-	FIRE_RESISTANCE,
-	WATER_BREATHING;
+	DAMAGE_BLOCK,
+	INCREASED_ARMOR,
+
+	// Alchemist
+
+	BUFF_OWNER,
+	HEAL_OWNER,
+
+	// Duelist
+
+	COMBO_ATTACK;
 }

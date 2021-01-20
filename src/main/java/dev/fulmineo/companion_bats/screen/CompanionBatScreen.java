@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
+import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
@@ -33,20 +34,20 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 
 		this.level = CompanionBatEntity.getLevelByExp(entityData.getInt("exp"));
 
-		if (this.level+1 < CompanionBatEntity.LEVELS.length){
-			this.currentLevelExp = entityData.getInt("exp") - CompanionBatEntity.LEVELS[this.level].totalExpNeeded;
-			this.nextLevelExp = CompanionBatEntity.LEVELS[this.level+1].totalExpNeeded - CompanionBatEntity.LEVELS[this.level].totalExpNeeded;
+		if (this.level+1 < CompanionBatLevels.LEVELS.length){
+			this.currentLevelExp = entityData.getInt("exp") - CompanionBatLevels.LEVELS[this.level].totalExpNeeded;
+			this.nextLevelExp = CompanionBatLevels.LEVELS[this.level+1].totalExpNeeded - CompanionBatLevels.LEVELS[this.level].totalExpNeeded;
 		} else {
 			this.currentLevelExp = entityData.getInt("exp");
-			this.nextLevelExp = CompanionBatEntity.LEVELS[this.level].totalExpNeeded;
+			this.nextLevelExp = CompanionBatLevels.LEVELS[this.level].totalExpNeeded;
 			this.maxExpReached = this.currentLevelExp >= this.nextLevelExp;
 		}
 
 		this.currentHealth = Math.round(entityData.getFloat("health") * 10F) / 10F;
-		this.maxHealth = CompanionBatEntity.LEVELS[this.level].health;
 
-		this.attack = CompanionBatEntity.LEVELS[this.level].attack;
-		this.speed = CompanionBatEntity.LEVELS[this.level].speed;
+		this.maxHealth = CompanionBatEntity.getLevelHealth(this.level);
+		this.attack = CompanionBatEntity.getLevelAttack(this.level);
+		this.speed = CompanionBatEntity.getLevelSpeed(this.level);
 
 		this.passEvents = false;
    	}
@@ -63,7 +64,6 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		// Draws the additional slots
 		this.drawTexture(matrices, i + 7, j + 35 - 18, 0, this.backgroundHeight, 18, 18);
 		this.drawTexture(matrices, i + 7, j + 35, 18, this.backgroundHeight, 18, 18);
-		this.drawTexture(matrices, i + 7, j + 35 + 18, 36, this.backgroundHeight, 18, 18);
 
 		float x = i + 28;
 		float y = j + 20;

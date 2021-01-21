@@ -98,6 +98,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private int exp = 0;
     private int classExp = 0;
     private int level = -1;
+	private int classLevel = -1;
 
     public CompanionBatEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
@@ -429,19 +430,56 @@ public class CompanionBatEntity extends TameableEntity {
 
 	private void setClassExp(int value) {
 		this.classExp = value;
+        this.tryClassLevelUp();
 	}
 
 	private void addClassExp(int expToAdd){
         this.setClassExp(this.exp + expToAdd);
     }
 
-	private void setLevelAbilities(){
+	private void setBatClass(){
+		ItemStack chestStack = this.getEquippedStack(EquipmentSlot.CHEST);
+		if (chestStack.getItem() instanceof CompanionBatArmorItem){
+			CompanionBatArmorItem armor = (CompanionBatArmorItem)chestStack.getItem();
+			this.currentClass = armor.getBatClass();
+		}
+	}
+
+	private void setClassLevel(CompoundTag entityData){
+		if (this.currentClass == null) return;
+		this.classExp = entityData.getInt(this.currentClass.getExpTagName());
+        this.classLevel = CompanionBatLevels.getClassLevelByExp(this.currentClass, this.exp);
+	}
+
+	private void setClassLevelAbilities(CompoundTag entityData){
 		for (CompanionBatClass batClass : CompanionBatClass.values()){
 			int classExp = this.getClassExp();
-			for (CompanionBatClassLevel level: CompanionBatLevels.CLASS_LEVELS.get(batClass)){
-				if (level.totalExpNeeded > classExp) break;
-				if (level.ability != null){
+			if (this.currentClass == batClass) {
+				for (CompanionBatClassLevel level : CompanionBatLevels.CLASS_LEVELS.get(batClass)){
+					if (level.totalExpNeeded > classExp) break;
+					if (level.ability != null){
+						this.abilities.put(level.ability, level.abilityLevel);
+					}
+				}
+			} else {
+				CompanionBatClassLevel level = CompanionBatLevels.GLOBAL_CLASS_LEVELS.get(batClass);
+				if (level != null && classExp >= level.totalExpNeeded){
 					this.abilities.put(level.ability, level.abilityLevel);
+				}
+			}
+		}
+	}
+
+	private void setCurrentClassLevelAbilities(){
+		if (this.currentClass == null) return;
+		for (CompanionBatClass batClass : CompanionBatClass.values()){
+			if (this.currentClass == batClass) {
+				int classExp = this.getClassExp();
+				for (CompanionBatClassLevel level: CompanionBatLevels.CLASS_LEVELS.get(batClass)){
+					if (level.totalExpNeeded > classExp) return;
+					if (level.ability != null){
+						this.abilities.put(level.ability, level.abilityLevel);
+					}
 				}
 			}
 		}
@@ -468,14 +506,28 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 	}
 
-    protected void tryLevelUp(){
+    private void tryLevelUp(){
         if (CompanionBatLevels.LEVELS.length > this.level + 1 && CompanionBatLevels.LEVELS[this.level + 1].totalExpNeeded <= this.exp) {
             this.level++;
             this.setLevelAttributes(this.level);
             this.heal(this.getMaxHealth());
             this.notifyLevelUp(this.level);
         }
-    }
+	}
+
+	private void tryClassLevelUp(){
+		CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
+        if (classLevels.length > this.level + 1 && classLevels[this.level + 1].totalExpNeeded <= this.exp) {
+            this.level++;
+            this.setCurrentClassLevelAbilities();
+            this.notifyClassLevelUp(this.classLevel);
+        }
+	}
+
+	private void setLevel(int exp){
+        this.exp = exp;
+        this.level =  CompanionBatLevels.getLevelByExp(this.exp);
+	}
 
     protected void setLevelAttributes(int level){
         this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(getLevelHealth(level));
@@ -497,7 +549,12 @@ public class CompanionBatEntity extends TameableEntity {
             }
             ((PlayerEntity)this.getOwner()).sendMessage(message, false);
         }
-    }
+	}
+
+    protected void notifyClassLevelUp(int classLevel){
+		MutableText message = new TranslatableText("entity.companion_bats.bat.class_level_up", this.hasCustomName() ? this.getCustomName() : new TranslatableText("entity.companion_bats.bat.your_bat"), this.currentClass.toString(), classLevel+1).append("\n");
+		((PlayerEntity)this.getOwner()).sendMessage(message, false);
+	}
 
     protected ItemStack toItem(){
 		ItemStack batItemStack = new ItemStack(CompanionBats.BAT_ITEM);
@@ -510,7 +567,6 @@ public class CompanionBatEntity extends TameableEntity {
         CompoundTag entityData = CompanionBatItem.createEntityData(batItemStack);
         entityData.putFloat("health", this.getHealth());
 		entityData.putInt("exp", this.getExp());
-        entityData.put("gem", this.getGem().toTag(new CompoundTag()));
         entityData.put("armor", this.getArmorType().toTag(new CompoundTag()));
         entityData.put("bundle", this.getBundle().toTag(new CompoundTag()));
         return batItemStack;
@@ -518,14 +574,15 @@ public class CompanionBatEntity extends TameableEntity {
 
     public void fromItem(PlayerEntity owner, CompoundTag entityData){
         this.setOwner(owner);
-        this.exp = entityData.getInt("exp");
-        this.level = getLevelByExp(this.exp);
+		this.setLevel(entityData.getInt("exp"));
 		this.setLevelAttributes(this.level);
         this.equipGem(ItemStack.fromTag(entityData.getCompound("gem")));
         this.equipArmor(ItemStack.fromTag(entityData.getCompound("armor")));
         this.equipBundle(ItemStack.fromTag(entityData.getCompound("bundle")));
 		this.setHealth(entityData.getFloat("health"));
-		this.setLevelAbilities();
+		this.setBatClass();
+		this.setClassLevel(entityData);
+		this.setClassLevelAbilities(entityData);
 		this.setAbilitiesEffects();
     }
 
@@ -555,10 +612,6 @@ public class CompanionBatEntity extends TameableEntity {
         this.setEquipmentDropChance(EquipmentSlot.FEET, 0.0F);
     }
 
-	public ItemStack getGem(){
-        return this.getEquippedStack(EquipmentSlot.HEAD);
-    }
-
     public ItemStack getArmorType() {
         return this.getEquippedStack(EquipmentSlot.CHEST);
 	}
@@ -572,16 +625,19 @@ public class CompanionBatEntity extends TameableEntity {
 		return abilityLevel != null && abilityLevel > 0;
 	}
 
-    public static int getLevelByExp(int exp) {
-        for (int i=CompanionBatLevels.LEVELS.length-1; i>=0; i--) {
-            if (CompanionBatLevels.LEVELS[i].totalExpNeeded <= exp){
+
+	public static int getClassLevelByTag(CompoundTag entityData, CompanionBatClass batClass) {
+		int exp = entityData.getInt(batClass.getExpTagName());
+		CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(batClass);
+		for (int i=classLevels.length-1; i>=0; i--) {
+            if (classLevels[i].totalExpNeeded <= exp){
                 return i;
             }
-        }
-        return CompanionBatLevels.LEVELS.length-1;
-    }
+		}
+        return classLevels.length-1;
+	}
 
-    public static void setDefaultEntityData(CompoundTag tag){
+	public static void setDefaultEntityData(CompoundTag tag){
         tag.putFloat("health", BASE_HEALTH);
         tag.putInt("exp", 0);
     }

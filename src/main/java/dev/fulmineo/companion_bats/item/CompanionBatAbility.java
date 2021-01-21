@@ -12,7 +12,7 @@ public enum CompanionBatAbility {
 	LIFESTEAL,
 	CRIT_IMMUNITY,
 
-	// Looter
+	// Forager
 
 	CANNOT_ATTACK,
 	INCREASED_SPEED,

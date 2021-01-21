@@ -54,7 +54,7 @@ public class CompanionBats implements ModInitializer {
     public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage((int)CompanionBatEntity.getMaxLevelHealth()).group(GROUP));
     public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
 
-	private static final Item INFERNO_SUIT = new CompanionBatArmorItem("inferno_suit", 10, CompanionBatClass.INFERNO, new FabricItemSettings().group(GROUP));
+	private static final Item INFERNO_SUIT = new CompanionBatArmorItem("inferno_suit", 10, CompanionBatClass.INFERNO, new FabricItemSettings().group(GROUP).maxCount(1));
     /*private static final Item BAT_ARMOR_GOLD = new CompanionBatArmorItem(ArmorMaterials.GOLD, new FabricItemSettings().group(GROUP));
     private static final Item BAT_ARMOR_DIAMOND = new CompanionBatArmorItem(ArmorMaterials.DIAMOND, new FabricItemSettings().group(GROUP));
 	private static final Item BAT_ARMOR_NETHERITE = new CompanionBatArmorItem(ArmorMaterials.NETHERITE, new FabricItemSettings().group(GROUP));*/

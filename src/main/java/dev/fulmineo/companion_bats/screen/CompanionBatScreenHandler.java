@@ -41,15 +41,13 @@ public class CompanionBatScreenHandler extends ScreenHandler {
             public void setStack(ItemStack stack) {
                 super.setStack(stack);
                 PlayerEntity player = playerInventory.player;
-                if (player.world instanceof ServerWorld){
-					ItemStack batItemStack = player.getStackInHand(hand);
-					if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
-                        CompoundTag tag = batItemStack.getTag();
-                        CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
-                        entityData.put("armor", stack.toTag(new CompoundTag()));
-                        tag.put("entityData", entityData);
-                    }
-                }
+				ItemStack batItemStack = player.getStackInHand(hand);
+				if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
+					CompoundTag tag = batItemStack.getTag();
+					CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
+					entityData.put("armor", stack.toTag(new CompoundTag()));
+					tag.put("entityData", entityData);
+				}
             }
 
             @Environment(EnvType.CLIENT)
@@ -89,7 +87,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 
         for(o = 0; o < 3; ++o) {
             for(n = 0; n < 9; ++n) {
-            this.addSlot(new Slot(playerInventory, n + o * 9 + 9, 8 + n * 18, 102 + o * 18 + -18));
+            	this.addSlot(new Slot(playerInventory, n + o * 9 + 9, 8 + n * 18, 102 + o * 18 + -18));
             }
         }
 

@@ -36,7 +36,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
         this.maxDistance = maxDistance;
         this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
     }
-  
+
     public boolean canStart() {
         if (--this.canStartCountdownTicks <= 0) {
             // Makes sure this check isn't spammed
@@ -56,11 +56,11 @@ public class CompanionBatPickUpItemGoal extends Goal {
         }
         return false;
     }
-  
+
     public boolean shouldContinue() {
         return this.targetItem != null && this.entity.squaredDistanceTo(this.owner) < (double)(this.maxDistance * this.maxDistance);
     }
-  
+
     public void start() {
         this.targetNextItem();
     }
@@ -78,7 +78,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
                 int added = ((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsAddToBundle(this.bundleStack, targetStack);
                 targetStack.decrement(added);
                 this.entity.world.playSound(null, this.entity.getBlockPos(), SoundEvents.BLOCK_WOOL_PLACE, SoundCategory.AMBIENT, 0.3F, 1F);
-                this.removeItemFromList(this.targetItem);
+				this.removeItemFromList(this.targetItem);
                 this.targetNextItem();
             } else {
                 this.navigation.startMovingTo(this.targetItem, this.speed);
@@ -97,7 +97,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
     }
 
     private void targetNextItem(){
-        for (ItemEntity item : itemList){ 
+        for (ItemEntity item : itemList){
             if (this.canItemFitInBundle(item.getStack()) && item.squaredDistanceTo(owner) < (double)(this.maxDistance * this.maxDistance)){
                 this.targetItem = item;
                 return;
@@ -112,12 +112,12 @@ public class CompanionBatPickUpItemGoal extends Goal {
 
     private boolean canItemFitInBundle(ItemStack itemStack) {
         return BundleItem.getAmountFilled(this.bundleStack) + (((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsGetItemOccupancy(itemStack) / 64 * itemStack.getCount()) <= 1;
-    } 
+    }
 
-    class ProximityComparator implements Comparator<ItemEntity> {  
-        // Used for sorting in ascending order of ID  
-        public int compare(ItemEntity a, ItemEntity b) {  
-            return (int)(CompanionBatPickUpItemGoal.this.entity.squaredDistanceTo(a) - CompanionBatPickUpItemGoal.this.entity.squaredDistanceTo(b));  
-        }  
-    }  
+    class ProximityComparator implements Comparator<ItemEntity> {
+        // Used for sorting in ascending order of ID
+        public int compare(ItemEntity a, ItemEntity b) {
+            return (int)(CompanionBatPickUpItemGoal.this.entity.squaredDistanceTo(a) - CompanionBatPickUpItemGoal.this.entity.squaredDistanceTo(b));
+        }
+    }
 }

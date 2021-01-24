@@ -59,7 +59,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		} else {
 			this.currentLevelExp = entityData.getInt("exp");
 			this.nextLevelExp = CompanionBatLevels.LEVELS[this.level].totalExpNeeded;
-			this.maxExpReached = this.currentLevelExp >= this.nextLevelExp;
+			this.maxExpReached = this.currentLevelExp == this.nextLevelExp;
 		}
 	}
 
@@ -72,12 +72,12 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 				this.classLevel = CompanionBatLevels.getClassLevelByExp(this.currentClass, classExp);
 				CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
 				if (this.classLevel+1 < classLevels.length){
-					this.currentClassLevelExp = entityData.getInt(this.currentClass.getExpTagName()) - classLevels[this.classLevel].totalExpNeeded;
-					this.nextClassLevelExp = classLevels[this.level+1].totalExpNeeded - classLevels[this.classLevel].totalExpNeeded;
+					this.currentClassLevelExp = classExp - classLevels[this.classLevel].totalExpNeeded;
+					this.nextClassLevelExp = classLevels[this.classLevel+1].totalExpNeeded - classLevels[this.classLevel].totalExpNeeded;
 				} else {
-					this.currentClassLevelExp = entityData.getInt(this.currentClass.getExpTagName());
+					this.currentClassLevelExp = classExp;
 					this.nextClassLevelExp = classLevels[this.classLevel].totalExpNeeded;
-					this.maxClassExpReached = this.currentClassLevelExp >= this.nextClassLevelExp;
+					this.maxClassExpReached = this.currentClassLevelExp == this.nextClassLevelExp;
 				}
 			}
 		} else {

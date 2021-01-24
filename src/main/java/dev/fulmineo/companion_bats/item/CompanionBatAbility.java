@@ -10,7 +10,6 @@ public enum CompanionBatAbility {
 	// Vampire
 
 	LIFESTEAL,
-	CRIT_IMMUNITY,
 
 	// Forager
 
@@ -19,15 +18,30 @@ public enum CompanionBatAbility {
 
 	// Knight
 
-	DAMAGE_BLOCK,
+	BLOCK_ATTACK,
 	INCREASED_ARMOR,
 
 	// Alchemist
 
-	BUFF_OWNER,
-	HEAL_OWNER,
+	EFFECT_POTION,
+	EMERGENCY_POTION,
 
 	// Duelist
 
-	COMBO_ATTACK;
+	COMBO_ATTACK,
+	COUNTER_ATTACK;
+
+	public int getValue(int level){
+		switch (this) {
+			case BLOCK_ATTACK:
+			case INCREASED_DAMAGE:
+			case INCREASED_SPEED:
+			case LIFESTEAL: {
+				return 10 * level;
+			}
+			default: {
+				return level;
+			}
+		}
+	}
 }

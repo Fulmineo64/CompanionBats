@@ -28,7 +28,7 @@ public class CompanionBatFollowOwnerGoal extends Goal {
 
     public boolean canStart() {
         LivingEntity livingEntity = this.entity.getOwner();
-         if (livingEntity == null || livingEntity.isSpectator() || !this.isWithinDistanceToStart(livingEntity)) {
+        if (livingEntity == null || livingEntity.isSpectator() || !this.isWithinDistanceToStart(livingEntity)) {
             return false;
         } else {
            this.owner = livingEntity;
@@ -76,7 +76,7 @@ public class CompanionBatFollowOwnerGoal extends Goal {
     }
 
     private boolean isWithinDistanceToStart(LivingEntity owner){
-        if (this.entity.isRoosting() || this.entity.isAboutToRoost()){
+        if (this.entity.isRoosting() || this.entity.isAboutToRoost() || this.entity.isFleeing()){
             return this.entity.squaredDistanceTo(owner) > this.maxDistanceSquared * 0.8D;
         } else {
             return this.entity.squaredDistanceTo(owner) > this.minDistanceSquared;

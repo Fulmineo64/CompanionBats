@@ -26,7 +26,7 @@ public class CompanionBatRoostGoal extends Goal {
 
     public boolean canStart() {
         LivingEntity livingEntity = this.entity.getOwner();
-        if (this.entity.age < 50 || this.entity.isRoosting() || this.entity.isLeashed() || this.entity.hasVehicle() || this.entity.getTarget() != null || !this.navigation.isIdle()){
+        if (this.entity.age < 50 || this.entity.isFleeing() || this.entity.isRoosting() || this.entity.isLeashed() || this.entity.hasVehicle() || this.entity.getTarget() != null || !this.navigation.isIdle()){
             return false;
         } else if (livingEntity != null && (livingEntity.isSpectator() || this.entity.squaredDistanceTo(livingEntity) > (double)(this.maxDistanceToBegin * this.maxDistanceToBegin))) {
             return false;

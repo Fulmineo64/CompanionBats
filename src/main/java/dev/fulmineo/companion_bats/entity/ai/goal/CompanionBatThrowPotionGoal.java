@@ -1,0 +1,130 @@
+package dev.fulmineo.companion_bats.entity.ai.goal;
+
+import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
+import dev.fulmineo.companion_bats.item.CompanionBatAbility;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.projectile.thrown.PotionEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionUtil;
+import net.minecraft.potion.Potions;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+
+public class CompanionBatThrowPotionGoal extends Goal {
+    private final CompanionBatEntity entity;
+    private LivingEntity owner;
+	private final double maxDistanceSquared;
+    private final EntityNavigation navigation;
+	private int emergencyPotionCooldown;
+	private int effectPotionCooldown;
+	private int emergencyPotionTicks;
+	private int effectPotionTicks;
+	private int updateCountdownTicks;
+	private Integer effectPotionLevel;
+	private Integer emergencyPotionLevel;
+
+	public CompanionBatThrowPotionGoal(CompanionBatEntity entity, float maxDistance, int emergencyPotionCooldown, int effectPotionCooldown) {
+		this.entity = entity;
+        this.maxDistanceSquared = (double)(maxDistance * maxDistance);
+		this.emergencyPotionCooldown = emergencyPotionCooldown;
+		this.effectPotionCooldown = effectPotionCooldown;
+		this.emergencyPotionTicks = this.emergencyPotionCooldown;
+		this.effectPotionTicks = this.effectPotionCooldown;
+        this.navigation = entity.getNavigation();
+        // this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+     }
+
+    public boolean canStart() {
+        LivingEntity livingEntity = this.entity.getOwner();
+		if (livingEntity == null || livingEntity.isSpectator() || this.entity.isRoosting()) {
+            return false;
+        } else {
+			if (this.emergencyPotionTicks > 0) this.emergencyPotionTicks--;
+			if (this.effectPotionTicks > 0) this.effectPotionTicks--;
+			if (this.emergencyPotionTicks <= 0 || this.effectPotionTicks <= 0){
+				this.effectPotionLevel = this.entity.getAbilityValue(CompanionBatAbility.EFFECT_POTION);
+				this.emergencyPotionLevel = this.entity.getAbilityValue(CompanionBatAbility.EFFECT_POTION);
+				if (this.effectPotionLevel == null || this.effectPotionLevel < 1) this.effectPotionTicks = this.effectPotionCooldown;
+				if (this.emergencyPotionLevel == null || this.emergencyPotionLevel < 1) this.emergencyPotionTicks = this.emergencyPotionCooldown;
+				if (this.emergencyPotionTicks <= 0 || this.effectPotionTicks <= 0){
+					this.owner = livingEntity;
+					return true;
+				}
+			}
+			return false;
+        }
+    }
+
+    public boolean shouldContinue() {
+		return !this.navigation.isIdle() && this.owner != null;
+    }
+
+    public void start() {
+    }
+
+    public void stop() {
+        this.owner = null;
+    }
+
+    public void tick() {
+        // this.entity.getLookControl().lookAt(this.owner, 10.0F, (float)this.entity.getLookPitchSpeed());
+        if (--this.updateCountdownTicks <= 0) {
+			this.updateCountdownTicks = 10;
+            if (!this.entity.isLeashed() && !this.entity.hasVehicle()) {
+				double distance = this.entity.squaredDistanceTo(this.owner);
+				if (distance < this.maxDistanceSquared){
+					Potion potion = null;
+					if (this.emergencyPotionTicks <= 0){
+						if (this.effectPotionLevel == 3 && (this.owner.isOnFire() || this.owner.getRecentDamageSource() != null && this.owner.getRecentDamageSource().isFire()) && !this.owner.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
+							potion = Potions.FIRE_RESISTANCE;
+						} else if (this.owner.getHealth() < (this.owner.getMaxHealth() * 30 / 100)) {
+							if (this.effectPotionLevel == 4){
+								potion = Potions.STRONG_HEALING;
+							} else {
+								potion = Potions.HEALING;
+							}
+						}
+						if (potion != null) this.emergencyPotionTicks = this.emergencyPotionCooldown;
+					}
+
+					if (potion == null && this.effectPotionTicks <= 0){
+						if (this.effectPotionLevel == 3 && !this.owner.hasStatusEffect(StatusEffects.REGENERATION) && this.owner.getHealth() < (this.owner.getMaxHealth() * 50 / 100)){
+							potion = Potions.REGENERATION;
+						} else if (this.effectPotionLevel >= 2 && !this.owner.hasStatusEffect(StatusEffects.NIGHT_VISION) && this.entity.world.getLightLevel(this.owner.getBlockPos()) <= 7){
+							potion = Potions.NIGHT_VISION;
+						} else if (!this.owner.hasStatusEffect(StatusEffects.SPEED)) {
+							potion = Potions.SWIFTNESS;
+						}
+						if (potion != null) this.effectPotionTicks = this.effectPotionCooldown;
+					}
+
+					if (potion != null) {
+						Vec3d vec3d = this.owner.getVelocity();
+						double d = this.owner.getX() + vec3d.x - this.entity.getX();
+						double e = this.owner.getEyeY() - 1.100000023841858D - this.entity.getY();
+						double f = this.owner.getZ() + vec3d.z - this.entity.getZ();
+						float g = MathHelper.sqrt(d * d + f * f);
+
+						PotionEntity potionEntity = new PotionEntity(this.entity.world, this.entity);
+						potionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
+						potionEntity.pitch -= -20.0F;
+						potionEntity.setVelocity(d, e + (double)(g * 0.2F), f, 0.75F, 8.0F);
+						if (!this.entity.isSilent()) {
+							this.entity.world.playSound(null, this.entity.getX(), this.entity.getY(), this.entity.getZ(), SoundEvents.ENTITY_WITCH_THROW, SoundCategory.PLAYERS, 1.0F, 0.8F + this.entity.world.random.nextFloat() * 0.4F);
+						}
+
+						this.entity.world.spawnEntity(potionEntity);
+						this.owner = null;
+					}
+				}
+            }
+        }
+	}
+}

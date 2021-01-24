@@ -9,6 +9,6 @@ public enum CompanionBatClass {
 	DUELIST;
 
 	public String getExpTagName(){
-		return this.toString().toLowerCase();
+		return this.toString().toLowerCase()+"_exp";
 	}
 }

@@ -29,7 +29,7 @@ import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
 
 public class CompanionBats implements ModInitializer {
 
-    public static Logger LOGGER = LogManager.getLogger();
+	public static Logger LOGGER = LogManager.getLogger();
 
     // Identifiers
 
@@ -55,9 +55,11 @@ public class CompanionBats implements ModInitializer {
     public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
 
 	private static final Item INFERNO_SUIT = new CompanionBatArmorItem("inferno_suit", 10, CompanionBatClass.INFERNO, new FabricItemSettings().group(GROUP).maxCount(1));
-    /*private static final Item BAT_ARMOR_GOLD = new CompanionBatArmorItem(ArmorMaterials.GOLD, new FabricItemSettings().group(GROUP));
-    private static final Item BAT_ARMOR_DIAMOND = new CompanionBatArmorItem(ArmorMaterials.DIAMOND, new FabricItemSettings().group(GROUP));
-	private static final Item BAT_ARMOR_NETHERITE = new CompanionBatArmorItem(ArmorMaterials.NETHERITE, new FabricItemSettings().group(GROUP));*/
+	private static final Item VAMPIRIC_ATTIRE = new CompanionBatArmorItem("vampiric_attire", 10, CompanionBatClass.VAMPIRE, new FabricItemSettings().group(GROUP).maxCount(1));
+	private static final Item FORAGER_VEST = new CompanionBatArmorItem("forager_vest", 10, CompanionBatClass.FORAGER, new FabricItemSettings().group(GROUP).maxCount(1));
+	private static final Item KNIGHT_PLATE = new CompanionBatArmorItem("knight_plate", 10, CompanionBatClass.KNIGHT, new FabricItemSettings().group(GROUP).maxCount(1));
+	private static final Item ALCHEMIST_ROBE = new CompanionBatArmorItem("alchemist_robe", 10, CompanionBatClass.ALCHEMIST, new FabricItemSettings().group(GROUP).maxCount(1));
+	private static final Item DUELIST_COSTUME = new CompanionBatArmorItem("duelist_costume", 10, CompanionBatClass.DUELIST, new FabricItemSettings().group(GROUP).maxCount(1));
 
     @Override
     public void onInitialize() {
@@ -65,11 +67,12 @@ public class CompanionBats implements ModInitializer {
         Registry.register(Registry.ITEM, BAT_ITEM_IDENTIFIER, BAT_ITEM);
         Registry.register(Registry.ITEM, BAT_FLUTE_IDENTIFIER, BAT_FLUTE_ITEM);
 
-        // Registry.register(Registry.ITEM, new Identifier(MOD_ID, "leather_bat_armor"), BAT_ARMOR_LEATHER);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "inferno_suit"), INFERNO_SUIT);
-        /*Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gold_bat_armor"), BAT_ARMOR_GOLD);
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "diamond_bat_armor"), BAT_ARMOR_DIAMOND);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "netherite_bat_armor"), BAT_ARMOR_NETHERITE);*/
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "inferno_suit"), 	INFERNO_SUIT);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "vampiric_attire"), VAMPIRIC_ATTIRE);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "forager_vest"), 	FORAGER_VEST);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "knight_plate"), 	KNIGHT_PLATE);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "alchemist_robe"), 	ALCHEMIST_ROBE);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "duelist_costume"), DUELIST_COSTUME);
     }
 
     public static void log(Level level, String message){

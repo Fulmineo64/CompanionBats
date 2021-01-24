@@ -94,13 +94,13 @@ public class CompanionBatLevels {
 		CompanionBatClassLevel[] INFERNO_LEVELS = new CompanionBatClassLevel[10];
 		INFERNO_LEVELS[0] = new CompanionBatClassLevel(0   , null, 0);
         INFERNO_LEVELS[1] = new CompanionBatClassLevel(50  , CompanionBatAbility.INCREASED_DAMAGE, 1);
-        INFERNO_LEVELS[2] = new CompanionBatClassLevel(150 , null, 0);
+        INFERNO_LEVELS[2] = new CompanionBatClassLevel(150 , CompanionBatAbility.BURN, 1);
         INFERNO_LEVELS[3] = new CompanionBatClassLevel(300 , CompanionBatAbility.INCREASED_DAMAGE, 2);
-        INFERNO_LEVELS[4] = new CompanionBatClassLevel(500 , CompanionBatAbility.BURN, 1);
+        INFERNO_LEVELS[4] = new CompanionBatClassLevel(500 , CompanionBatAbility.BURN, 2);
         INFERNO_LEVELS[5] = new CompanionBatClassLevel(750 , CompanionBatAbility.INCREASED_DAMAGE, 3);
-        INFERNO_LEVELS[6] = new CompanionBatClassLevel(1050, null, 0);
+        INFERNO_LEVELS[6] = new CompanionBatClassLevel(1050, CompanionBatAbility.BURN, 3);
 		INFERNO_LEVELS[7] = new CompanionBatClassLevel(1400, CompanionBatAbility.INCREASED_DAMAGE, 4);
-        INFERNO_LEVELS[8] = new CompanionBatClassLevel(1800, null, 0);
+        INFERNO_LEVELS[8] = new CompanionBatClassLevel(1800, CompanionBatAbility.BURN, 4);
 		INFERNO_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.FIRE_RESISTANCE, 1);
 
 		CLASS_LEVELS.put(CompanionBatClass.INFERNO, INFERNO_LEVELS);
@@ -109,14 +109,14 @@ public class CompanionBatLevels {
 		CompanionBatClassLevel[] VAMPIRE_LEVELS = new CompanionBatClassLevel[10];
 		VAMPIRE_LEVELS[0] = new CompanionBatClassLevel(0   , null, 0);
         VAMPIRE_LEVELS[1] = new CompanionBatClassLevel(50  , null, 0);
-        VAMPIRE_LEVELS[2] = new CompanionBatClassLevel(150 , CompanionBatAbility.LIFESTEAL, 1);
-        VAMPIRE_LEVELS[3] = new CompanionBatClassLevel(300 , null, 0);
+        VAMPIRE_LEVELS[2] = new CompanionBatClassLevel(150 , CompanionBatAbility.INCREASED_ARMOR, 1);
+        VAMPIRE_LEVELS[3] = new CompanionBatClassLevel(300 , CompanionBatAbility.LIFESTEAL, 1);
         VAMPIRE_LEVELS[4] = new CompanionBatClassLevel(500 , null, 0);
-        VAMPIRE_LEVELS[5] = new CompanionBatClassLevel(750 , CompanionBatAbility.LIFESTEAL, 3);
-        VAMPIRE_LEVELS[6] = new CompanionBatClassLevel(1050, null, 0);
+        VAMPIRE_LEVELS[5] = new CompanionBatClassLevel(750 , CompanionBatAbility.INCREASED_ARMOR, 2);
+        VAMPIRE_LEVELS[6] = new CompanionBatClassLevel(1050, CompanionBatAbility.LIFESTEAL, 2);
 		VAMPIRE_LEVELS[7] = new CompanionBatClassLevel(1400, null, 0);
-        VAMPIRE_LEVELS[8] = new CompanionBatClassLevel(1800, CompanionBatAbility.LIFESTEAL, 3);
-		VAMPIRE_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.CRIT_IMMUNITY, 1);
+        VAMPIRE_LEVELS[8] = new CompanionBatClassLevel(1800, CompanionBatAbility.INCREASED_ARMOR, 3);
+		VAMPIRE_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.LIFESTEAL, 3);
 
 		CLASS_LEVELS.put(CompanionBatClass.VAMPIRE, VAMPIRE_LEVELS);
 		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.VAMPIRE, new CompanionBatClassLevel(2250, CompanionBatAbility.LIFESTEAL, 1));
@@ -131,7 +131,7 @@ public class CompanionBatLevels {
         FORAGER_LEVELS[6] = new CompanionBatClassLevel(1050, null, 0);
 		FORAGER_LEVELS[7] = new CompanionBatClassLevel(1400, CompanionBatAbility.INCREASED_SPEED, 4);
         FORAGER_LEVELS[8] = new CompanionBatClassLevel(1800, null, 0);
-		FORAGER_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.FIRE_RESISTANCE, 5);
+		FORAGER_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.INCREASED_SPEED, 5);
 
 		CLASS_LEVELS.put(CompanionBatClass.FORAGER, FORAGER_LEVELS);
 		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.FORAGER, new CompanionBatClassLevel(2250, CompanionBatAbility.INCREASED_SPEED, 1));
@@ -139,46 +139,46 @@ public class CompanionBatLevels {
 		CompanionBatClassLevel[] KNIGHT_LEVELS = new CompanionBatClassLevel[10];
 		KNIGHT_LEVELS[0] = new CompanionBatClassLevel(0   , null, 0);
         KNIGHT_LEVELS[1] = new CompanionBatClassLevel(50  , CompanionBatAbility.INCREASED_ARMOR, 1);
-        KNIGHT_LEVELS[2] = new CompanionBatClassLevel(150 , CompanionBatAbility.DAMAGE_BLOCK, 1);
+        KNIGHT_LEVELS[2] = new CompanionBatClassLevel(150 , CompanionBatAbility.BLOCK_ATTACK, 1);
         KNIGHT_LEVELS[3] = new CompanionBatClassLevel(300 , null, 0);
         KNIGHT_LEVELS[4] = new CompanionBatClassLevel(500 , CompanionBatAbility.INCREASED_ARMOR, 2);
-        KNIGHT_LEVELS[5] = new CompanionBatClassLevel(750 , CompanionBatAbility.DAMAGE_BLOCK, 2);
+        KNIGHT_LEVELS[5] = new CompanionBatClassLevel(750 , CompanionBatAbility.BLOCK_ATTACK, 2);
         KNIGHT_LEVELS[6] = new CompanionBatClassLevel(1050, null, 0);
 		KNIGHT_LEVELS[7] = new CompanionBatClassLevel(1400, CompanionBatAbility.INCREASED_ARMOR, 3);
-        KNIGHT_LEVELS[8] = new CompanionBatClassLevel(1800, CompanionBatAbility.DAMAGE_BLOCK, 3);
+        KNIGHT_LEVELS[8] = new CompanionBatClassLevel(1800, CompanionBatAbility.BLOCK_ATTACK, 3);
 		KNIGHT_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.INCREASED_ARMOR, 4);
 
 		CLASS_LEVELS.put(CompanionBatClass.KNIGHT, KNIGHT_LEVELS);
 		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.KNIGHT, new CompanionBatClassLevel(2250, CompanionBatAbility.INCREASED_ARMOR, 1));
 
 		CompanionBatClassLevel[] ALCHEMIST_LEVELS = new CompanionBatClassLevel[10];
-		ALCHEMIST_LEVELS[0] = new CompanionBatClassLevel(0   , CompanionBatAbility.CANNOT_ATTACK, 0);
-        ALCHEMIST_LEVELS[1] = new CompanionBatClassLevel(50  , null, 0);
-        ALCHEMIST_LEVELS[2] = new CompanionBatClassLevel(150 , CompanionBatAbility.BUFF_OWNER, 1);
-        ALCHEMIST_LEVELS[3] = new CompanionBatClassLevel(300 , null, 0);
-        ALCHEMIST_LEVELS[4] = new CompanionBatClassLevel(500 , CompanionBatAbility.HEAL_OWNER, 1);
-        ALCHEMIST_LEVELS[5] = new CompanionBatClassLevel(750 , CompanionBatAbility.BUFF_OWNER, 2);
+		ALCHEMIST_LEVELS[0] = new CompanionBatClassLevel(0   , CompanionBatAbility.CANNOT_ATTACK, 1);
+        ALCHEMIST_LEVELS[1] = new CompanionBatClassLevel(50  , CompanionBatAbility.EFFECT_POTION, 1);
+        ALCHEMIST_LEVELS[2] = new CompanionBatClassLevel(150 , null, 0);
+        ALCHEMIST_LEVELS[3] = new CompanionBatClassLevel(300 , CompanionBatAbility.EFFECT_POTION, 2);
+        ALCHEMIST_LEVELS[4] = new CompanionBatClassLevel(500 , null, 0);
+        ALCHEMIST_LEVELS[5] = new CompanionBatClassLevel(750 , CompanionBatAbility.EMERGENCY_POTION, 1);
         ALCHEMIST_LEVELS[6] = new CompanionBatClassLevel(1050, null, 0);
-		ALCHEMIST_LEVELS[7] = new CompanionBatClassLevel(1400, null, 0);
-        ALCHEMIST_LEVELS[8] = new CompanionBatClassLevel(1800, CompanionBatAbility.BUFF_OWNER, 3);
-		ALCHEMIST_LEVELS[9] = new CompanionBatClassLevel(2250, null, 0);
+		ALCHEMIST_LEVELS[7] = new CompanionBatClassLevel(1400, CompanionBatAbility.EFFECT_POTION, 3);
+        ALCHEMIST_LEVELS[8] = new CompanionBatClassLevel(1800, null, 0);
+		ALCHEMIST_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.EFFECT_POTION, 4);
 
 		CLASS_LEVELS.put(CompanionBatClass.ALCHEMIST, ALCHEMIST_LEVELS);
-		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.ALCHEMIST, new CompanionBatClassLevel(2250, CompanionBatAbility.HEAL_OWNER, 1));
+		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.ALCHEMIST, new CompanionBatClassLevel(2250, CompanionBatAbility.EMERGENCY_POTION, 1));
 
 		CompanionBatClassLevel[] DUELIST_LEVELS = new CompanionBatClassLevel[10];
 		DUELIST_LEVELS[0] = new CompanionBatClassLevel(0   , null, 0);
         DUELIST_LEVELS[1] = new CompanionBatClassLevel(50  , CompanionBatAbility.COMBO_ATTACK, 1);
-        DUELIST_LEVELS[2] = new CompanionBatClassLevel(150 , null, 0);
-        DUELIST_LEVELS[3] = new CompanionBatClassLevel(300 , CompanionBatAbility.COMBO_ATTACK, 2);
-        DUELIST_LEVELS[4] = new CompanionBatClassLevel(500 , null, 0);
-        DUELIST_LEVELS[5] = new CompanionBatClassLevel(750 , CompanionBatAbility.COMBO_ATTACK, 3);
-        DUELIST_LEVELS[6] = new CompanionBatClassLevel(1050, null, 0);
-		DUELIST_LEVELS[7] = new CompanionBatClassLevel(1400, CompanionBatAbility.COMBO_ATTACK, 4);
-        DUELIST_LEVELS[8] = new CompanionBatClassLevel(1800, null, 0);
-		DUELIST_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.COMBO_ATTACK, 5);
+        DUELIST_LEVELS[2] = new CompanionBatClassLevel(150 , CompanionBatAbility.BLOCK_ATTACK, 1);
+        DUELIST_LEVELS[3] = new CompanionBatClassLevel(300 , CompanionBatAbility.COUNTER_ATTACK, 1);
+        DUELIST_LEVELS[4] = new CompanionBatClassLevel(500 , CompanionBatAbility.COMBO_ATTACK, 2);
+        DUELIST_LEVELS[5] = new CompanionBatClassLevel(750 , CompanionBatAbility.BLOCK_ATTACK, 2);
+        DUELIST_LEVELS[6] = new CompanionBatClassLevel(1050, CompanionBatAbility.COUNTER_ATTACK, 2);
+		DUELIST_LEVELS[7] = new CompanionBatClassLevel(1400, CompanionBatAbility.COMBO_ATTACK, 3);
+        DUELIST_LEVELS[8] = new CompanionBatClassLevel(1800, CompanionBatAbility.BLOCK_ATTACK, 3);
+		DUELIST_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.COUNTER_ATTACK, 3);
 
 		CLASS_LEVELS.put(CompanionBatClass.DUELIST, DUELIST_LEVELS);
-		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.DUELIST, new CompanionBatClassLevel(2250, CompanionBatAbility.COMBO_ATTACK, 1));
+		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.DUELIST, new CompanionBatClassLevel(2250, CompanionBatAbility.BLOCK_ATTACK, 1));
 	}
 }

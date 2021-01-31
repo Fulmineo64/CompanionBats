@@ -73,6 +73,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -108,6 +109,9 @@ public class CompanionBatEntity extends TameableEntity {
 	private static final int EFFECT_POTION_TICKS = 3600;
 	private static final int PASSIVE_EXP_TICKS = 600;
 	private static final int COMBO_ATTACK_RESET_TICKS = 100;
+	private static final int TELEPORT_TICKS = 200;
+	private static final int INITIAL_TELEPORT_TICKS = 100;
+	private static final int RETRY_TELEPORT_TICKS = 10;
 
 	public static final Predicate<ItemStack> IS_FOOD_ITEM;
 	public static final Predicate<ItemEntity> IS_FOOD_ITEM_ENTITY;
@@ -120,9 +124,11 @@ public class CompanionBatEntity extends TameableEntity {
 	private int level = -1;
 	private int classLevel = -1;
 	private boolean hasPassiveExp;
+	private boolean hasTeleport;
 	private int passiveExpTicks = PASSIVE_EXP_TICKS;
 	private int comboAttackResetTicks = COMBO_ATTACK_RESET_TICKS;
 	private int comboAttackLevel = 0;
+	private int teleportTicks = INITIAL_TELEPORT_TICKS;
 
 	public CompanionBatEntity(EntityType<? extends TameableEntity> entityType, World world) {
 		super(entityType, world);
@@ -148,11 +154,17 @@ public class CompanionBatEntity extends TameableEntity {
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
 		tag.putInt("exp", this.getExp());
+		this.writeExpToTag(tag);
 	}
 
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
-		this.setExp(tag.getInt("exp"));
+		this.setLevel(tag.getInt("exp"));
+		this.setLevelAttributes(this.level);
+		this.setBatClass();
+		this.setClasses(tag);
+		this.setClassesAbilities(tag);
+		this.setAbilitiesEffects(true);
 	}
 
 	protected float getSoundVolume() {
@@ -243,6 +255,18 @@ public class CompanionBatEntity extends TameableEntity {
 				this.comboAttackResetTicks--;
 				if (this.comboAttackResetTicks == 0){
 					this.clearComboLevel();
+				}
+			}
+
+			if (this.hasTeleport){
+				this.teleportTicks--;
+				if (this.teleportTicks == 0){
+					LivingEntity target = this.getTarget();
+					if (target != null && this.squaredDistanceTo(target) <= this.getAbilityValue(CompanionBatAbility.TELEPORT) && this.teleportTo(target)){
+						this.teleportTicks = TELEPORT_TICKS;
+					} else {
+						this.teleportTicks = RETRY_TELEPORT_TICKS;
+					}
 				}
 			}
 		}
@@ -349,13 +373,25 @@ public class CompanionBatEntity extends TameableEntity {
 
 	public boolean tryAttack(Entity target) {
 		float targetHealth = target instanceof LivingEntity ? ((LivingEntity)target).getHealth() : 0;
-		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
+		boolean bl = target.damage(DamageSource.mob(this), this.getAttackDamage(target));
 		if (bl) {
 			this.dealDamage(this, target);
 			float damageDealt = targetHealth - (target instanceof LivingEntity ? ((LivingEntity)target).getHealth() : 0);
 			this.onAttack(target, damageDealt);
 		}
 		return bl;
+	}
+
+	private float getAttackDamage(Entity target){
+		float attackDamage = (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+		if (this.hasAbility(CompanionBatAbility.SNEAK_ATTACK) && target instanceof LivingEntity && this.isBehind((LivingEntity)target)) {
+			attackDamage += attackDamage * this.getAbilityValue(CompanionBatAbility.SNEAK_ATTACK) / 4;
+		}
+		return attackDamage;
+	}
+
+	private boolean isBehind(LivingEntity target){
+		return !target.getHorizontalFacing().equals(this.getHorizontalFacing());
 	}
 
 	private void onAttack(Entity target, float damageDealt){
@@ -554,13 +590,12 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void setClasses(CompoundTag entityData) {
-		if (this.currentClass == null) {
-			return;
-		}
-		this.classExp = entityData.getInt(this.currentClass.getExpTagName());
-		this.classLevel = CompanionBatLevels.getClassLevelByExp(this.currentClass, (int)this.classExp);
 		for (CompanionBatClass cls : CompanionBatClass.values()) {
 			this.classesExp.put(cls, entityData.getInt(cls.getExpTagName()));
+		}
+		if (this.currentClass != null) {
+			this.classExp = this.classesExp.get(this.currentClass);
+			this.classLevel = CompanionBatLevels.getClassLevelByExp(this.currentClass, (int)this.classExp);
 		}
 	}
 
@@ -628,10 +663,10 @@ public class CompanionBatEntity extends TameableEntity {
 			if (!firstTime) attr.removeModifier(BAT_ARMOR_BONUS_ID);
 			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_ARMOR_BONUS_ID, "Ability armor bonus", this.getAbilityValue(CompanionBatAbility.INCREASED_ARMOR), EntityAttributeModifier.Operation.ADDITION));
 		}
-		if (this.hasAbility(CompanionBatAbility.INCREASED_DAMAGE)){
+		if (this.hasAbility(CompanionBatAbility.INCREASED_ATTACK)){
 			EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 			if (!firstTime) attr.removeModifier(BAT_ATTACK_BONUS_ID);
-			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_ATTACK_BONUS_ID, "Ability attack bonus", (double)(attr.getBaseValue() * this.getAbilityValue(CompanionBatAbility.INCREASED_DAMAGE) / 100), EntityAttributeModifier.Operation.ADDITION));
+			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_ATTACK_BONUS_ID, "Ability attack bonus", (double)(attr.getBaseValue() * this.getAbilityValue(CompanionBatAbility.INCREASED_ATTACK) / 100), EntityAttributeModifier.Operation.ADDITION));
 		}
 		if (this.hasAbility(CompanionBatAbility.INCREASED_SPEED)){
 			EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
@@ -640,6 +675,39 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 		if (this.hasAbility(CompanionBatAbility.FIRE_RESISTANCE)){
 			this.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 1000000000, 1, false, false));
+		}
+		if (this.hasAbility(CompanionBatAbility.TELEPORT)){
+			this.hasTeleport = true;
+		}
+	}
+
+	private boolean teleportTo(Entity entity) {
+		// TODO: Fix this
+		Vec3d vec3d = new Vec3d(this.getX() - entity.getX(), this.getBodyY(0.5D) - entity.getEyeY(), this.getZ() - entity.getZ());
+		vec3d = vec3d.normalize();
+		double e = this.getX() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3d.x * 16.0D;
+		double f = this.getY() + (double)(this.random.nextInt(16) - 8) - vec3d.y * 16.0D;
+		double g = this.getZ() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3d.z * 16.0D;
+		return this.teleportTo(e, f, g);
+	}
+
+	private boolean teleportTo(double x, double y, double z) {
+		BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
+
+		while(mutable.getY() > this.world.getSectionCount() && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
+		   mutable.move(Direction.DOWN);
+		}
+
+		BlockState blockState = this.world.getBlockState(mutable);
+		boolean bl = blockState.getMaterial().blocksMovement();
+		if (bl) {
+		   	boolean bl3 = this.teleport(x, y, z, true);
+			if (bl3 && !this.isSilent()) {
+				this.world.playSound((PlayerEntity)null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 0.3F, this.getSoundPitch() + 1.0F);
+			}
+			return bl3;
+		} else {
+		   return false;
 		}
 	}
 
@@ -694,6 +762,18 @@ public class CompanionBatEntity extends TameableEntity {
 		((PlayerEntity)this.getOwner()).sendMessage(message, false);
 	}
 
+	private void writeExpToTag(CompoundTag entityData){
+		entityData.putInt("exp", this.getExp());
+		for (Map.Entry<CompanionBatClass,Integer> entry : this.classesExp.entrySet()){
+			if (entry.getValue() > 0){
+				entityData.putInt(entry.getKey().getExpTagName(), entry.getValue());
+			}
+		}
+		if (this.currentClass != null){
+			entityData.putInt(this.currentClass.getExpTagName(), this.getClassExp());
+		}
+	}
+
     protected ItemStack toItem(){
 		ItemStack batItemStack = new ItemStack(CompanionBats.BAT_ITEM);
 		if (this.hasCustomName()){
@@ -704,25 +784,16 @@ public class CompanionBatEntity extends TameableEntity {
         batItemStack.setDamage(Math.round(percentage * batItemStack.getMaxDamage()));
         CompoundTag entityData = CompanionBatItem.createEntityData(batItemStack);
         entityData.putFloat("health", this.getHealth());
-		entityData.putInt("exp", this.getExp());
-		if (this.currentClass != null){
-			entityData.putInt(this.currentClass.getExpTagName(), this.getClassExp());
-		}
-		for (Map.Entry<CompanionBatClass,Integer> entry : this.classesExp.entrySet()){
-			if (entry.getValue() > 0){
-				entityData.putInt(entry.getKey().getExpTagName(), entry.getValue());
-			}
-		}
+		this.writeExpToTag(entityData);
         entityData.put("armor", this.getArmorType().toTag(new CompoundTag()));
         entityData.put("bundle", this.getBundle().toTag(new CompoundTag()));
         return batItemStack;
-    }
+	}
 
     public void fromItem(PlayerEntity owner, CompoundTag entityData){
         this.setOwner(owner);
 		this.setLevel(entityData.getInt("exp"));
 		this.setLevelAttributes(this.level);
-        this.equipGem(ItemStack.fromTag(entityData.getCompound("gem")));
         this.equipArmor(ItemStack.fromTag(entityData.getCompound("armor")));
         this.equipBundle(ItemStack.fromTag(entityData.getCompound("bundle")));
 		this.setHealth(entityData.getFloat("health"));
@@ -730,12 +801,7 @@ public class CompanionBatEntity extends TameableEntity {
 		this.setClasses(entityData);
 		this.setClassesAbilities(entityData);
 		this.setAbilitiesEffects(true);
-    }
-
-	private void equipGem(ItemStack stack) {
-        this.equipStack(EquipmentSlot.HEAD, stack);
-        this.setEquipmentDropChance(EquipmentSlot.HEAD, 0.0F);
-    }
+	}
 
 	private void equipArmor(ItemStack stack) {
 		this.equipStack(EquipmentSlot.CHEST, stack);

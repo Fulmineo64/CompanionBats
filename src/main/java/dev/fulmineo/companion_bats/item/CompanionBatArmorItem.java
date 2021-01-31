@@ -14,8 +14,7 @@ public class CompanionBatArmorItem extends Item {
     public CompanionBatArmorItem(String identifier, int protectionAmount, CompanionBatClass batClass, Item.Settings settings) {
 		super(settings);
 		this.batClass = batClass;
-		// this.entityTexture = "textures/entity/bat/armor/" + identifier + ".png";
-		this.entityTexture = "textures/entity/bat/armor/bat_armor_iron.png";
+		this.entityTexture = "textures/entity/bat/armor/" + identifier + ".png";
 	}
 
     @Environment(EnvType.CLIENT)

@@ -3,7 +3,7 @@ package dev.fulmineo.companion_bats.item;
 public enum CompanionBatAbility {
 	// Inferno
 
-	INCREASED_DAMAGE,
+	INCREASED_ATTACK,
 	FIRE_RESISTANCE,
 	BURN,
 
@@ -11,7 +11,7 @@ public enum CompanionBatAbility {
 
 	LIFESTEAL,
 
-	// Forager
+	// Looter
 
 	CANNOT_ATTACK,
 	INCREASED_SPEED,
@@ -29,15 +29,24 @@ public enum CompanionBatAbility {
 	// Duelist
 
 	COMBO_ATTACK,
-	COUNTER_ATTACK;
+	COUNTER_ATTACK,
+
+	// Ninja
+
+	SNEAK_ATTACK,
+	TELEPORT;
 
 	public int getValue(int level){
 		switch (this) {
 			case BLOCK_ATTACK:
-			case INCREASED_DAMAGE:
+			case INCREASED_ATTACK:
 			case INCREASED_SPEED:
 			case LIFESTEAL: {
 				return 10 * level;
+			}
+			case TELEPORT: {
+				int val = 5 * level;
+				return val * val;
 			}
 			default: {
 				return level;

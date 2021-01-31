@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
+import dev.fulmineo.companion_bats.init.CompanionBatLootTableInit;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.item.CompanionBatClass;
 import dev.fulmineo.companion_bats.item.CompanionBatFluteItem;
@@ -54,12 +55,13 @@ public class CompanionBats implements ModInitializer {
     public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage((int)CompanionBatEntity.getMaxLevelHealth()).group(GROUP));
     public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
 
-	private static final Item INFERNO_SUIT = new CompanionBatArmorItem("inferno_suit", 10, CompanionBatClass.INFERNO, new FabricItemSettings().group(GROUP).maxCount(1));
-	private static final Item VAMPIRIC_ATTIRE = new CompanionBatArmorItem("vampiric_attire", 10, CompanionBatClass.VAMPIRE, new FabricItemSettings().group(GROUP).maxCount(1));
-	private static final Item FORAGER_VEST = new CompanionBatArmorItem("forager_vest", 10, CompanionBatClass.FORAGER, new FabricItemSettings().group(GROUP).maxCount(1));
-	private static final Item KNIGHT_PLATE = new CompanionBatArmorItem("knight_plate", 10, CompanionBatClass.KNIGHT, new FabricItemSettings().group(GROUP).maxCount(1));
-	private static final Item ALCHEMIST_ROBE = new CompanionBatArmorItem("alchemist_robe", 10, CompanionBatClass.ALCHEMIST, new FabricItemSettings().group(GROUP).maxCount(1));
-	private static final Item DUELIST_COSTUME = new CompanionBatArmorItem("duelist_costume", 10, CompanionBatClass.DUELIST, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item INFERNO_SUIT = new CompanionBatArmorItem("inferno_suit", 10, CompanionBatClass.INFERNO, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item VAMPIRIC_ATTIRE = new CompanionBatArmorItem("vampiric_attire", 10, CompanionBatClass.VAMPIRE, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item LOOTER_VEST = new CompanionBatArmorItem("looter_vest", 10, CompanionBatClass.LOOTER, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item KNIGHT_PLATE = new CompanionBatArmorItem("knight_plate", 10, CompanionBatClass.KNIGHT, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item ALCHEMIST_ROBE = new CompanionBatArmorItem("alchemist_robe", 10, CompanionBatClass.ALCHEMIST, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item DUELIST_COSTUME = new CompanionBatArmorItem("duelist_costume", 10, CompanionBatClass.DUELIST, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item NINJA_GARB = new CompanionBatArmorItem("ninja_garb", 10, CompanionBatClass.NINJA, new FabricItemSettings().group(GROUP).maxCount(1));
 
     @Override
     public void onInitialize() {
@@ -69,10 +71,13 @@ public class CompanionBats implements ModInitializer {
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "inferno_suit"), 	INFERNO_SUIT);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "vampiric_attire"), VAMPIRIC_ATTIRE);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "forager_vest"), 	FORAGER_VEST);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "looter_vest"), 	LOOTER_VEST);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "knight_plate"), 	KNIGHT_PLATE);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "alchemist_robe"), 	ALCHEMIST_ROBE);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "duelist_costume"), DUELIST_COSTUME);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "duelist_costume"),	DUELIST_COSTUME);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "ninja_garb"),		NINJA_GARB);
+
+		CompanionBatLootTableInit.init();
     }
 
     public static void log(Level level, String message){

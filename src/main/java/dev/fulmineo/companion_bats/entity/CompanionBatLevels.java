@@ -93,18 +93,18 @@ public class CompanionBatLevels {
 
 		CompanionBatClassLevel[] INFERNO_LEVELS = new CompanionBatClassLevel[10];
 		INFERNO_LEVELS[0] = new CompanionBatClassLevel(0   , null, 0);
-        INFERNO_LEVELS[1] = new CompanionBatClassLevel(50  , CompanionBatAbility.INCREASED_DAMAGE, 1);
+        INFERNO_LEVELS[1] = new CompanionBatClassLevel(50  , CompanionBatAbility.INCREASED_ATTACK, 1);
         INFERNO_LEVELS[2] = new CompanionBatClassLevel(150 , CompanionBatAbility.BURN, 1);
-        INFERNO_LEVELS[3] = new CompanionBatClassLevel(300 , CompanionBatAbility.INCREASED_DAMAGE, 2);
+        INFERNO_LEVELS[3] = new CompanionBatClassLevel(300 , CompanionBatAbility.INCREASED_ATTACK, 2);
         INFERNO_LEVELS[4] = new CompanionBatClassLevel(500 , CompanionBatAbility.BURN, 2);
-        INFERNO_LEVELS[5] = new CompanionBatClassLevel(750 , CompanionBatAbility.INCREASED_DAMAGE, 3);
+        INFERNO_LEVELS[5] = new CompanionBatClassLevel(750 , CompanionBatAbility.INCREASED_ATTACK, 3);
         INFERNO_LEVELS[6] = new CompanionBatClassLevel(1050, CompanionBatAbility.BURN, 3);
-		INFERNO_LEVELS[7] = new CompanionBatClassLevel(1400, CompanionBatAbility.INCREASED_DAMAGE, 4);
+		INFERNO_LEVELS[7] = new CompanionBatClassLevel(1400, CompanionBatAbility.INCREASED_ATTACK, 4);
         INFERNO_LEVELS[8] = new CompanionBatClassLevel(1800, CompanionBatAbility.BURN, 4);
 		INFERNO_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.FIRE_RESISTANCE, 1);
 
 		CLASS_LEVELS.put(CompanionBatClass.INFERNO, INFERNO_LEVELS);
-		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.INFERNO, new CompanionBatClassLevel(2250, CompanionBatAbility.INCREASED_DAMAGE, 1));
+		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.INFERNO, new CompanionBatClassLevel(2250, CompanionBatAbility.INCREASED_ATTACK, 1));
 
 		CompanionBatClassLevel[] VAMPIRE_LEVELS = new CompanionBatClassLevel[10];
 		VAMPIRE_LEVELS[0] = new CompanionBatClassLevel(0   , null, 0);
@@ -121,20 +121,20 @@ public class CompanionBatLevels {
 		CLASS_LEVELS.put(CompanionBatClass.VAMPIRE, VAMPIRE_LEVELS);
 		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.VAMPIRE, new CompanionBatClassLevel(2250, CompanionBatAbility.LIFESTEAL, 1));
 
-		CompanionBatClassLevel[] FORAGER_LEVELS = new CompanionBatClassLevel[10];
-		FORAGER_LEVELS[0] = new CompanionBatClassLevel(0   , CompanionBatAbility.CANNOT_ATTACK, 1);
-        FORAGER_LEVELS[1] = new CompanionBatClassLevel(50  , CompanionBatAbility.INCREASED_SPEED, 1);
-        FORAGER_LEVELS[2] = new CompanionBatClassLevel(150 , null, 0);
-        FORAGER_LEVELS[3] = new CompanionBatClassLevel(300 , CompanionBatAbility.INCREASED_SPEED, 2);
-        FORAGER_LEVELS[4] = new CompanionBatClassLevel(500 , null, 0);
-        FORAGER_LEVELS[5] = new CompanionBatClassLevel(750 , CompanionBatAbility.INCREASED_SPEED, 3);
-        FORAGER_LEVELS[6] = new CompanionBatClassLevel(1050, null, 0);
-		FORAGER_LEVELS[7] = new CompanionBatClassLevel(1400, CompanionBatAbility.INCREASED_SPEED, 4);
-        FORAGER_LEVELS[8] = new CompanionBatClassLevel(1800, null, 0);
-		FORAGER_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.INCREASED_SPEED, 5);
+		CompanionBatClassLevel[] LOOTER_LEVELS = new CompanionBatClassLevel[10];
+		LOOTER_LEVELS[0] = new CompanionBatClassLevel(0   , CompanionBatAbility.CANNOT_ATTACK, 1);
+        LOOTER_LEVELS[1] = new CompanionBatClassLevel(50  , CompanionBatAbility.INCREASED_SPEED, 1);
+        LOOTER_LEVELS[2] = new CompanionBatClassLevel(150 , null, 0);
+        LOOTER_LEVELS[3] = new CompanionBatClassLevel(300 , CompanionBatAbility.INCREASED_SPEED, 2);
+        LOOTER_LEVELS[4] = new CompanionBatClassLevel(500 , null, 0);
+        LOOTER_LEVELS[5] = new CompanionBatClassLevel(750 , CompanionBatAbility.INCREASED_SPEED, 3);
+        LOOTER_LEVELS[6] = new CompanionBatClassLevel(1050, null, 0);
+		LOOTER_LEVELS[7] = new CompanionBatClassLevel(1400, CompanionBatAbility.INCREASED_SPEED, 4);
+        LOOTER_LEVELS[8] = new CompanionBatClassLevel(1800, null, 0);
+		LOOTER_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.INCREASED_SPEED, 5);
 
-		CLASS_LEVELS.put(CompanionBatClass.FORAGER, FORAGER_LEVELS);
-		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.FORAGER, new CompanionBatClassLevel(2250, CompanionBatAbility.INCREASED_SPEED, 1));
+		CLASS_LEVELS.put(CompanionBatClass.LOOTER, LOOTER_LEVELS);
+		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.LOOTER, new CompanionBatClassLevel(2250, CompanionBatAbility.INCREASED_SPEED, 1));
 
 		CompanionBatClassLevel[] KNIGHT_LEVELS = new CompanionBatClassLevel[10];
 		KNIGHT_LEVELS[0] = new CompanionBatClassLevel(0   , null, 0);
@@ -180,5 +180,20 @@ public class CompanionBatLevels {
 
 		CLASS_LEVELS.put(CompanionBatClass.DUELIST, DUELIST_LEVELS);
 		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.DUELIST, new CompanionBatClassLevel(2250, CompanionBatAbility.BLOCK_ATTACK, 1));
+
+		CompanionBatClassLevel[] NINJA_LEVELS = new CompanionBatClassLevel[10];
+		NINJA_LEVELS[0] = new CompanionBatClassLevel(0   , null, 0);
+        NINJA_LEVELS[1] = new CompanionBatClassLevel(50  , CompanionBatAbility.INCREASED_ATTACK, 1);
+        NINJA_LEVELS[2] = new CompanionBatClassLevel(150 , CompanionBatAbility.SNEAK_ATTACK, 1);
+        NINJA_LEVELS[3] = new CompanionBatClassLevel(300 , CompanionBatAbility.TELEPORT, 1);
+        NINJA_LEVELS[4] = new CompanionBatClassLevel(500 , CompanionBatAbility.INCREASED_ATTACK, 2);
+        NINJA_LEVELS[5] = new CompanionBatClassLevel(750 , CompanionBatAbility.SNEAK_ATTACK, 2);
+        NINJA_LEVELS[6] = new CompanionBatClassLevel(1050, CompanionBatAbility.TELEPORT, 2);
+		NINJA_LEVELS[7] = new CompanionBatClassLevel(1400, CompanionBatAbility.INCREASED_ATTACK, 3);
+        NINJA_LEVELS[8] = new CompanionBatClassLevel(1800, CompanionBatAbility.SNEAK_ATTACK, 3);
+		NINJA_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.TELEPORT, 3);
+
+		CLASS_LEVELS.put(CompanionBatClass.NINJA, NINJA_LEVELS);
+		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.NINJA, new CompanionBatClassLevel(2250, CompanionBatAbility.SNEAK_ATTACK, 1));
 	}
 }

@@ -1,0 +1,31 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"lbl",
+		"LCL",
+		"sws"
+	],
+	"key": {
+		"l": {
+			"item": "minecraft:lead"
+		},
+		"b": {
+			"item": "minecraft:bundle"
+		},
+		"L": {
+			"item": "minecraft:leather"
+		},
+		"C": {
+			"item": "companion_bats:spirit_crystal"
+		},
+		"s": {
+			"item": "minecraft:sugar"
+		},
+		"w": {
+			"item": "minecraft:white_wool"
+		}
+	},
+	"result": {
+		"item": "companion_bats:looter_jacket"
+	}
+}

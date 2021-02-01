@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
+import dev.fulmineo.companion_bats.init.CompanionBatCommandInit;
 import dev.fulmineo.companion_bats.init.CompanionBatLootTableInit;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.item.CompanionBatClass;
@@ -37,9 +38,7 @@ public class CompanionBats implements ModInitializer {
     public static final String MOD_ID = "companion_bats";
     public static final String MOD_NAME = "Companion bats";
 
-    public static final Identifier BAT_ITEM_IDENTIFIER = new Identifier(MOD_ID, "bat_item");
-    public static final Identifier BAT_FLUTE_IDENTIFIER = new Identifier(MOD_ID, "bat_flute");
-    public static final ScreenHandlerType<CompanionBatScreenHandler> BAT_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(BAT_ITEM_IDENTIFIER, CompanionBatScreenHandler::new);
+    public static final ScreenHandlerType<CompanionBatScreenHandler> BAT_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(new Identifier(MOD_ID, "bat_item"), CompanionBatScreenHandler::new);
 
     // Entities
 
@@ -51,13 +50,16 @@ public class CompanionBats implements ModInitializer {
 
     // Items
 
-    public static final ItemGroup GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID,"group"), () -> new ItemStack(Registry.ITEM.get(new Identifier(MOD_ID,"bat_item"))));
+	public static final ItemGroup GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID,"group"), () -> new ItemStack(Registry.ITEM.get(new Identifier(MOD_ID,"bat_item"))));
+
     public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage((int)CompanionBatEntity.getMaxLevelHealth()).group(GROUP));
-    public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
+	public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
+    public static final Item SPIRIT_SHARD = new Item(new FabricItemSettings().group(GROUP));
+    public static final Item SPIRIT_CRYSTAL = new Item(new FabricItemSettings().group(GROUP));
 
 	public static final Item INFERNO_SUIT = new CompanionBatArmorItem("inferno_suit", 10, CompanionBatClass.INFERNO, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item VAMPIRIC_ATTIRE = new CompanionBatArmorItem("vampiric_attire", 10, CompanionBatClass.VAMPIRE, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item LOOTER_VEST = new CompanionBatArmorItem("looter_vest", 10, CompanionBatClass.LOOTER, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item LOOTER_JACKET = new CompanionBatArmorItem("looter_jacket", 10, CompanionBatClass.LOOTER, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item KNIGHT_PLATE = new CompanionBatArmorItem("knight_plate", 10, CompanionBatClass.KNIGHT, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item ALCHEMIST_ROBE = new CompanionBatArmorItem("alchemist_robe", 10, CompanionBatClass.ALCHEMIST, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item DUELIST_COSTUME = new CompanionBatArmorItem("duelist_costume", 10, CompanionBatClass.DUELIST, new FabricItemSettings().group(GROUP).maxCount(1));
@@ -66,18 +68,21 @@ public class CompanionBats implements ModInitializer {
     @Override
     public void onInitialize() {
         FabricDefaultAttributeRegistry.register(COMPANION_BAT, CompanionBatEntity.createMobAttributes());
-        Registry.register(Registry.ITEM, BAT_ITEM_IDENTIFIER, BAT_ITEM);
-        Registry.register(Registry.ITEM, BAT_FLUTE_IDENTIFIER, BAT_FLUTE_ITEM);
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_item"), 		BAT_ITEM);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_flute"), 	 	BAT_FLUTE_ITEM);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_shard"), 	SPIRIT_SHARD);
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_crystal"),  SPIRIT_CRYSTAL);
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "inferno_suit"), 	INFERNO_SUIT);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "vampiric_attire"), VAMPIRIC_ATTIRE);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "looter_vest"), 	LOOTER_VEST);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "looter_jacket"), 	LOOTER_JACKET);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "knight_plate"), 	KNIGHT_PLATE);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "alchemist_robe"), 	ALCHEMIST_ROBE);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "duelist_costume"),	DUELIST_COSTUME);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "ninja_garb"),		NINJA_GARB);
 
 		CompanionBatLootTableInit.init();
+		CompanionBatCommandInit.init();
     }
 
     public static void log(Level level, String message){

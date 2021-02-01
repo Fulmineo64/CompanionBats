@@ -1,0 +1,9 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [{
+		"tag": "companion_bats:bat_armors"
+	}],
+	"result": {
+		"item": "companion_bats:spirit_shard"
+	}
+}

@@ -1,0 +1,31 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"sgs",
+		"rCr",
+		"bBb"
+	],
+	"key": {
+		"s": {
+			"item": "minecraft:splash_potion"
+		},
+		"g": {
+			"item": "minecraft:gold_ingot"
+		},
+		"r": {
+			"item": "minecraft:red_wool"
+		},
+		"C": {
+			"item": "companion_bats:spirit_crystal"
+		},
+		"b": {
+			"item": "minecraft:brewing_stand"
+		},
+		"B": {
+			"item": "minecraft:black_wool"
+		}
+	},
+	"result": {
+		"item": "companion_bats:alchemist_robe"
+	}
+}

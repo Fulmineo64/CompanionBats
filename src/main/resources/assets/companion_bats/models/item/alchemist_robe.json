@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "companion_bats:item/inferno_suit"
+    "layer0": "companion_bats:item/alchemist_robe"
   }
 }

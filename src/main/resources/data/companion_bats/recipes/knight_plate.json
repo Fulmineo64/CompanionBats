@@ -1,0 +1,28 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"lhl",
+		"gCg",
+		"lcl"
+	],
+	"key": {
+		"l": {
+			"item": "minecraft:lead"
+		},
+		"h": {
+			"item": "minecraft:iron_helmet"
+		},
+		"g": {
+			"item": "minecraft:green_wool"
+		},
+		"C": {
+			"item": "companion_bats:spirit_crystal"
+		},
+		"c": {
+			"item": "minecraft:iron_chestplate"
+		}
+	},
+	"result": {
+		"item": "companion_bats:knight_plate"
+	}
+}

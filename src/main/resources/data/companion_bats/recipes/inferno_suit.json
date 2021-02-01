@@ -1,0 +1,31 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"cqc",
+		"rCr",
+		"bgb"
+	],
+	"key": {
+		"c": {
+			"item": "minecraft:chain"
+		},
+		"q": {
+			"item": "minecraft:quartz_block"
+		},
+		"r": {
+			"item": "minecraft:red_wool"
+		},
+		"C": {
+			"item": "companion_bats:spirit_crystal"
+		},
+		"b": {
+			"item": "minecraft:blaze_rod"
+		},
+		"g": {
+			"item": "minecraft:gold_ingot"
+		}
+	},
+	"result": {
+		"item": "companion_bats:inferno_suit"
+	}
+}

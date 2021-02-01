@@ -25,7 +25,7 @@ public class CompanionBatLootTableInit {
 				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootNumberProvider.create(1)).with(ItemEntry.builder(CompanionBats.VAMPIRIC_ATTIRE));
 				supplier.pool(poolBuilder);
 			} else if (LOOTER_LOOT_TABLE_ID.equals(id)) {
-				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootNumberProvider.create(1)).with(ItemEntry.builder(CompanionBats.LOOTER_VEST));
+				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootNumberProvider.create(1)).with(ItemEntry.builder(CompanionBats.LOOTER_JACKET));
 				supplier.pool(poolBuilder);
 			} else if (KNIGHT_LOOT_TABLE_ID.equals(id)) {
 				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootNumberProvider.create(1)).with(ItemEntry.builder(CompanionBats.KNIGHT_PLATE));

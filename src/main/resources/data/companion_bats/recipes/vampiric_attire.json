@@ -1,0 +1,28 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"ama",
+		"pCp",
+		"aea"
+	],
+	"key": {
+		"a": {
+			"item": "minecraft:amethyst_shard"
+		},
+		"m": {
+			"item": "minecraft:magenta_wool"
+		},
+		"p": {
+			"item": "minecraft:purple_wool"
+		},
+		"C": {
+			"item": "companion_bats:spirit_crystal"
+		},
+		"e": {
+			"item": "minecraft:end_crystal"
+		}
+	},
+	"result": {
+		"item": "companion_bats:vampiric_attire"
+	}
+}

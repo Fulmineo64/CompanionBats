@@ -1,0 +1,28 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"bgb",
+		"pCp",
+		"sgs"
+	],
+	"key": {
+		"b": {
+			"item": "minecraft:blaze_powder"
+		},
+		"g": {
+			"item": "minecraft:light_gray_wool"
+		},
+		"p": {
+			"item": "minecraft:pumpkin"
+		},
+		"C": {
+			"item": "companion_bats:spirit_crystal"
+		},
+		"s": {
+			"item": "minecraft:sugar"
+		}
+	},
+	"result": {
+		"item": "companion_bats:duelist_costume"
+	}
+}

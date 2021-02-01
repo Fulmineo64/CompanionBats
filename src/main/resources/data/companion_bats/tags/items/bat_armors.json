@@ -1,0 +1,12 @@
+{
+    "replace": false,
+    "values": [
+		"companion_bats:alchemist_robe",
+		"companion_bats:duelist_costume",
+		"companion_bats:inferno_suit",
+		"companion_bats:knight_plate",
+		"companion_bats:looter_jacket",
+		"companion_bats:ninja_garb",
+        "companion_bats:vampiric_attire"
+    ]
+}

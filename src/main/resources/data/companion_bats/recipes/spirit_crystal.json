@@ -1,0 +1,15 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"##",
+		"##"
+	],
+	"key": {
+		"#": {
+			"item": "companion_bats:spirit_shard"
+		}
+	},
+	"result": {
+		"item": "companion_bats:spirit_crystal"
+	}
+}

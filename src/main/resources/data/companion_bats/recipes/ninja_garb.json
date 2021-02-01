@@ -1,0 +1,31 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"cec",
+		"bCb",
+		"omo"
+	],
+	"key": {
+		"c": {
+			"item": "minecraft:popped_chorus_fruit"
+		},
+		"e": {
+			"item": "minecraft:ender_pearl"
+		},
+		"b": {
+			"item": "minecraft:blue_wool"
+		},
+		"C": {
+			"item": "companion_bats:spirit_crystal"
+		},
+		"o": {
+			"item": "minecraft:crying_obsidian"
+		},
+		"m": {
+			"item": "minecraft:magenta_wool"
+		}
+	},
+	"result": {
+		"item": "companion_bats:ninja_garb"
+	}
+}

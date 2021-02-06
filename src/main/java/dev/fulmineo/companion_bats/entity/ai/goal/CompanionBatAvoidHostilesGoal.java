@@ -21,6 +21,7 @@ public class CompanionBatAvoidHostilesGoal extends Goal {
 	protected Path fleePath;
 	protected final EntityNavigation navigation;
 	private final TargetPredicate withinRangePredicate;
+	public BlockPos fleeingPosition;
 
 	private static final Direction[] DIRECTIONS_X;
 	private static final Direction[] DIRECTIONS_Z;
@@ -60,15 +61,14 @@ public class CompanionBatAvoidHostilesGoal extends Goal {
 				z += this.fleeDistance * (ownerFacing == Direction.NORTH ? 1 : -1);
 			}
 
-			this.entity.fleeingPosition = new BlockPos(new Vec3d(x, y, z));
+			this.fleeingPosition = new BlockPos(new Vec3d(x, y, z));
 			this.fleePath = this.navigation.findPathTo(x, y, z, 0);
 			return this.fleePath != null;
 		}
 	}
 
 	public boolean shouldContinue() {
-		boolean bl = !this.navigation.isIdle();
-	   	return bl;
+	   	return !this.navigation.isIdle();
 	}
 
 	public void start() {
@@ -76,7 +76,7 @@ public class CompanionBatAvoidHostilesGoal extends Goal {
 	}
 
 	public void stop() {
-		this.entity.fleeingPosition = null;
+		this.fleeingPosition = null;
 	   	this.targetEntity = null;
 	}
 

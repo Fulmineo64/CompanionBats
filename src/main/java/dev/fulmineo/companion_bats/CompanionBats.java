@@ -32,6 +32,7 @@ import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
 public class CompanionBats implements ModInitializer {
 
 	public static Logger LOGGER = LogManager.getLogger();
+	public static boolean PROD = true;
 
     // Identifiers
 
@@ -57,13 +58,13 @@ public class CompanionBats implements ModInitializer {
     public static final Item SPIRIT_SHARD = new Item(new FabricItemSettings().group(GROUP));
     public static final Item SPIRIT_CRYSTAL = new Item(new FabricItemSettings().group(GROUP));
 
-	public static final Item INFERNO_SUIT = new CompanionBatArmorItem("inferno_suit", 10, CompanionBatClass.INFERNO, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item VAMPIRIC_ATTIRE = new CompanionBatArmorItem("vampiric_attire", 10, CompanionBatClass.VAMPIRE, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item LOOTER_JACKET = new CompanionBatArmorItem("looter_jacket", 10, CompanionBatClass.LOOTER, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item KNIGHT_PLATE = new CompanionBatArmorItem("knight_plate", 10, CompanionBatClass.KNIGHT, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item ALCHEMIST_ROBE = new CompanionBatArmorItem("alchemist_robe", 10, CompanionBatClass.ALCHEMIST, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item DUELIST_COSTUME = new CompanionBatArmorItem("duelist_costume", 10, CompanionBatClass.DUELIST, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item NINJA_GARB = new CompanionBatArmorItem("ninja_garb", 10, CompanionBatClass.NINJA, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item INFERNO_SUIT = new CompanionBatArmorItem("inferno_suit", CompanionBatClass.INFERNO, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item VAMPIRIC_ATTIRE = new CompanionBatArmorItem("vampiric_attire", CompanionBatClass.VAMPIRE, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item LOOTER_JACKET = new CompanionBatArmorItem("looter_jacket", CompanionBatClass.LOOTER, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item KNIGHT_PLATE = new CompanionBatArmorItem("knight_plate", CompanionBatClass.KNIGHT, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item ALCHEMIST_ROBE = new CompanionBatArmorItem("alchemist_robe", CompanionBatClass.ALCHEMIST, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item DUELIST_COSTUME = new CompanionBatArmorItem("duelist_costume", CompanionBatClass.DUELIST, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item NINJA_GARB = new CompanionBatArmorItem("ninja_garb", CompanionBatClass.NINJA, new FabricItemSettings().group(GROUP).maxCount(1));
 
     @Override
     public void onInitialize() {
@@ -85,11 +86,7 @@ public class CompanionBats implements ModInitializer {
 		CompanionBatCommandInit.init();
     }
 
-    public static void log(Level level, String message){
-        LOGGER.log(level, "["+MOD_NAME+"] " + message);
-    }
-
-    public static void info(String message){
-        log(Level.INFO, message);
+	public static void info(String message){
+        if (!PROD) LOGGER.log(Level.INFO, message);
     }
 }

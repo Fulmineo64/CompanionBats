@@ -22,8 +22,8 @@ public class CompanionBatThrowPotionGoal extends Goal {
     private LivingEntity owner;
 	private final double maxDistanceSquared;
     private final EntityNavigation navigation;
-	private int emergencyPotionCooldown;
-	private int effectPotionCooldown;
+	private final int emergencyPotionCooldown;
+	private final int effectPotionCooldown;
 	private int emergencyPotionTicks;
 	private int effectPotionTicks;
 	private int updateCountdownTicks;
@@ -50,7 +50,7 @@ public class CompanionBatThrowPotionGoal extends Goal {
 			if (this.effectPotionTicks > 0) this.effectPotionTicks--;
 			if (this.emergencyPotionTicks <= 0 || this.effectPotionTicks <= 0){
 				this.effectPotionLevel = this.entity.getAbilityValue(CompanionBatAbility.EFFECT_POTION);
-				this.emergencyPotionLevel = this.entity.getAbilityValue(CompanionBatAbility.EFFECT_POTION);
+				this.emergencyPotionLevel = this.entity.getAbilityValue(CompanionBatAbility.EMERGENCY_POTION);
 				if (this.effectPotionLevel == null || this.effectPotionLevel < 1) this.effectPotionTicks = this.effectPotionCooldown;
 				if (this.emergencyPotionLevel == null || this.emergencyPotionLevel < 1) this.emergencyPotionTicks = this.emergencyPotionCooldown;
 				if (this.emergencyPotionTicks <= 0 || this.effectPotionTicks <= 0){
@@ -74,7 +74,6 @@ public class CompanionBatThrowPotionGoal extends Goal {
     }
 
     public void tick() {
-        // this.entity.getLookControl().lookAt(this.owner, 10.0F, (float)this.entity.getLookPitchSpeed());
         if (--this.updateCountdownTicks <= 0) {
 			this.updateCountdownTicks = 10;
             if (!this.entity.isLeashed() && !this.entity.hasVehicle()) {
@@ -82,28 +81,26 @@ public class CompanionBatThrowPotionGoal extends Goal {
 				if (distance < this.maxDistanceSquared){
 					Potion potion = null;
 					if (this.emergencyPotionTicks <= 0){
-						if (this.effectPotionLevel == 3 && (this.owner.isOnFire() || this.owner.getRecentDamageSource() != null && this.owner.getRecentDamageSource().isFire()) && !this.owner.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
+						if (this.effectPotionLevel >= 3 && (this.owner.isOnFire() || this.owner.getRecentDamageSource() != null && this.owner.getRecentDamageSource().isFire()) && !this.owner.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
 							potion = Potions.FIRE_RESISTANCE;
-						} else if (this.owner.getHealth() < (this.owner.getMaxHealth() * 30 / 100)) {
-							if (this.effectPotionLevel == 4){
-								potion = Potions.STRONG_HEALING;
-							} else {
-								potion = Potions.HEALING;
-							}
+						} else if (this.owner.getHealth() < (this.owner.getMaxHealth() * 40 / 100)) {
+							potion = Potions.STRONG_HEALING;
 						}
 						if (potion != null) this.emergencyPotionTicks = this.emergencyPotionCooldown;
 					}
 
 					if (potion == null && this.effectPotionTicks <= 0){
-						if (this.effectPotionLevel == 3 && !this.owner.hasStatusEffect(StatusEffects.REGENERATION) && this.owner.getHealth() < (this.owner.getMaxHealth() * 50 / 100)){
+						if (this.effectPotionLevel >= 4 && !this.owner.hasStatusEffect(StatusEffects.REGENERATION) && this.owner.getHealth() < (this.owner.getMaxHealth() * 50 / 100)){
 							potion = Potions.REGENERATION;
-						} else if (this.effectPotionLevel >= 2 && !this.owner.hasStatusEffect(StatusEffects.NIGHT_VISION) && this.entity.world.getLightLevel(this.owner.getBlockPos()) <= 7){
+						} else if (this.effectPotionLevel >= 2 && (!this.owner.hasStatusEffect(StatusEffects.NIGHT_VISION) || this.owner.getStatusEffect(StatusEffects.NIGHT_VISION).getDuration() <= 400) && this.entity.world.getLightLevel(this.owner.getBlockPos()) <= 7){
 							potion = Potions.NIGHT_VISION;
-						} else if (!this.owner.hasStatusEffect(StatusEffects.SPEED)) {
+						} else if (!this.owner.hasStatusEffect(StatusEffects.SPEED) || this.owner.getStatusEffect(StatusEffects.SPEED).getDuration() <= 400) {
 							potion = Potions.SWIFTNESS;
 						}
 						if (potion != null) this.effectPotionTicks = this.effectPotionCooldown;
 					}
+
+					// TODO: Attack potion
 
 					if (potion != null) {
 						Vec3d vec3d = this.owner.getVelocity();

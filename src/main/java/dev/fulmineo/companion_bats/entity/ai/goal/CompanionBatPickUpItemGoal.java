@@ -40,7 +40,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
     public boolean canStart() {
         if (--this.canStartCountdownTicks <= 0) {
             // Makes sure this check isn't spammed
-            this.canStartCountdownTicks = 20;
+            this.canStartCountdownTicks = 10;
             this.bundleStack = this.entity.getBundle();
             LivingEntity livingEntity = this.entity.getOwner();
             if (this.entity.isRoosting() || this.entity.isAboutToRoost()){

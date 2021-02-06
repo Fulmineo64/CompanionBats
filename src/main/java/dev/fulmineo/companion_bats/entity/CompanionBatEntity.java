@@ -8,7 +8,6 @@ import java.util.UUID;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 
-import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.Nullable;
 
 import dev.fulmineo.companion_bats.CompanionBats;
@@ -91,10 +90,6 @@ public class CompanionBatEntity extends TameableEntity {
 	private static final UUID BAT_ATTACK_BONUS_ID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F298");
 	private static final UUID BAT_SPEED_BONUS_ID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F299");
 
-	private static final UUID COMBO_ATTACK_BONUS_ID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F29A");
-	private static final UUID COMBO_SPEED_BONUS_ID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F29B");
-
-
 	// Configurable values
 	// TODO: Add configuration for these values and levels
 
@@ -104,19 +99,29 @@ public class CompanionBatEntity extends TameableEntity {
 
 	private static final int EXP_GAIN = 1;
 
+	private static final int ROOST_START_TICKS = 200;
 	private static final int HEAL_TICKS = 600;
 	private static final int EMERGENCY_POTION_TICKS = 6000;
-	private static final int EFFECT_POTION_TICKS = 3600;
+	private static final int EFFECT_POTION_TICKS = 2400;
 	private static final int PASSIVE_EXP_TICKS = 600;
-	private static final int COMBO_ATTACK_RESET_TICKS = 100;
-	private static final int TELEPORT_TICKS = 200;
-	private static final int INITIAL_TELEPORT_TICKS = 100;
+	private static final int COMBO_ATTACK_RESET_TICKS = 600;
+	private static final int TELEPORT_TICKS = 100;
 	private static final int RETRY_TELEPORT_TICKS = 10;
+	private static int ADVENTURER_AURA_TICKS = 420;
+
+	public static final int BLOCK_ATTACK_MULTIPLIER = 10;
+	public static final int BURN_MULTIPLIER = 3;
+	public static final int INCREASED_ARMOR_MULTIPLIER = 2;
+	public static final int INCREASED_ATTACK_MULTIPLIER = 10;
+	public static final int INCREASED_SPEED_MULTIPLIER = 15;
+	public static final int LIFESTEAL_MULTIPLIER = 10;
+	public static final int TELEPORT_MULTIPLIER = 25;
 
 	public static final Predicate<ItemStack> IS_FOOD_ITEM;
 	public static final Predicate<ItemEntity> IS_FOOD_ITEM_ENTITY;
 	public BlockPos hangingPosition;
 	public BlockPos fleeingPosition;
+	public BlockPos diggingPosition;
 
 	private CompanionBatClass currentClass;
 	private int exp = 0;
@@ -125,10 +130,12 @@ public class CompanionBatEntity extends TameableEntity {
 	private int classLevel = -1;
 	private boolean hasPassiveExp;
 	private boolean hasTeleport;
+	private boolean hasAdventurerAura;
 	private int passiveExpTicks = PASSIVE_EXP_TICKS;
 	private int comboAttackResetTicks = COMBO_ATTACK_RESET_TICKS;
-	private int comboAttackLevel = 0;
-	private int teleportTicks = INITIAL_TELEPORT_TICKS;
+	private int comboLevel = 0;
+	private int teleportTicks = TELEPORT_TICKS;
+	private int adventurerAuraTicks = 1;
 
 	public CompanionBatEntity(EntityType<? extends TameableEntity> entityType, World world) {
 		super(entityType, world);
@@ -141,14 +148,14 @@ public class CompanionBatEntity extends TameableEntity {
 
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(BAT_FLAGS, (byte)0);
+		this.dataTracker.startTracking(BAT_FLAGS, (byte) 0);
 	}
 
 	protected void initGoals() {
 		this.goalSelector.add(2, new CompanionBatPickUpItemGoal(this, 1.0D, 16.0F));
-		this.goalSelector.add(3, new CompanionBatFollowOwnerGoal(this, 1.0D, 2.5F, 16.0F));
+		this.goalSelector.add(3, new CompanionBatFollowOwnerGoal(this, 1.0D, 2.5F, 24.0F));
 		this.goalSelector.add(4, new CompanionBatTransferItemsToOwnerGoal(this, 2.5F));
-		this.goalSelector.add(5, new CompanionBatRoostGoal(this, 0.75F, 4.0F));
+		this.goalSelector.add(5, new CompanionBatRoostGoal(this, 0.75F, 4.0F, ROOST_START_TICKS));
 	}
 
 	public void writeCustomDataToTag(CompoundTag tag) {
@@ -199,16 +206,17 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, BASE_HEALTH)
-				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, BASE_ATTACK)
-				.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, BASE_SPEED);
+		return MobEntity.createMobAttributes()
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, BASE_HEALTH)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, BASE_ATTACK)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, BASE_SPEED);
 	}
 
 	/**
 	 * Returns whether this bat is hanging upside-down under a block.
 	 */
 	public boolean isRoosting() {
-		return ((Byte)this.dataTracker.get(BAT_FLAGS) & 1) != 0;
+		return ((Byte) this.dataTracker.get(BAT_FLAGS) & 1) != 0;
 	}
 
 	public boolean isInjured() {
@@ -223,13 +231,17 @@ public class CompanionBatEntity extends TameableEntity {
 		return this.fleeingPosition != null;
 	}
 
+	public boolean isDigging() {
+		return this.diggingPosition != null;
+	}
+
 	public void setRoosting(boolean roosting) {
-		byte b = (Byte)this.dataTracker.get(BAT_FLAGS);
+		byte b = (Byte) this.dataTracker.get(BAT_FLAGS);
 		if (roosting) {
-			this.dataTracker.set(BAT_FLAGS, (byte)(b | 1));
+			this.dataTracker.set(BAT_FLAGS, (byte) (b | 1));
 			this.healTicks = HEAL_TICKS;
 		} else {
-			this.dataTracker.set(BAT_FLAGS, (byte)(b & -2));
+			this.dataTracker.set(BAT_FLAGS, (byte) (b & -2));
 			this.hangingPosition = null;
 		}
 	}
@@ -238,34 +250,45 @@ public class CompanionBatEntity extends TameableEntity {
 		super.tick();
 		if (this.isRoosting()) {
 			this.setVelocity(Vec3d.ZERO);
-			this.setPos(this.getX(), (double)MathHelper.floor(this.getY()) + 1.0D - (double)this.getHeight(), this.getZ());
+			this.setPos(this.getX(), (double) MathHelper.floor(this.getY()) + 1.0D - (double) this.getHeight(), this.getZ());
 			this.comboAttackResetTicks = 0;
 		} else {
 			this.setVelocity(this.getVelocity().multiply(1.0D, 0.6D, 1.0D));
 
 			if (this.hasPassiveExp) {
 				this.passiveExpTicks--;
-				if (this.passiveExpTicks<=0){
+				if (this.passiveExpTicks <= 0) {
 					this.gainExp();
 					this.passiveExpTicks = PASSIVE_EXP_TICKS;
 				}
 			}
 
-			if (this.comboAttackResetTicks > 0){
+			if (this.comboAttackResetTicks > 0) {
 				this.comboAttackResetTicks--;
-				if (this.comboAttackResetTicks == 0){
-					this.clearComboLevel();
+				if (this.comboAttackResetTicks == 0) {
+					this.comboLevel = 0;
 				}
 			}
 
-			if (this.hasTeleport){
+			if (this.hasTeleport) {
 				this.teleportTicks--;
-				if (this.teleportTicks == 0){
+				if (this.teleportTicks == 0) {
 					LivingEntity target = this.getTarget();
-					if (target != null && this.squaredDistanceTo(target) <= this.getAbilityValue(CompanionBatAbility.TELEPORT) && this.teleportTo(target)){
+					if (target != null && this.squaredDistanceTo(target) <= this.getAbilityValue(CompanionBatAbility.TELEPORT) && this.teleportTo(target)) {
 						this.teleportTicks = TELEPORT_TICKS;
 					} else {
 						this.teleportTicks = RETRY_TELEPORT_TICKS;
+					}
+				}
+			}
+
+			if (this.hasAdventurerAura){
+				this.adventurerAuraTicks--;
+				if (this.adventurerAuraTicks == 0) {
+					this.adventurerAuraTicks = ADVENTURER_AURA_TICKS > 200 ? ADVENTURER_AURA_TICKS - 200 : ADVENTURER_AURA_TICKS;
+					LivingEntity owner = this.getOwner();
+					if (owner != null){
+						owner.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, ADVENTURER_AURA_TICKS, 0, false, false));
 					}
 				}
 			}
@@ -304,13 +327,18 @@ public class CompanionBatEntity extends TameableEntity {
 			if (!source.isUnblockable() && this.hasAbility(CompanionBatAbility.BLOCK_ATTACK)) {
 				int roll = this.world.random.nextInt(100);
 				if (roll < this.getAbilityValue(CompanionBatAbility.BLOCK_ATTACK)) {
-					this.world.playSound(null, this.getBlockPos(), SoundEvents.ITEM_SHIELD_BLOCK, SoundCategory.PLAYERS, 0.2F, this.getSoundPitch());
-					if (this.hasAbility(CompanionBatAbility.COUNTER_ATTACK) && !source.isMagic() && !source.isProjectile() && source.getAttacker() instanceof LivingEntity){
-						LivingEntity target = (LivingEntity)source.getAttacker();
-						float targetHealth = target.getHealth();
-						target.damage(source, amount * this.getAbilityValue(CompanionBatAbility.COUNTER_ATTACK) / 4);
-						this.onAttack(target, targetHealth - target.getHealth());
+					if (this.hasAbility(CompanionBatAbility.COUNTER_ATTACK) && source.getAttacker() instanceof LivingEntity) {
+						LivingEntity target = (LivingEntity) source.getAttacker();
+						LivingEntity owner = this.getOwner();
+						if (target != owner && this.canAttackWithOwner(target, this.getOwner()) && this.isWithinDistanceToAttack(target)){
+							this.world.playSound(null, this.getBlockPos(), SoundEvents.BLOCK_ANVIL_LAND , SoundCategory.PLAYERS, 0.2F, this.getSoundPitch() + 2F);
+							float targetHealth = target.getHealth();
+							target.damage(source, amount * this.getAbilityValue(CompanionBatAbility.COUNTER_ATTACK) / 4);
+							this.onAttack(target, targetHealth - target.getHealth());
+							return false;
+						}
 					}
+					this.world.playSound(null, this.getBlockPos(), SoundEvents.ITEM_SHIELD_BLOCK, SoundCategory.PLAYERS, 0.2F, this.getSoundPitch());
 					return false;
 				}
 			}
@@ -322,17 +350,17 @@ public class CompanionBatEntity extends TameableEntity {
 	public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
 		if (!(target instanceof CreeperEntity)) {
 			if (target instanceof WolfEntity) {
-				WolfEntity wolfEntity = (WolfEntity)target;
+				WolfEntity wolfEntity = (WolfEntity) target;
 				return !wolfEntity.isTamed() || wolfEntity.getOwner() != owner;
 			} else if (target instanceof CompanionBatEntity) {
-				CompanionBatEntity companionBatEntity = (CompanionBatEntity)target;
+				CompanionBatEntity companionBatEntity = (CompanionBatEntity) target;
 				return companionBatEntity.getOwner() != owner;
-			} else if (target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity)owner).shouldDamagePlayer((PlayerEntity)target)) {
+			} else if (target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity) owner).shouldDamagePlayer((PlayerEntity) target)) {
 				return false;
-			} else if (target instanceof HorseBaseEntity && ((HorseBaseEntity)target).isTame()) {
+			} else if (target instanceof HorseBaseEntity && ((HorseBaseEntity) target).isTame()) {
 				return false;
 			} else {
-				return !(target instanceof TameableEntity) || !((TameableEntity)target).isTamed();
+				return !(target instanceof TameableEntity) || !((TameableEntity) target).isTamed();
 			}
 		} else {
 			return false;
@@ -349,52 +377,47 @@ public class CompanionBatEntity extends TameableEntity {
 			if (this.hangingPosition == null || !this.world.getBlockState(this.hangingPosition).isSolidBlock(this.world, this.hangingPosition)) {
 				this.setRoosting(false);
 				if (!this.isSilent()) {
-					this.world.syncWorldEvent((PlayerEntity)null, 1025, this.getBlockPos(), 0);
+					this.world.syncWorldEvent((PlayerEntity) null, 1025, this.getBlockPos(), 0);
 				}
 			} else if (this.healTicks <= 0) {
 				this.healTicks = HEAL_TICKS;
 				if (this.isInjured()) {
-					int val = Math.max(1, (int)(this.getMaxHealth() * 10 / 100));
+					int val = Math.max(1, (int) (this.getMaxHealth() * 10 / 100));
 					this.heal(val);
 				}
 			}
 		}
 	}
 
-    /*
-    public void tickMovement() {
-        super.mobTick();
-    }
-    */
-
 	public CompanionBatEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		return null;
 	}
 
 	public boolean tryAttack(Entity target) {
-		float targetHealth = target instanceof LivingEntity ? ((LivingEntity)target).getHealth() : 0;
+		float targetHealth = target instanceof LivingEntity ? ((LivingEntity) target).getHealth() : 0;
 		boolean bl = target.damage(DamageSource.mob(this), this.getAttackDamage(target));
 		if (bl) {
 			this.dealDamage(this, target);
-			float damageDealt = targetHealth - (target instanceof LivingEntity ? ((LivingEntity)target).getHealth() : 0);
+			float damageDealt = targetHealth - (target instanceof LivingEntity ? ((LivingEntity) target).getHealth() : 0);
 			this.onAttack(target, damageDealt);
 		}
 		return bl;
 	}
 
-	private float getAttackDamage(Entity target){
-		float attackDamage = (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
-		if (this.hasAbility(CompanionBatAbility.SNEAK_ATTACK) && target instanceof LivingEntity && this.isBehind((LivingEntity)target)) {
+	private float getAttackDamage(Entity target) {
+		float attackDamage = (float) ((int) this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+		if (this.hasAbility(CompanionBatAbility.SNEAK_ATTACK) && target instanceof LivingEntity && this.isBehind((LivingEntity) target)) {
+			this.world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT , SoundCategory.PLAYERS, 1F, 1.5F);
 			attackDamage += attackDamage * this.getAbilityValue(CompanionBatAbility.SNEAK_ATTACK) / 4;
 		}
 		return attackDamage;
 	}
 
-	private boolean isBehind(LivingEntity target){
-		return !target.getHorizontalFacing().equals(this.getHorizontalFacing());
+	private boolean isBehind(LivingEntity target) {
+		return target.getHorizontalFacing().equals(this.getHorizontalFacing());
 	}
 
-	private void onAttack(Entity target, float damageDealt){
+	private void onAttack(Entity target, float damageDealt) {
 		CompanionBats.info("damage dealt " + damageDealt);
 		if (damageDealt > 0) {
 			this.gainExp();
@@ -410,32 +433,24 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 	}
 
-	private void increaseComboLevel(){
+	private void increaseComboLevel() {
 		this.comboAttackResetTicks = COMBO_ATTACK_RESET_TICKS;
-		if (this.comboAttackLevel < 10){
-			this.comboAttackLevel++;
-			int value = this.getAbilityValue(CompanionBatAbility.COMBO_ATTACK);
 
-			EntityAttributeInstance attack = this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-			attack.removeModifier(COMBO_ATTACK_BONUS_ID);
-			double bonusAttack = attack.getValue() * (value * this.comboAttackLevel) / 100;
-			attack.addTemporaryModifier(new EntityAttributeModifier(COMBO_ATTACK_BONUS_ID, "Combo attack bonus", bonusAttack, EntityAttributeModifier.Operation.ADDITION));
+		int comboAttackLevel = this.getAbilityValue(CompanionBatAbility.COMBO_ATTACK);
+		this.comboLevel++;
+		CompanionBats.info("Increased combo level to: "+this.comboLevel);
 
-			EntityAttributeInstance speed = this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-			speed.removeModifier(COMBO_SPEED_BONUS_ID);
-			double bonusSpeed = speed.getValue() * (value * this.comboAttackLevel) / 100;
-			speed.addTemporaryModifier(new EntityAttributeModifier(COMBO_SPEED_BONUS_ID, "Combo speed bonus", bonusSpeed, EntityAttributeModifier.Operation.ADDITION));
+		if (comboAttackLevel >= 3 && this.comboLevel % 25 == 0) {
+			this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, this.comboLevel == 100 ? 1 : 0));
+		} else if (comboAttackLevel >= 2 && this.comboLevel % 10 == 0) {
+			this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 100, this.comboLevel > 50 ? 1 : 0));
+		} else if (this.comboLevel % 5 == 0) {
+			this.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 100, this.comboLevel > 50 ? 1 : 0));
 		}
-	}
 
-	private void clearComboLevel(){
-		this.comboAttackLevel = 0;
-
-		EntityAttributeInstance attack = this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-		attack.removeModifier(COMBO_ATTACK_BONUS_ID);
-
-		EntityAttributeInstance speed = this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-		speed.removeModifier(COMBO_SPEED_BONUS_ID);
+		if (this.comboLevel == 100){
+			this.comboLevel = 0;
+		}
 	}
 
 	@Override
@@ -460,6 +475,13 @@ public class CompanionBatEntity extends TameableEntity {
 					itemStack.decrement(1);
 				}
 				return ActionResult.SUCCESS;
+			} else if (itemStack.isOf(Items.PUMPKIN_PIE) && player == this.getOwner()){
+				ItemStack fluteStack = this.getFluteItemStack();
+				if (fluteStack == null){
+					this.discard();
+					player.giveItemStack(this.toItem());
+					return ActionResult.SUCCESS;
+				}
 			}
 		}
 		return ActionResult.PASS;
@@ -515,15 +537,12 @@ public class CompanionBatEntity extends TameableEntity {
 		ServerPlayerEntity player = (ServerPlayerEntity) this.getOwner();
 		if (player != null) {
 			PlayerInventory inventory = player.getInventory();
-			ImmutableList<DefaultedList<ItemStack>> mainAndOffhand = ImmutableList.of(inventory.main,
-					inventory.offHand);
+			ImmutableList<DefaultedList<ItemStack>> mainAndOffhand = ImmutableList.of(inventory.main, inventory.offHand);
 			Iterator<DefaultedList<ItemStack>> iterator = mainAndOffhand.iterator();
 			while (iterator.hasNext()) {
 				DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
 				for (int i = 0; i < defaultedList.size(); ++i) {
-					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM
-							&& defaultedList.get(i).getTag().getUuid("entityUuid").equals(this.getUuid())) {
-						// Get item in hand
+					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getTag().getUuid("entityUuid").equals(this.getUuid())) {
 						this.discard();
 						defaultedList.set(i, this.toItem());
 						world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.AMBIENT, 1F, 1F);
@@ -533,6 +552,28 @@ public class CompanionBatEntity extends TameableEntity {
 			}
 		}
 		return false;
+	}
+
+	private ItemStack getFluteItemStack(){
+		ServerPlayerEntity player = (ServerPlayerEntity) this.getOwner();
+		if (player != null) {
+			PlayerInventory inventory = player.getInventory();
+			ImmutableList<DefaultedList<ItemStack>> mainAndOffhand = ImmutableList.of(inventory.main, inventory.offHand);
+			Iterator<DefaultedList<ItemStack>> iterator = mainAndOffhand.iterator();
+			while (iterator.hasNext()) {
+				DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
+				for (int i = 0; i < defaultedList.size(); ++i) {
+					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getTag().getUuid("entityUuid").equals(this.getUuid())) {
+						return defaultedList.get(i);
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	private boolean isWithinDistanceToAttack(LivingEntity entity) {
+		return this.squaredDistanceTo(entity) < (double)(this.getWidth() * 2.0F * this.getWidth() * 2.0F + entity.getWidth());
 	}
 
 	public int getExp() {
@@ -559,7 +600,6 @@ public class CompanionBatEntity extends TameableEntity {
 			CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
 			if (this.classExp < classLevels[classLevels.length - 1].totalExpNeeded) {
 				this.addClassExp(EXP_GAIN);
-				CompanionBats.log(Level.INFO, "total class exp " + this.getClassExp());
 			}
 		}
 	}
@@ -595,7 +635,7 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 		if (this.currentClass != null) {
 			this.classExp = this.classesExp.get(this.currentClass);
-			this.classLevel = CompanionBatLevels.getClassLevelByExp(this.currentClass, (int)this.classExp);
+			this.classLevel = CompanionBatLevels.getClassLevelByExp(this.currentClass, (int) this.classExp);
 		}
 	}
 
@@ -607,13 +647,15 @@ public class CompanionBatEntity extends TameableEntity {
 					if (level.totalExpNeeded > classExp) {
 						break;
 					}
-					if (level.ability != null) {
+					Integer current = this.abilityLevels.get(level.ability);
+					if (level.ability != null && (current == null || current < level.abilityLevel)) {
 						this.abilityLevels.put(level.ability, level.abilityLevel);
 					}
 				}
 			} else {
 				CompanionBatClassLevel level = CompanionBatLevels.GLOBAL_CLASS_LEVELS.get(batClass);
-				if (level != null && classExp >= level.totalExpNeeded) {
+				Integer current = this.abilityLevels.get(level.ability);
+				if (level != null && classExp >= level.totalExpNeeded && (current == null || current < level.abilityLevel)) {
 					this.abilityLevels.put(level.ability, level.abilityLevel);
 				}
 			}
@@ -640,7 +682,11 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void setAbilitiesEffects(boolean firstTime) {
-		if (firstTime){
+		CompanionBats.info("Current abilities:");
+		for (Map.Entry<CompanionBatAbility, Integer> entry : this.abilityLevels.entrySet()) {
+			CompanionBats.info(entry.getKey() + " " + entry.getValue());
+		}
+		if (firstTime) {
 			if (this.hasAbility(CompanionBatAbility.CANNOT_ATTACK)) {
 				this.goalSelector.add(1, new CompanionBatAvoidHostilesGoal(this, 3.0F, 1.0F));
 				this.hasPassiveExp = true;
@@ -653,149 +699,147 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 		if (this.hasAbility(CompanionBatAbility.EMERGENCY_POTION) || this.hasAbility(CompanionBatAbility.EFFECT_POTION)) {
 			Goal THROW_POTION_GOAL = new CompanionBatThrowPotionGoal(this, 3.0F, EMERGENCY_POTION_TICKS, EFFECT_POTION_TICKS);
-			if (firstTime ? true : !this.goalSelector.getRunningGoals().anyMatch((prioritizedGoal) -> prioritizedGoal.getGoal().equals(THROW_POTION_GOAL))){
-				// TODO: test this
+			if (firstTime ? true : !this.goalSelector.getRunningGoals().anyMatch((prioritizedGoal) -> prioritizedGoal.getGoal().equals(THROW_POTION_GOAL))) {
 				this.goalSelector.add(6, THROW_POTION_GOAL);
 			}
 		}
-		if (this.hasAbility(CompanionBatAbility.INCREASED_ARMOR)){
+		if (this.hasAbility(CompanionBatAbility.INCREASED_ARMOR)) {
 			EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR);
 			if (!firstTime) attr.removeModifier(BAT_ARMOR_BONUS_ID);
 			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_ARMOR_BONUS_ID, "Ability armor bonus", this.getAbilityValue(CompanionBatAbility.INCREASED_ARMOR), EntityAttributeModifier.Operation.ADDITION));
 		}
-		if (this.hasAbility(CompanionBatAbility.INCREASED_ATTACK)){
+		if (this.hasAbility(CompanionBatAbility.INCREASED_ATTACK)) {
 			EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 			if (!firstTime) attr.removeModifier(BAT_ATTACK_BONUS_ID);
-			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_ATTACK_BONUS_ID, "Ability attack bonus", (double)(attr.getBaseValue() * this.getAbilityValue(CompanionBatAbility.INCREASED_ATTACK) / 100), EntityAttributeModifier.Operation.ADDITION));
+			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_ATTACK_BONUS_ID, "Ability attack bonus", (double) (attr.getBaseValue() * this.getAbilityValue(CompanionBatAbility.INCREASED_ATTACK) / 100), EntityAttributeModifier.Operation.ADDITION));
 		}
-		if (this.hasAbility(CompanionBatAbility.INCREASED_SPEED)){
+		if (this.hasAbility(CompanionBatAbility.INCREASED_SPEED)) {
 			EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 			if (!firstTime) attr.removeModifier(BAT_SPEED_BONUS_ID);
-			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_SPEED_BONUS_ID, "Ability speed bonus", (double)(attr.getBaseValue() * this.getAbilityValue(CompanionBatAbility.INCREASED_SPEED) / 100), EntityAttributeModifier.Operation.ADDITION));
+			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_SPEED_BONUS_ID, "Ability speed bonus", (double) (attr.getBaseValue() * this.getAbilityValue(CompanionBatAbility.INCREASED_SPEED) / 100), EntityAttributeModifier.Operation.ADDITION));
 		}
-		if (this.hasAbility(CompanionBatAbility.FIRE_RESISTANCE)){
+		if (this.hasAbility(CompanionBatAbility.FIRE_RESISTANCE)) {
 			this.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 1000000000, 1, false, false));
 		}
-		if (this.hasAbility(CompanionBatAbility.TELEPORT)){
+		if (this.hasAbility(CompanionBatAbility.TELEPORT)) {
 			this.hasTeleport = true;
+		}
+		if (this.hasAbility(CompanionBatAbility.ADVENTURER_AURA)) {
+			this.hasAdventurerAura = true;
 		}
 	}
 
 	private boolean teleportTo(Entity entity) {
-		// TODO: Fix this
-		Vec3d vec3d = new Vec3d(this.getX() - entity.getX(), this.getBodyY(0.5D) - entity.getEyeY(), this.getZ() - entity.getZ());
-		vec3d = vec3d.normalize();
-		double e = this.getX() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3d.x * 16.0D;
-		double f = this.getY() + (double)(this.random.nextInt(16) - 8) - vec3d.y * 16.0D;
-		double g = this.getZ() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3d.z * 16.0D;
-		return this.teleportTo(e, f, g);
+		Direction looking = entity.getHorizontalFacing().getOpposite();
+		return this.teleportTo(entity.getX() + looking.getOffsetX() * 0.5, entity.getEyeY(), entity.getZ() + looking.getOffsetZ() * 0.5);
 	}
 
 	private boolean teleportTo(double x, double y, double z) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
 
-		while(mutable.getY() > this.world.getSectionCount() && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
-		   mutable.move(Direction.DOWN);
+		while (mutable.getY() > this.world.getSectionCount() && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
+			mutable.move(Direction.DOWN);
 		}
 
 		BlockState blockState = this.world.getBlockState(mutable);
 		boolean bl = blockState.getMaterial().blocksMovement();
 		if (bl) {
-		   	boolean bl3 = this.teleport(x, y, z, true);
+			boolean bl3 = this.teleport(x, y, z, true);
 			if (bl3 && !this.isSilent()) {
-				this.world.playSound((PlayerEntity)null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 0.3F, this.getSoundPitch() + 1.0F);
+				this.world.playSound((PlayerEntity) null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 0.3F, this.getSoundPitch() + 1.0F);
 			}
 			return bl3;
 		} else {
-		   return false;
+			return false;
 		}
 	}
 
-    private void tryLevelUp(){
-        if (CompanionBatLevels.LEVELS.length > this.level + 1 && CompanionBatLevels.LEVELS[this.level + 1].totalExpNeeded <= this.exp) {
-            this.level++;
-            this.setLevelAttributes(this.level);
-            this.heal(this.getMaxHealth());
-            this.notifyLevelUp(this.level);
-        }
+	private void tryLevelUp() {
+		if (CompanionBatLevels.LEVELS.length > this.level + 1
+				&& CompanionBatLevels.LEVELS[this.level + 1].totalExpNeeded <= this.exp) {
+			this.level++;
+			this.setLevelAttributes(this.level);
+			this.heal(this.getMaxHealth());
+			this.notifyLevelUp(this.level);
+		}
 	}
 
-	private void tryClassLevelUp(){
+	private void tryClassLevelUp() {
 		CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
-        if (classLevels.length > this.level + 1 && classLevels[this.level + 1].totalExpNeeded <= this.exp) {
-            this.level++;
+		if (classLevels.length > this.classLevel + 1 && classLevels[this.classLevel + 1].totalExpNeeded <= this.classExp) {
+			this.classLevel++;
 			this.setCurrentClassLevelAbilities();
 			this.setAbilitiesEffects(false);
-            this.notifyClassLevelUp(this.classLevel);
-        }
+			this.notifyClassLevelUp(this.classLevel);
+		}
 	}
 
-	private void setLevel(int exp){
-        this.exp = exp;
-        this.level =  CompanionBatLevels.getLevelByExp((int)this.exp);
+	private void setLevel(int exp) {
+		this.exp = exp;
+		this.level = CompanionBatLevels.getLevelByExp((int) this.exp);
 	}
 
-    protected void setLevelAttributes(int level){
-        this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(getLevelHealth(level));
-        this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(getLevelAttack(level));
-        this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(getLevelSpeed(level));
-    }
-
-    protected void notifyLevelUp(int level){
-        if (level > 0){
-            MutableText message = new TranslatableText("entity.companion_bats.bat.level_up", this.hasCustomName() ? this.getCustomName() : new TranslatableText("entity.companion_bats.bat.your_bat"), level+1).append("\n");
-            if (CompanionBatLevels.LEVELS[level].healthBonus > CompanionBatLevels.LEVELS[level-1].healthBonus){
-                message.append(new TranslatableText("entity.companion_bats.bat.level_up_health", (int)(CompanionBatLevels.LEVELS[level].healthBonus - CompanionBatLevels.LEVELS[level-1].healthBonus))).append(" ");
-            }
-            if (CompanionBatLevels.LEVELS[level].attackBonus > CompanionBatLevels.LEVELS[level-1].attackBonus){
-                message.append(new TranslatableText("entity.companion_bats.bat.level_up_attack", (int)(CompanionBatLevels.LEVELS[level].attackBonus - CompanionBatLevels.LEVELS[level-1].attackBonus))).append(" ");
-            }
-            if (CompanionBatLevels.LEVELS[level].speedBonus > CompanionBatLevels.LEVELS[level-1].speedBonus){
-                message.append(new TranslatableText("entity.companion_bats.bat.level_up_speed", Math.round(100 - (CompanionBatLevels.LEVELS[level-1].speedBonus / CompanionBatLevels.LEVELS[level].speedBonus * 100)))).append(" ");
-            }
-            ((PlayerEntity)this.getOwner()).sendMessage(message, false);
-        }
+	protected void setLevelAttributes(int level) {
+		this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(getLevelHealth(level));
+		this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(getLevelAttack(level));
+		this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(getLevelSpeed(level));
 	}
 
-    protected void notifyClassLevelUp(int classLevel){
-		MutableText message = new TranslatableText("entity.companion_bats.bat.class_level_up", this.hasCustomName() ? this.getCustomName() : new TranslatableText("entity.companion_bats.bat.your_bat"), this.currentClass.toString(), classLevel+1).append("\n");
-		((PlayerEntity)this.getOwner()).sendMessage(message, false);
+	protected void notifyLevelUp(int level) {
+		if (level > 0) {
+			MutableText message = new TranslatableText("entity.companion_bats.bat.level_up", this.hasCustomName() ? this.getCustomName() : new TranslatableText("entity.companion_bats.bat.your_bat"), level + 1).append("\n");
+			if (CompanionBatLevels.LEVELS[level].healthBonus > CompanionBatLevels.LEVELS[level - 1].healthBonus) {
+				message.append(new TranslatableText("entity.companion_bats.bat.level_up_health", (int) (CompanionBatLevels.LEVELS[level].healthBonus - CompanionBatLevels.LEVELS[level - 1].healthBonus))).append(" ");
+			}
+			if (CompanionBatLevels.LEVELS[level].attackBonus > CompanionBatLevels.LEVELS[level - 1].attackBonus) {
+				message.append(new TranslatableText("entity.companion_bats.bat.level_up_attack", (int) (CompanionBatLevels.LEVELS[level].attackBonus - CompanionBatLevels.LEVELS[level - 1].attackBonus))).append(" ");
+			}
+			if (CompanionBatLevels.LEVELS[level].speedBonus > CompanionBatLevels.LEVELS[level - 1].speedBonus) {
+				message.append(new TranslatableText("entity.companion_bats.bat.level_up_speed", Math.round(100 - (CompanionBatLevels.LEVELS[level - 1].speedBonus / CompanionBatLevels.LEVELS[level].speedBonus * 100)))).append(" ");
+			}
+			((PlayerEntity) this.getOwner()).sendMessage(message, false);
+		}
 	}
 
-	private void writeExpToTag(CompoundTag entityData){
+	protected void notifyClassLevelUp(int classLevel) {
+		MutableText message = new TranslatableText("entity.companion_bats.bat.class_level_up", this.hasCustomName() ? this.getCustomName() : new TranslatableText("entity.companion_bats.bat.your_bat"), this.currentClass.toString(), classLevel + 1);
+		((PlayerEntity) this.getOwner()).sendMessage(message, false);
+	}
+
+	private void writeExpToTag(CompoundTag entityData) {
 		entityData.putInt("exp", this.getExp());
-		for (Map.Entry<CompanionBatClass,Integer> entry : this.classesExp.entrySet()){
-			if (entry.getValue() > 0){
+		for (Map.Entry<CompanionBatClass, Integer> entry : this.classesExp.entrySet()) {
+			if (entry.getValue() > 0) {
 				entityData.putInt(entry.getKey().getExpTagName(), entry.getValue());
 			}
 		}
-		if (this.currentClass != null){
+		if (this.currentClass != null) {
 			entityData.putInt(this.currentClass.getExpTagName(), this.getClassExp());
 		}
 	}
 
-    protected ItemStack toItem(){
+	protected ItemStack toItem() {
 		ItemStack batItemStack = new ItemStack(CompanionBats.BAT_ITEM);
-		if (this.hasCustomName()){
+		if (this.hasCustomName()) {
 			batItemStack.setCustomName(this.getCustomName());
 		}
-        // Set companion bat item durability realtive to the bat health
-        float percentage = 1 - (this.getHealth() / this.getMaxHealth());
-        batItemStack.setDamage(Math.round(percentage * batItemStack.getMaxDamage()));
-        CompoundTag entityData = CompanionBatItem.createEntityData(batItemStack);
-        entityData.putFloat("health", this.getHealth());
+		// Set companion bat item durability realtive to the bat health
+		float percentage = 1 - (this.getHealth() / this.getMaxHealth());
+		batItemStack.setDamage(Math.round(percentage * batItemStack.getMaxDamage()));
+		CompoundTag entityData = CompanionBatItem.createEntityData(batItemStack);
+		entityData.putFloat("health", this.getHealth());
 		this.writeExpToTag(entityData);
-        entityData.put("armor", this.getArmorType().toTag(new CompoundTag()));
-        entityData.put("bundle", this.getBundle().toTag(new CompoundTag()));
-        return batItemStack;
+		entityData.put("armor", this.getArmorType().toTag(new CompoundTag()));
+		entityData.put("bundle", this.getBundle().toTag(new CompoundTag()));
+		return batItemStack;
 	}
 
-    public void fromItem(PlayerEntity owner, CompoundTag entityData){
-        this.setOwner(owner);
+	public void fromItem(PlayerEntity owner, CompoundTag entityData) {
+		this.setOwner(owner);
 		this.setLevel(entityData.getInt("exp"));
 		this.setLevelAttributes(this.level);
-        this.equipArmor(ItemStack.fromTag(entityData.getCompound("armor")));
-        this.equipBundle(ItemStack.fromTag(entityData.getCompound("bundle")));
+		this.equipArmor(ItemStack.fromTag(entityData.getCompound("armor")));
+		this.equipBundle(ItemStack.fromTag(entityData.getCompound("bundle")));
 		this.setHealth(entityData.getFloat("health"));
 		this.setBatClass();
 		this.setClasses(entityData);
@@ -806,60 +850,89 @@ public class CompanionBatEntity extends TameableEntity {
 	private void equipArmor(ItemStack stack) {
 		this.equipStack(EquipmentSlot.CHEST, stack);
 		this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0F);
-        if (!this.world.isClient) {
+		if (!this.world.isClient) {
 			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(BAT_EQUIPMENT_ARMOR_BONUS_ID);
 			if (stack.getItem() instanceof CompanionBatArmorItem) {
-				CompanionBatArmorItem armor = (CompanionBatArmorItem)stack.getItem();
+				CompanionBatArmorItem armor = (CompanionBatArmorItem) stack.getItem();
 				this.currentClass = armor.getBatClass();
 				int armorToAdd = armor.getProtectionAmount();
 				if (armorToAdd != 0) {
-					this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addTemporaryModifier(new EntityAttributeModifier(BAT_EQUIPMENT_ARMOR_BONUS_ID, "Equipment armor bonus", (double)armorToAdd, EntityAttributeModifier.Operation.ADDITION));
+					this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addTemporaryModifier(new EntityAttributeModifier(BAT_EQUIPMENT_ARMOR_BONUS_ID, "Equipment armor bonus", (double) armorToAdd, EntityAttributeModifier.Operation.ADDITION));
 				}
 			}
-        }
+		}
 	}
 
 	private void equipBundle(ItemStack stack) {
-        this.equipStack(EquipmentSlot.FEET, stack);
-        this.setEquipmentDropChance(EquipmentSlot.FEET, 0.0F);
-    }
-
-    public ItemStack getArmorType() {
-        return this.getEquippedStack(EquipmentSlot.CHEST);
+		this.equipStack(EquipmentSlot.FEET, stack);
+		this.setEquipmentDropChance(EquipmentSlot.FEET, 0.0F);
 	}
 
-	public ItemStack getBundle(){
-        return this.getEquippedStack(EquipmentSlot.FEET);
-    }
+	public ItemStack getArmorType() {
+		return this.getEquippedStack(EquipmentSlot.CHEST);
+	}
+
+	public ItemStack getBundle() {
+		return this.getEquippedStack(EquipmentSlot.FEET);
+	}
 
 	public boolean hasAbility(CompanionBatAbility ability) {
 		Integer abilityLevel = this.abilityLevels.get(ability);
 		return abilityLevel != null && abilityLevel > 0;
 	}
 
-	public int getAbilityValue(CompanionBatAbility ability){
-		return ability.getValue(this.abilityLevels.get(ability));
+	public int getAbilityValue(CompanionBatAbility ability) {
+		Integer level = this.abilityLevels.get(ability);
+		if (level != null) {
+			switch (ability) {
+				case BLOCK_ATTACK: {
+					return level * BLOCK_ATTACK_MULTIPLIER;
+				}
+				case BURN: {
+					return level * BURN_MULTIPLIER;
+				}
+				case INCREASED_ARMOR: {
+					return level * INCREASED_ARMOR_MULTIPLIER;
+				}
+				case INCREASED_ATTACK: {
+					return level * INCREASED_ATTACK_MULTIPLIER;
+				}
+				case INCREASED_SPEED: {
+					return level * INCREASED_SPEED_MULTIPLIER;
+				}
+				case LIFESTEAL: {
+					return level * LIFESTEAL_MULTIPLIER;
+				}
+				case TELEPORT: {
+					return level * TELEPORT_MULTIPLIER;
+				}
+				default: {
+					return level;
+				}
+			}
+		}
+		return 0;
 	}
 
 	public static int getClassLevelByTag(CompoundTag entityData, CompanionBatClass batClass) {
 		int exp = entityData.getInt(batClass.getExpTagName());
 		CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(batClass);
-		for (int i=classLevels.length-1; i>=0; i--) {
-            if (classLevels[i].totalExpNeeded <= exp){
-                return i;
-            }
+		for (int i = classLevels.length - 1; i >= 0; i--) {
+			if (classLevels[i].totalExpNeeded <= exp) {
+				return i;
+			}
 		}
-        return classLevels.length-1;
+		return classLevels.length - 1;
 	}
 
-	public static void setDefaultEntityData(CompoundTag tag){
-        tag.putFloat("health", BASE_HEALTH);
-        tag.putInt("exp", 0);
-    }
+	public static void setDefaultEntityData(CompoundTag tag) {
+		tag.putFloat("health", BASE_HEALTH);
+		tag.putInt("exp", 0);
+	}
 
-    static {
-        BAT_FLAGS = DataTracker.registerData(CompanionBatEntity.class, TrackedDataHandlerRegistry.BYTE);
-        IS_FOOD_ITEM = (itemStack) -> itemStack.isOf(Items.PUMPKIN_PIE);
-        IS_FOOD_ITEM_ENTITY = (itemEntity) -> IS_FOOD_ITEM.test(itemEntity.getStack());
-    }
+	static {
+		BAT_FLAGS = DataTracker.registerData(CompanionBatEntity.class, TrackedDataHandlerRegistry.BYTE);
+		IS_FOOD_ITEM = (itemStack) -> itemStack.isOf(Items.PUMPKIN_PIE);
+		IS_FOOD_ITEM_ENTITY = (itemEntity) -> IS_FOOD_ITEM.test(itemEntity.getStack());
+	}
 }

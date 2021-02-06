@@ -1,6 +1,5 @@
 package dev.fulmineo.companion_bats.mixin;
 
-import org.apache.logging.log4j.Level;
 import org.spongepowered.asm.mixin.Mixin;
 
 import dev.fulmineo.companion_bats.CompanionBats;
@@ -29,10 +28,8 @@ public abstract class BatEntityMixin extends AmbientEntity {
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
         if (this.world.isClient){
-            CompanionBats.log(Level.INFO, "interact (client)");
-            return itemStack.isOf(Items.PUMPKIN_PIE) /*&& !this.isTamed()*/ ? ActionResult.CONSUME : ActionResult.PASS;
+            return itemStack.isOf(Items.PUMPKIN_PIE) ? ActionResult.CONSUME : ActionResult.PASS;
         } else {
-            CompanionBats.log(Level.INFO, "interact (server)");
             if (itemStack.isOf(Items.PUMPKIN_PIE)) {
                 if (!player.getAbilities().creativeMode) {
                     itemStack.decrement(1);

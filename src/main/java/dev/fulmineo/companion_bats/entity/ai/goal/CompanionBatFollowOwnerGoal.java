@@ -28,7 +28,7 @@ public class CompanionBatFollowOwnerGoal extends Goal {
 
     public boolean canStart() {
         LivingEntity livingEntity = this.entity.getOwner();
-        if (livingEntity == null || livingEntity.isSpectator() || !this.isWithinDistanceToStart(livingEntity)) {
+        if (livingEntity == null || livingEntity.isSpectator() || this.entity.isDigging() || !this.isWithinDistanceToStart(livingEntity)) {
             return false;
         } else {
            this.owner = livingEntity;
@@ -38,9 +38,10 @@ public class CompanionBatFollowOwnerGoal extends Goal {
 
     public boolean shouldContinue() {
         if (this.navigation.isIdle()) {
-           return false;
+           	return false;
         } else {
-           return this.entity.squaredDistanceTo(this.owner) > (double)(this.maxDistanceSquared);
+			double distance = this.entity.squaredDistanceTo(this.owner);
+           	return distance > 7 && distance < (double)(this.maxDistanceSquared);
         }
     }
 
@@ -62,7 +63,7 @@ public class CompanionBatFollowOwnerGoal extends Goal {
             this.updateCountdownTicks = 10;
             if (!this.entity.isLeashed() && !this.entity.hasVehicle()) {
                 double distance = this.entity.squaredDistanceTo(this.owner);
-                if (distance >= this.maxDistanceSquared + (this.maxDistanceSquared * 15 / 100)){
+                if (distance >= this.maxDistanceSquared * 1.15){
                     this.tryTeleport();
                 } else {
                     this.navigation.startMovingTo(this.owner, distance > (this.maxDistanceSquared * 10 / 100) ? this.speed : this.speed * 0.75);
@@ -77,7 +78,7 @@ public class CompanionBatFollowOwnerGoal extends Goal {
 
     private boolean isWithinDistanceToStart(LivingEntity owner){
         if (this.entity.isRoosting() || this.entity.isAboutToRoost() || this.entity.isFleeing()){
-            return this.entity.squaredDistanceTo(owner) > this.maxDistanceSquared * 0.8D;
+            return this.entity.squaredDistanceTo(owner) > this.maxDistanceSquared * 0.7D;
         } else {
             return this.entity.squaredDistanceTo(owner) > this.minDistanceSquared;
         }

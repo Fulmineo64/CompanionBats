@@ -8,10 +8,9 @@ import net.minecraft.util.Identifier;
 
 public class CompanionBatArmorItem extends Item {
 	private CompanionBatClass batClass;
-	private int protectionAmount;
 
 	private String entityTexture;
-    public CompanionBatArmorItem(String identifier, int protectionAmount, CompanionBatClass batClass, Item.Settings settings) {
+    public CompanionBatArmorItem(String identifier, CompanionBatClass batClass, Item.Settings settings) {
 		super(settings);
 		this.batClass = batClass;
 		this.entityTexture = "textures/entity/bat/armor/" + identifier + ".png";
@@ -27,6 +26,6 @@ public class CompanionBatArmorItem extends Item {
 	}
 
 	public int getProtectionAmount(){
-		return this.protectionAmount;
+		return 10;
 	}
 }

@@ -3,7 +3,7 @@
 	"pattern": [
 		"lbl",
 		"LCL",
-		"sws"
+		"pwp"
 	],
 	"key": {
 		"l": {
@@ -18,8 +18,8 @@
 		"C": {
 			"item": "companion_bats:spirit_crystal"
 		},
-		"s": {
-			"item": "minecraft:sugar"
+		"p": {
+			"item": "minecraft:phantom_membrane"
 		},
 		"w": {
 			"item": "minecraft:white_wool"

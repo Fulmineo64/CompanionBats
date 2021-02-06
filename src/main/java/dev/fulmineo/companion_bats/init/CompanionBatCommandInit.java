@@ -22,7 +22,8 @@ public class CompanionBatCommandInit {
 	public static void init(){
 		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
             dispatcher.register(
-				CommandManager.literal("bat_exp")
+				CommandManager.literal("batexp")
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(CommandManager.argument("exp", IntegerArgumentType.integer(1))
 					.executes(context -> {
 						ServerCommandSource source = context.getSource();
@@ -47,7 +48,8 @@ public class CompanionBatCommandInit {
 			);
 
 			dispatcher.register(
-				CommandManager.literal("bat_class_exp")
+				CommandManager.literal("batclassexp")
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(CommandManager.argument("exp", IntegerArgumentType.integer(1))
 					.executes(context -> {
 						ServerCommandSource source = context.getSource();

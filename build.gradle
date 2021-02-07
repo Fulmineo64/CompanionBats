@@ -100,8 +100,12 @@ curseforge {
 			requiredLibrary 'fabric-api'
 		}
 
-		mainArtifact(jar) {
-			displayName = "Companion bats $project.version"
+		mainArtifact(file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar")) {
+			displayName = "Companion bats $version"
+		}
+
+		afterEvaluate {
+			uploadTask.dependsOn("remapJar")
 		}
 	}
 }

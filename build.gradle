@@ -114,7 +114,7 @@ curseforge {
 		}
 
 		mainArtifact(file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar")) {
-			displayName = "Companion bats $version"
+			displayName = "[$project.minecraft_version] Companion bats $version"
 		}
 
 		afterEvaluate {

@@ -13,6 +13,6 @@ public class CompanionBatsClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ScreenRegistry.register(CompanionBats.BAT_SCREEN_HANDLER, CompanionBatScreen::new);
-        EntityRendererRegistry.INSTANCE.register(CompanionBats.COMPANION_BAT, (dispatcher) -> new CompanionBatEntityRenderer(dispatcher));
+        EntityRendererRegistry.INSTANCE.register(CompanionBats.COMPANION_BAT, (dispatcher, factory) -> new CompanionBatEntityRenderer(dispatcher));
     }
 }

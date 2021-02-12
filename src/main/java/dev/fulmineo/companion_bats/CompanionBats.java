@@ -27,6 +27,7 @@ import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.item.CompanionBatClass;
 import dev.fulmineo.companion_bats.item.CompanionBatFluteItem;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
+import dev.fulmineo.companion_bats.item.CompanionBatPouchItem;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
 
 public class CompanionBats implements ModInitializer {
@@ -55,6 +56,8 @@ public class CompanionBats implements ModInitializer {
 
     public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage((int)CompanionBatEntity.getMaxLevelHealth()).group(GROUP));
 	public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
+	public static final Item BAT_POUCH_ITEM = new CompanionBatPouchItem(new FabricItemSettings().maxCount(1).group(GROUP));
+
     public static final Item SPIRIT_SHARD = new Item(new FabricItemSettings().group(GROUP));
     public static final Item SPIRIT_CRYSTAL = new Item(new FabricItemSettings().group(GROUP));
 
@@ -71,6 +74,8 @@ public class CompanionBats implements ModInitializer {
         FabricDefaultAttributeRegistry.register(COMPANION_BAT, CompanionBatEntity.createMobAttributes());
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_item"), 		BAT_ITEM);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_flute"), 	 	BAT_FLUTE_ITEM);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_pouch"), 	 	BAT_POUCH_ITEM);
+
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_shard"), 	SPIRIT_SHARD);
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_crystal"),  SPIRIT_CRYSTAL);
 

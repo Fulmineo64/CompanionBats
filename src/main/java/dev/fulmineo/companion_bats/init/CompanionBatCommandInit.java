@@ -29,7 +29,7 @@ public class CompanionBatCommandInit {
 						ServerCommandSource source = context.getSource();
 						if (source != null) {
 							ServerPlayerEntity player = source.getPlayer();
-							if (player != null && player.getStackInHand(Hand.MAIN_HAND).isOf(CompanionBats.BAT_ITEM)) {
+							if (player != null && player.getStackInHand(Hand.MAIN_HAND).getItem() == CompanionBats.BAT_ITEM) {
 								ItemStack stack = player.getStackInHand(Hand.MAIN_HAND);
 								CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(stack);
 								int exp = IntegerArgumentType.getInteger(context, "exp");
@@ -55,7 +55,7 @@ public class CompanionBatCommandInit {
 						ServerCommandSource source = context.getSource();
 						if (source != null) {
 							ServerPlayerEntity player = source.getPlayer();
-							if (player != null && player.getStackInHand(Hand.MAIN_HAND).isOf(CompanionBats.BAT_ITEM)) {
+							if (player != null && player.getStackInHand(Hand.MAIN_HAND).getItem() == CompanionBats.BAT_ITEM) {
 								ItemStack stack = player.getStackInHand(Hand.MAIN_HAND);
 								CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(stack);
 								ItemStack armorStack = ItemStack.fromTag(entityData.getCompound("armor"));

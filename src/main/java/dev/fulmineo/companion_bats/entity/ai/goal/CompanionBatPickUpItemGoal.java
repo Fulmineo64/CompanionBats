@@ -5,16 +5,14 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
+import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
-import dev.fulmineo.companion_bats.item.CompanionBatBundleItem;
+import dev.fulmineo.companion_bats.item.CompanionBatPouchItem;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
-import net.minecraft.item.BundleItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 
@@ -75,8 +73,9 @@ public class CompanionBatPickUpItemGoal extends Goal {
         if (!this.entity.isLeashed() && !this.entity.hasVehicle() && this.targetItem != null) {
             if (this.entity.squaredDistanceTo(this.targetItem) < 2F) {
                 ItemStack targetStack = this.targetItem.getStack();
-                int added = ((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsAddToBundle(this.bundleStack, targetStack);
-                targetStack.decrement(added);
+                if (CompanionBatPouchItem.addItem(this.bundleStack, targetStack)){
+					this.targetItem.remove();
+				}
                 this.entity.world.playSound(null, this.entity.getBlockPos(), SoundEvents.BLOCK_WOOL_PLACE, SoundCategory.AMBIENT, 0.3F, 1F);
 				this.removeItemFromList(this.targetItem);
                 this.targetNextItem();
@@ -107,11 +106,11 @@ public class CompanionBatPickUpItemGoal extends Goal {
     }
 
     private boolean isBundleAvailable(){
-        return this.bundleStack != null && this.bundleStack.isOf(Items.BUNDLE) && BundleItem.getAmountFilled(this.bundleStack) != 1;
+        return this.bundleStack != null && this.bundleStack.getItem() == CompanionBats.BAT_POUCH_ITEM && CompanionBatPouchItem.isEmpty(this.bundleStack);
     }
 
     private boolean canItemFitInBundle(ItemStack itemStack) {
-        return BundleItem.getAmountFilled(this.bundleStack) + (((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsGetItemOccupancy(itemStack) / 64 * itemStack.getCount()) <= 1;
+        return CompanionBatPouchItem.isEmpty(itemStack);
     }
 
     class ProximityComparator implements Comparator<ItemEntity> {

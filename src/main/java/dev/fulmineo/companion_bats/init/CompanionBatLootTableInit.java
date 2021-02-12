@@ -3,7 +3,7 @@ package dev.fulmineo.companion_bats.init;
 import dev.fulmineo.companion_bats.CompanionBats;
 import net.fabricmc.fabric.api.loot.v1.FabricLootPoolBuilder;
 import net.fabricmc.fabric.api.loot.v1.event.LootTableLoadingCallback;
-import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
+import net.minecraft.loot.ConstantLootTableRange;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.util.Identifier;
 
@@ -19,25 +19,25 @@ public class CompanionBatLootTableInit {
 	public static void init(){
 		LootTableLoadingCallback.EVENT.register((resourceManager, lootManager, id, supplier, setter) -> {
 			if (INFERNO_LOOT_TABLE_ID.equals(id)) {
-				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootNumberProvider.create(1)).with(ItemEntry.builder(CompanionBats.INFERNO_SUIT));
+				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(CompanionBats.INFERNO_SUIT));
 				supplier.pool(poolBuilder);
 			} else if (VAMPIRE_LOOT_TABLE_ID.equals(id)) {
-				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootNumberProvider.create(1)).with(ItemEntry.builder(CompanionBats.VAMPIRIC_ATTIRE));
+				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(CompanionBats.VAMPIRIC_ATTIRE));
 				supplier.pool(poolBuilder);
 			} else if (LOOTER_LOOT_TABLE_ID.equals(id)) {
-				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootNumberProvider.create(1)).with(ItemEntry.builder(CompanionBats.LOOTER_JACKET));
+				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(CompanionBats.LOOTER_JACKET));
 				supplier.pool(poolBuilder);
 			} else if (KNIGHT_LOOT_TABLE_ID.equals(id)) {
-				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootNumberProvider.create(1)).with(ItemEntry.builder(CompanionBats.KNIGHT_PLATE));
+				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(CompanionBats.KNIGHT_PLATE));
 				supplier.pool(poolBuilder);
 			} else if (ALCHEMIST_LOOT_TABLE_ID.equals(id)) {
-				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootNumberProvider.create(1)).with(ItemEntry.builder(CompanionBats.ALCHEMIST_ROBE));
+				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(CompanionBats.ALCHEMIST_ROBE));
 				supplier.pool(poolBuilder);
 			} else if (DUELIST_LOOT_TABLE_ID.equals(id)) {
-				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootNumberProvider.create(1)).with(ItemEntry.builder(CompanionBats.DUELIST_COSTUME));
+				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(CompanionBats.DUELIST_COSTUME));
 				supplier.pool(poolBuilder);
 			} else if (NINJA_LOOT_TABLE_ID.equals(id)) {
-				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootNumberProvider.create(1)).with(ItemEntry.builder(CompanionBats.NINJA_GARB));
+				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(CompanionBats.NINJA_GARB));
 				supplier.pool(poolBuilder);
 			}
 		});

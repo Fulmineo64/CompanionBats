@@ -2,13 +2,13 @@ package dev.fulmineo.companion_bats.entity.ai.goal;
 
 import java.util.Random;
 
+import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
+import dev.fulmineo.companion_bats.item.CompanionBatPouchItem;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
-import net.minecraft.item.BundleItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -109,6 +109,6 @@ public class CompanionBatRoostGoal extends Goal {
 
 	private boolean isBundleEmpty(){
 		ItemStack bundleStack = this.entity.getBundle();
-		return !bundleStack.isOf(Items.BUNDLE) || BundleItem.getAmountFilled(bundleStack) == 0;
+		return bundleStack.getItem() != CompanionBats.BAT_POUCH_ITEM || CompanionBatPouchItem.isEmpty(bundleStack);
 	}
 }

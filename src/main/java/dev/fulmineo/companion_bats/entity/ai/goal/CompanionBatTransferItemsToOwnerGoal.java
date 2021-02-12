@@ -1,18 +1,13 @@
 package dev.fulmineo.companion_bats.entity.ai.goal;
 
-import java.util.Optional;
-
+import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
-import dev.fulmineo.companion_bats.item.CompanionBatBundleItem;
+import dev.fulmineo.companion_bats.item.CompanionBatPouchItem;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BundleItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 
@@ -36,7 +31,7 @@ public class CompanionBatTransferItemsToOwnerGoal extends Goal {
             this.canStartCountdownTicks = 10;
             if (this.entity.isRoosting() || this.entity.isAboutToRoost()) return false;
             this.bundleStack = this.entity.getBundle();
-            if (!this.bundleStack.isOf(Items.BUNDLE)) return false;
+            if (this.bundleStack.getItem() != CompanionBats.BAT_POUCH_ITEM) return false;
             LivingEntity livingEntity = this.entity.getOwner();
             if (livingEntity == null) {
                 return false;
@@ -48,8 +43,7 @@ public class CompanionBatTransferItemsToOwnerGoal extends Goal {
                 this.owner = (PlayerEntity)livingEntity;
                 CompoundTag tag = this.bundleStack.getTag();
                 if (tag == null) return false;
-				ListTag listTag = tag.getList("Items", 10);
-				this.canContinue = listTag.size() > 0;
+				this.canContinue = tag.contains("item");
                 return this.canContinue;
             }
         }
@@ -64,13 +58,12 @@ public class CompanionBatTransferItemsToOwnerGoal extends Goal {
         if (--this.updateCountdownTicks <= 0) {
             this.updateCountdownTicks = 5;
 			this.canContinue = false;
-            Optional<ItemStack> firstStack = ((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsGetFirstStack(this.bundleStack);
-			if (firstStack.isPresent()){
-                if (owner.getInventory().insertStack(firstStack.get())){
+            ItemStack firstStack = CompanionBatPouchItem.getItem(this.bundleStack);
+			if (firstStack != null){
+                if (owner.inventory.insertStack(firstStack)){
 					this.entity.world.playSound(null, this.entity.getBlockPos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.AMBIENT, 0.3F, 2F);
-					this.canContinue = true;
                 } else {
-					((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsAddToBundle(this.bundleStack, firstStack.get());
+					CompanionBatPouchItem.addItem(this.bundleStack, firstStack);
                 }
             }
         }

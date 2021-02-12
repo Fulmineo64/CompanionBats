@@ -7,17 +7,15 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.EntityModelLoader;
-import net.minecraft.client.util.math.Dilation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 
 public class CompanionBatArmorFeatureRenderer extends FeatureRenderer<CompanionBatEntity, CompanionBatEntityModel> {
     private final CompanionBatEntityModel model;
 
-    public CompanionBatArmorFeatureRenderer(FeatureRendererContext<CompanionBatEntity, CompanionBatEntityModel> featureRendererContext, EntityModelLoader entityModelLoader) {
+    public CompanionBatArmorFeatureRenderer(FeatureRendererContext<CompanionBatEntity, CompanionBatEntityModel> featureRendererContext) {
        super(featureRendererContext);
-       this.model = new CompanionBatEntityModel(CompanionBatEntityModel.getTexturedModelData(new Dilation(0.1F)).createModel());
+       this.model = new CompanionBatEntityModel();
     }
 
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CompanionBatEntity entity, float f, float g, float h, float j, float k, float l) {

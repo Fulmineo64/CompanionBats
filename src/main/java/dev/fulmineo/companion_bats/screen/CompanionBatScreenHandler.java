@@ -10,7 +10,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
@@ -42,7 +41,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
                 super.setStack(stack);
                 PlayerEntity player = playerInventory.player;
 				ItemStack batItemStack = player.getStackInHand(hand);
-				if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
+				if (batItemStack.getItem() == CompanionBats.BAT_ITEM){
 					CompoundTag tag = batItemStack.getTag();
 					CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
 					entityData.put("armor", stack.toTag(new CompoundTag()));
@@ -58,7 +57,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 
         this.addSlot(new Slot(inventory, 1, 8, 36) {
             public boolean canInsert(ItemStack stack) {
-                return stack.isOf(Items.BUNDLE);
+                return stack.getItem() == CompanionBats.BAT_POUCH_ITEM;
             }
 
             @Override
@@ -67,7 +66,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
                 PlayerEntity player = playerInventory.player;
                 if (player.world instanceof ServerWorld){
                     ItemStack batItemStack = player.getStackInHand(hand);
-                    if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
+                    if (batItemStack.getItem() == CompanionBats.BAT_ITEM){
                         CompoundTag tag = batItemStack.getTag();
                         CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
                         entityData.put("bundle", stack.toTag(new CompoundTag()));

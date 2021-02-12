@@ -471,14 +471,14 @@ public class CompanionBatEntity extends TameableEntity {
 		} else {
 			boolean res = this.healWithItem(itemStack);
 			if (res) {
-				if (!player.getAbilities().creativeMode) {
+				if (!player.abilities.creativeMode) {
 					itemStack.decrement(1);
 				}
 				return ActionResult.SUCCESS;
-			} else if (itemStack.isOf(Items.PUMPKIN_PIE) && player == this.getOwner()){
+			} else if (itemStack.getItem() == Items.PUMPKIN_PIE && player == this.getOwner()){
 				ItemStack fluteStack = this.getFluteItemStack();
 				if (fluteStack == null){
-					this.discard();
+					this.remove();
 					player.giveItemStack(this.toItem());
 					return ActionResult.SUCCESS;
 				}
@@ -499,7 +499,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public static float getItemHealAmount(ItemStack stack) {
-		if (stack.isOf(Items.PUMPKIN_PIE)) {
+		if (stack.getItem() == Items.PUMPKIN_PIE) {
 			return 6.0F;
 		}
 		return 0;
@@ -536,14 +536,14 @@ public class CompanionBatEntity extends TameableEntity {
 	public boolean returnToPlayerInventory() {
 		ServerPlayerEntity player = (ServerPlayerEntity) this.getOwner();
 		if (player != null) {
-			PlayerInventory inventory = player.getInventory();
+			PlayerInventory inventory = player.inventory;
 			ImmutableList<DefaultedList<ItemStack>> mainAndOffhand = ImmutableList.of(inventory.main, inventory.offHand);
 			Iterator<DefaultedList<ItemStack>> iterator = mainAndOffhand.iterator();
 			while (iterator.hasNext()) {
 				DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
 				for (int i = 0; i < defaultedList.size(); ++i) {
 					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getTag().getUuid("entityUuid").equals(this.getUuid())) {
-						this.discard();
+						this.remove();
 						defaultedList.set(i, this.toItem());
 						world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.AMBIENT, 1F, 1F);
 						return true;
@@ -557,7 +557,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private ItemStack getFluteItemStack(){
 		ServerPlayerEntity player = (ServerPlayerEntity) this.getOwner();
 		if (player != null) {
-			PlayerInventory inventory = player.getInventory();
+			PlayerInventory inventory = player.inventory;
 			ImmutableList<DefaultedList<ItemStack>> mainAndOffhand = ImmutableList.of(inventory.main, inventory.offHand);
 			Iterator<DefaultedList<ItemStack>> iterator = mainAndOffhand.iterator();
 			while (iterator.hasNext()) {
@@ -737,7 +737,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private boolean teleportTo(double x, double y, double z) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
 
-		while (mutable.getY() > this.world.getSectionCount() && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
+		while (mutable.getY() > 0 && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
 			mutable.move(Direction.DOWN);
 		}
 
@@ -932,7 +932,7 @@ public class CompanionBatEntity extends TameableEntity {
 
 	static {
 		BAT_FLAGS = DataTracker.registerData(CompanionBatEntity.class, TrackedDataHandlerRegistry.BYTE);
-		IS_FOOD_ITEM = (itemStack) -> itemStack.isOf(Items.PUMPKIN_PIE);
+		IS_FOOD_ITEM = (itemStack) -> itemStack.getItem() == Items.PUMPKIN_PIE;
 		IS_FOOD_ITEM_ENTITY = (itemEntity) -> IS_FOOD_ITEM.test(itemEntity.getStack());
 	}
 }

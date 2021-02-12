@@ -28,15 +28,15 @@ public abstract class BatEntityMixin extends AmbientEntity {
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
         if (this.world.isClient){
-            return itemStack.isOf(Items.PUMPKIN_PIE) ? ActionResult.CONSUME : ActionResult.PASS;
+            return itemStack.getItem() == Items.PUMPKIN_PIE ? ActionResult.CONSUME : ActionResult.PASS;
         } else {
-            if (itemStack.isOf(Items.PUMPKIN_PIE)) {
-                if (!player.getAbilities().creativeMode) {
+            if (itemStack.getItem() == Items.PUMPKIN_PIE) {
+                if (!player.abilities.creativeMode) {
                     itemStack.decrement(1);
                 }
 
                 if (this.random.nextInt(1) == 0) {
-                    this.discard();
+                    this.remove();
                     player.giveItemStack(new ItemStack(CompanionBats.BAT_ITEM));
                 } else {
                     this.world.sendEntityStatus(this, (byte)6);

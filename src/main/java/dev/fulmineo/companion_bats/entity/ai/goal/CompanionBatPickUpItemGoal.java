@@ -2,7 +2,6 @@ package dev.fulmineo.companion_bats.entity.ai.goal;
 
 import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.List;
 
 import dev.fulmineo.companion_bats.CompanionBats;
@@ -38,7 +37,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
     public boolean canStart() {
         if (--this.canStartCountdownTicks <= 0) {
             // Makes sure this check isn't spammed
-            this.canStartCountdownTicks = 10;
+            this.canStartCountdownTicks = 5;
             this.bundleStack = this.entity.getBundle();
             LivingEntity livingEntity = this.entity.getOwner();
             if (this.entity.isRoosting() || this.entity.isAboutToRoost()){
@@ -47,9 +46,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
                 return false;
             } else if (this.isBundleAvailable()) {
                 this.owner = livingEntity;
-                this.itemList = this.entity.world.getEntitiesByClass(ItemEntity.class, this.entity.getBoundingBox().expand(12.0D, 12.0D, 12.0D), (itemEntity) -> true);
-                this.itemList.sort(new ProximityComparator());
-                return this.itemList.size() > 0;
+                return true;
             }
         }
         return false;
@@ -60,11 +57,16 @@ public class CompanionBatPickUpItemGoal extends Goal {
     }
 
     public void start() {
-        this.targetNextItem();
+		this.itemList = this.entity.world.getEntitiesByClass(ItemEntity.class, this.entity.getBoundingBox().expand(12.0D, 12.0D, 12.0D), (itemEntity) -> true);
+		this.itemList.sort(new ProximityComparator());
+		if (this.itemList.size() > 0){
+			this.targetItem = this.itemList.get(0);
+		}
     }
 
     public void stop() {
-        this.itemList = null;
+		this.targetItem = null;
+		this.itemList = null;
         this.owner = null;
         this.navigation.stop();
     }
@@ -72,45 +74,27 @@ public class CompanionBatPickUpItemGoal extends Goal {
     public void tick() {
         if (!this.entity.isLeashed() && !this.entity.hasVehicle() && this.targetItem != null) {
             if (this.entity.squaredDistanceTo(this.targetItem) < 2F) {
+				// Anti dupe measure (NOT needed in 1.17!)
+				for (ItemEntity itemEntity: this.itemList){
+					if (this.entity.squaredDistanceTo(this.targetItem) < 3F){
+						itemEntity.resetPickupDelay();
+					}
+				}
+				// Pick up the item
                 ItemStack targetStack = this.targetItem.getStack();
                 if (CompanionBatPouchItem.addItem(this.bundleStack, targetStack)){
-					this.targetItem.remove();
+					this.targetItem.getStack().decrement(targetStack.getCount());
 				}
                 this.entity.world.playSound(null, this.entity.getBlockPos(), SoundEvents.BLOCK_WOOL_PLACE, SoundCategory.AMBIENT, 0.3F, 1F);
-				this.removeItemFromList(this.targetItem);
-                this.targetNextItem();
+                this.stop();
             } else {
                 this.navigation.startMovingTo(this.targetItem, this.speed);
             }
         }
     }
 
-    private void removeItemFromList(ItemEntity itemToRemove){
-        for (Iterator<ItemEntity> iter = this.itemList.listIterator(); iter.hasNext(); ) {
-            ItemEntity item = iter.next();
-            if (item.equals(itemToRemove)) {
-                iter.remove();
-                return;
-            }
-        }
-    }
-
-    private void targetNextItem(){
-        for (ItemEntity item : itemList){
-            if (this.canItemFitInBundle(item.getStack()) && item.squaredDistanceTo(owner) < (double)(this.maxDistance * this.maxDistance)){
-                this.targetItem = item;
-                return;
-            }
-        }
-        this.targetItem = null;
-    }
-
     private boolean isBundleAvailable(){
         return this.bundleStack != null && this.bundleStack.getItem() == CompanionBats.BAT_POUCH_ITEM && CompanionBatPouchItem.isEmpty(this.bundleStack);
-    }
-
-    private boolean canItemFitInBundle(ItemStack itemStack) {
-        return CompanionBatPouchItem.isEmpty(itemStack);
     }
 
     class ProximityComparator implements Comparator<ItemEntity> {

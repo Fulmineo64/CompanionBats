@@ -1,0 +1,22 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"srs",
+		"rpr",
+		"rrr"
+	],
+	"key": {
+		"s": {
+			"item": "minecraft:string"
+		},
+		"r": {
+			"item": "minecraft:rabbit_hide"
+		},
+		"p": {
+			"item": "minecraft:pumpkin_pie"
+		}
+	},
+	"result": {
+		"item": "companion_bats:bat_pouch"
+	}
+}

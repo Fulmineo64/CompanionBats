@@ -7,6 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -59,11 +60,9 @@ public class CompanionBatTransferItemsToOwnerGoal extends Goal {
             this.updateCountdownTicks = 5;
 			this.canContinue = false;
             ItemStack firstStack = CompanionBatPouchItem.getItem(this.bundleStack);
-			if (firstStack != null){
-                if (owner.inventory.insertStack(firstStack)){
+			if (firstStack != null && firstStack.getItem() != Items.AIR){
+				if (owner.inventory.insertStack(firstStack)){
 					this.entity.world.playSound(null, this.entity.getBlockPos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.AMBIENT, 0.3F, 2F);
-                } else {
-					CompanionBatPouchItem.addItem(this.bundleStack, firstStack);
                 }
             }
         }

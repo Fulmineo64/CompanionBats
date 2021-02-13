@@ -3,7 +3,6 @@ package dev.fulmineo.companion_bats.item;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -43,14 +42,6 @@ public class CompanionBatPouchItem extends Item {
 		if (!tag.contains("item")){
 			tag.put("item", stackToAdd.toTag(new CompoundTag()));
 			return true;
-		} else {
-			ItemStack currentItem = ItemStack.fromTag(tag.getCompound("item"));
-			if (currentItem.getItem() == stackToAdd.getItem()){
-				int count = currentItem.getCount() + stackToAdd.getCount();
-				int remainder = count > 64 ? 64 - count : 0;
-				stackToAdd.setCount(remainder);
-				currentItem.setCount(count);
-			}
 		}
 		return false;
 	}

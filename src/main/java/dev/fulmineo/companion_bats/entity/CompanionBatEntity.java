@@ -441,7 +441,7 @@ public class CompanionBatEntity extends TameableEntity {
 		CompanionBats.info("Increased combo level to: "+this.comboLevel);
 
 		if (comboAttackLevel >= 3 && this.comboLevel % 25 == 0) {
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, this.comboLevel == 100 ? 1 : 0));
+			this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, this.comboLevel == 100 ? 1 : 0));
 		} else if (comboAttackLevel >= 2 && this.comboLevel % 10 == 0) {
 			this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 100, this.comboLevel > 50 ? 1 : 0));
 		} else if (this.comboLevel % 5 == 0) {

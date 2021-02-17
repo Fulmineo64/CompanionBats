@@ -831,6 +831,9 @@ public class CompanionBatEntity extends TameableEntity {
 		if (entityData.contains("emergencyPotionTicks")){
 			this.emergencyPotionTicks = entityData.getInt("emergencyPotionTicks");
 			this.effectPotionTicks = entityData.getInt("effectPotionTicks");
+		} else {
+			this.emergencyPotionTicks = EMERGENCY_POTION_TICKS;
+			this.effectPotionTicks = EFFECT_POTION_TICKS;
 		}
 	}
 

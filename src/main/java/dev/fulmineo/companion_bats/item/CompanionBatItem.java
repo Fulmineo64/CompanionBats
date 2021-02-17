@@ -74,7 +74,7 @@ public class CompanionBatItem extends Item {
                 }
                 if (entityHealth > 0){
 					Vec3d pos = user.getPos();
-                    CompanionBatEntity batEntity = (CompanionBatEntity)CompanionBats.COMPANION_BAT.spawnFromItemStack((ServerWorld)world, itemStack, user, new BlockPos(pos.x, Math.round(pos.y), pos.z), SpawnReason.SPAWN_EGG, false, false);
+                    CompanionBatEntity batEntity = (CompanionBatEntity)CompanionBats.COMPANION_BAT.spawnFromItemStack((ServerWorld)world, itemStack, user, new BlockPos(pos.x, Math.ceil(pos.y), pos.z), SpawnReason.SPAWN_EGG, false, false);
                     batEntity.fromItem(user, entityData);
                     ItemStack fluteItemStack = new ItemStack(CompanionBats.BAT_FLUTE_ITEM);
                     fluteItemStack.getOrCreateTag().putUuid("entityUuid", batEntity.getUuid());

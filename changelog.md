@@ -1,6 +1,6 @@
-# 1.0.4
-- Fixed bat spawning on path blocks
-- Saved potion ticks when the bat is recalled
+# 1.0.4 - 1.1.1
+- Fixed spawning of the Companion Bat on path blocks and other non-full blocks
+- The alchemist's potions cooldown will now be kept when the bat is recalled
 
 # 1.0.3
 - Buffed slightly the duelist's regeneration effect

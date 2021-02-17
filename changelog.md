@@ -1,3 +1,11 @@
+# 1.0.4
+- Fixed bat spawning on path blocks
+- Saved potion ticks when the bat is recalled
+
+# 1.0.3
+- Buffed slightly the duelist's regeneration effect
+- Fixed bug with class levels at max exp
+
 # 1.1.0
 - Ported to Minecraft version 1.16.5
 - Added bat pouch as an inferior replacement of the bundle

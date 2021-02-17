@@ -32,7 +32,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.AttackWithOwnerGoal;
-import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.TrackOwnerAttackerGoal;
@@ -107,7 +106,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private static final int COMBO_ATTACK_RESET_TICKS = 600;
 	private static final int TELEPORT_TICKS = 100;
 	private static final int RETRY_TELEPORT_TICKS = 10;
-	private static int ADVENTURER_AURA_TICKS = 420;
+	private static final int ADVENTURER_AURA_TICKS = 420;
 
 	public static final int BLOCK_ATTACK_MULTIPLIER = 10;
 	public static final int BURN_MULTIPLIER = 3;
@@ -122,6 +121,8 @@ public class CompanionBatEntity extends TameableEntity {
 	public BlockPos hangingPosition;
 	public BlockPos fleeingPosition;
 	public BlockPos diggingPosition;
+	public int emergencyPotionTicks;
+	public int effectPotionTicks;
 
 	private CompanionBatClass currentClass;
 	private int exp = 0;
@@ -131,6 +132,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private boolean hasPassiveExp;
 	private boolean hasTeleport;
 	private boolean hasAdventurerAura;
+	private boolean hasPotionGoal;
 	private int passiveExpTicks = PASSIVE_EXP_TICKS;
 	private int comboAttackResetTicks = COMBO_ATTACK_RESET_TICKS;
 	private int comboLevel = 0;
@@ -162,6 +164,7 @@ public class CompanionBatEntity extends TameableEntity {
 		super.writeCustomDataToTag(tag);
 		tag.putInt("exp", this.getExp());
 		this.writeExpToTag(tag);
+		this.writePotionTicks(tag);
 	}
 
 	public void readCustomDataFromTag(CompoundTag tag) {
@@ -172,6 +175,7 @@ public class CompanionBatEntity extends TameableEntity {
 		this.setClasses(tag);
 		this.setClassesAbilities(tag);
 		this.setAbilitiesEffects(true);
+		this.setPotionTicks(tag);
 	}
 
 	protected float getSoundVolume() {
@@ -698,9 +702,9 @@ public class CompanionBatEntity extends TameableEntity {
 			}
 		}
 		if (this.hasAbility(CompanionBatAbility.EMERGENCY_POTION) || this.hasAbility(CompanionBatAbility.EFFECT_POTION)) {
-			Goal THROW_POTION_GOAL = new CompanionBatThrowPotionGoal(this, 3.0F, EMERGENCY_POTION_TICKS, EFFECT_POTION_TICKS);
-			if (firstTime ? true : !this.goalSelector.getRunningGoals().anyMatch((prioritizedGoal) -> prioritizedGoal.getGoal().equals(THROW_POTION_GOAL))) {
-				this.goalSelector.add(6, THROW_POTION_GOAL);
+			if (!this.hasPotionGoal){
+				this.goalSelector.add(6, new CompanionBatThrowPotionGoal(this, 3.0F, EMERGENCY_POTION_TICKS, EFFECT_POTION_TICKS));
+				this.hasPotionGoal = true;
 			}
 		}
 		if (this.hasAbility(CompanionBatAbility.INCREASED_ARMOR)) {
@@ -818,6 +822,18 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 	}
 
+	private void writePotionTicks(CompoundTag entityData) {
+		entityData.putInt("emergencyPotionTicks", this.emergencyPotionTicks);
+		entityData.putInt("effectPotionTicks", this.effectPotionTicks);
+	}
+
+	private void setPotionTicks(CompoundTag entityData) {
+		if (entityData.contains("emergencyPotionTicks")){
+			this.emergencyPotionTicks = entityData.getInt("emergencyPotionTicks");
+			this.effectPotionTicks = entityData.getInt("effectPotionTicks");
+		}
+	}
+
 	protected ItemStack toItem() {
 		ItemStack batItemStack = new ItemStack(CompanionBats.BAT_ITEM);
 		if (this.hasCustomName()) {
@@ -831,6 +847,7 @@ public class CompanionBatEntity extends TameableEntity {
 		this.writeExpToTag(entityData);
 		entityData.put("armor", this.getArmorType().toTag(new CompoundTag()));
 		entityData.put("bundle", this.getBundle().toTag(new CompoundTag()));
+		this.writePotionTicks(entityData);
 		return batItemStack;
 	}
 
@@ -845,6 +862,7 @@ public class CompanionBatEntity extends TameableEntity {
 		this.setClasses(entityData);
 		this.setClassesAbilities(entityData);
 		this.setAbilitiesEffects(true);
+		this.setPotionTicks(entityData);
 	}
 
 	private void equipArmor(ItemStack stack) {

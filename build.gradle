@@ -66,9 +66,10 @@ task publishModrinth (type: TaskModrinthUpload) {
     token = config.modrinth.token
     projectId = config.modrinth.project.id
     versionNumber = project.mod_version
+	releaseType = project.release_type
     uploadFile = file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar")
     addGameVersion(project.minecraft_version)
-	changelog = file('changelog.md')
+	changelog = new File('changelog.md').text
     addLoader('fabric')
 }
 
@@ -107,14 +108,14 @@ curseforge {
 		changelogType = 'markdown'
 		changelog = file('changelog.md')
 		releaseType = project.release_type
-		addGameVersion config.curse.minecraft.version
+		addGameVersion project.curse_minecraft_version
 
 		relations {
 			requiredLibrary 'fabric-api'
 		}
 
 		mainArtifact(file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar")) {
-			displayName = "Companion bats $version"
+			displayName = "[$project.minecraft_version] Companion bats $version"
 		}
 
 		afterEvaluate {

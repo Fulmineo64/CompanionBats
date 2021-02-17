@@ -67,6 +67,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		this.armorStack = ItemStack.fromTag(entityData.getCompound("armor"));
 		if (this.armorStack.getItem() instanceof CompanionBatArmorItem){
 			this.currentClass = ((CompanionBatArmorItem)this.armorStack.getItem()).getBatClass();
+			this.maxClassExpReached = false;
 			if (this.currentClass != null){
 				int classExp = entityData.getInt(this.currentClass.getExpTagName());
 				this.classLevel = CompanionBatLevels.getClassLevelByExp(this.currentClass, classExp);

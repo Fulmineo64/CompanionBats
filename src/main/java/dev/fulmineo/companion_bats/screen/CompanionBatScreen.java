@@ -70,7 +70,6 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 			if (this.currentClass != null){
 				int classExp = entityData.getInt(this.currentClass.getExpTagName());
 				this.classLevel = CompanionBatLevels.getClassLevelByExp(this.currentClass, classExp);
-				this.maxClassExpReached = false;
 				CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
 				if (this.classLevel+1 < classLevels.length){
 					this.currentClassLevelExp = classExp - classLevels[this.classLevel].totalExpNeeded;

@@ -24,8 +24,6 @@ public class CompanionBatThrowPotionGoal extends Goal {
     private final EntityNavigation navigation;
 	private final int emergencyPotionCooldown;
 	private final int effectPotionCooldown;
-	private int emergencyPotionTicks;
-	private int effectPotionTicks;
 	private int updateCountdownTicks;
 	private Integer effectPotionLevel;
 	private Integer emergencyPotionLevel;
@@ -35,10 +33,9 @@ public class CompanionBatThrowPotionGoal extends Goal {
         this.maxDistanceSquared = (double)(maxDistance * maxDistance);
 		this.emergencyPotionCooldown = emergencyPotionCooldown;
 		this.effectPotionCooldown = effectPotionCooldown;
-		this.emergencyPotionTicks = this.emergencyPotionCooldown;
-		this.effectPotionTicks = this.effectPotionCooldown;
+		this.entity.emergencyPotionTicks = this.emergencyPotionCooldown;
+		this.entity.effectPotionTicks = this.effectPotionCooldown;
         this.navigation = entity.getNavigation();
-        // this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
      }
 
     public boolean canStart() {
@@ -46,14 +43,14 @@ public class CompanionBatThrowPotionGoal extends Goal {
 		if (livingEntity == null || livingEntity.isSpectator() || this.entity.isRoosting()) {
             return false;
         } else {
-			if (this.emergencyPotionTicks > 0) this.emergencyPotionTicks--;
-			if (this.effectPotionTicks > 0) this.effectPotionTicks--;
-			if (this.emergencyPotionTicks <= 0 || this.effectPotionTicks <= 0){
+			if (this.entity.emergencyPotionTicks > 0) this.entity.emergencyPotionTicks--;
+			if (this.entity.effectPotionTicks > 0) this.entity.effectPotionTicks--;
+			if (this.entity.emergencyPotionTicks <= 0 || this.entity.effectPotionTicks <= 0){
 				this.effectPotionLevel = this.entity.getAbilityValue(CompanionBatAbility.EFFECT_POTION);
 				this.emergencyPotionLevel = this.entity.getAbilityValue(CompanionBatAbility.EMERGENCY_POTION);
-				if (this.effectPotionLevel == null || this.effectPotionLevel < 1) this.effectPotionTicks = this.effectPotionCooldown;
-				if (this.emergencyPotionLevel == null || this.emergencyPotionLevel < 1) this.emergencyPotionTicks = this.emergencyPotionCooldown;
-				if (this.emergencyPotionTicks <= 0 || this.effectPotionTicks <= 0){
+				if (this.effectPotionLevel == null || this.effectPotionLevel < 1) this.entity.effectPotionTicks = this.effectPotionCooldown;
+				if (this.emergencyPotionLevel == null || this.emergencyPotionLevel < 1) this.entity.emergencyPotionTicks = this.emergencyPotionCooldown;
+				if (this.entity.emergencyPotionTicks <= 0 || this.entity.effectPotionTicks <= 0){
 					this.owner = livingEntity;
 					return true;
 				}
@@ -80,16 +77,16 @@ public class CompanionBatThrowPotionGoal extends Goal {
 				double distance = this.entity.squaredDistanceTo(this.owner);
 				if (distance < this.maxDistanceSquared){
 					Potion potion = null;
-					if (this.emergencyPotionTicks <= 0){
+					if (this.entity.emergencyPotionTicks <= 0){
 						if (this.effectPotionLevel >= 3 && (this.owner.isOnFire() || this.owner.getRecentDamageSource() != null && this.owner.getRecentDamageSource().isFire()) && !this.owner.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
 							potion = Potions.FIRE_RESISTANCE;
 						} else if (this.owner.getHealth() < (this.owner.getMaxHealth() * 40 / 100)) {
 							potion = Potions.STRONG_HEALING;
 						}
-						if (potion != null) this.emergencyPotionTicks = this.emergencyPotionCooldown;
+						if (potion != null) this.entity.emergencyPotionTicks = this.emergencyPotionCooldown;
 					}
 
-					if (potion == null && this.effectPotionTicks <= 0){
+					if (potion == null && this.entity.effectPotionTicks <= 0){
 						if (this.effectPotionLevel >= 4 && !this.owner.hasStatusEffect(StatusEffects.REGENERATION) && this.owner.getHealth() < (this.owner.getMaxHealth() * 50 / 100)){
 							potion = Potions.REGENERATION;
 						} else if (this.effectPotionLevel >= 2 && (!this.owner.hasStatusEffect(StatusEffects.NIGHT_VISION) || this.owner.getStatusEffect(StatusEffects.NIGHT_VISION).getDuration() <= 400) && this.entity.world.getLightLevel(this.owner.getBlockPos()) <= 7){
@@ -97,7 +94,7 @@ public class CompanionBatThrowPotionGoal extends Goal {
 						} else if (!this.owner.hasStatusEffect(StatusEffects.SPEED) || this.owner.getStatusEffect(StatusEffects.SPEED).getDuration() <= 400) {
 							potion = Potions.SWIFTNESS;
 						}
-						if (potion != null) this.effectPotionTicks = this.effectPotionCooldown;
+						if (potion != null) this.entity.effectPotionTicks = this.effectPotionCooldown;
 					}
 
 					// TODO: Attack potion

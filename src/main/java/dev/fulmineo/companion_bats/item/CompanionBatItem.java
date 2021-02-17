@@ -26,6 +26,8 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class CompanionBatItem extends Item {
@@ -71,7 +73,8 @@ public class CompanionBatItem extends Item {
                     }
                 }
                 if (entityHealth > 0){
-                    CompanionBatEntity batEntity = (CompanionBatEntity)CompanionBats.COMPANION_BAT.spawnFromItemStack((ServerWorld)world, itemStack, user, user.getBlockPos(), SpawnReason.SPAWN_EGG, false, false);
+					Vec3d pos = user.getPos();
+                    CompanionBatEntity batEntity = (CompanionBatEntity)CompanionBats.COMPANION_BAT.spawnFromItemStack((ServerWorld)world, itemStack, user, new BlockPos(pos.x, Math.round(pos.y), pos.z), SpawnReason.SPAWN_EGG, false, false);
                     batEntity.fromItem(user, entityData);
                     ItemStack fluteItemStack = new ItemStack(CompanionBats.BAT_FLUTE_ITEM);
                     fluteItemStack.getOrCreateTag().putUuid("entityUuid", batEntity.getUuid());

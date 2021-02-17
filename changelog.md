@@ -1,3 +1,7 @@
+# 1.0.4
+- Fixed bat spawning on path blocks
+- Saved potion ticks when the bat is recalled
+
 # 1.0.3
 - Buffed slightly the duelist's regeneration effect
 - Fixed bug with class levels at max exp

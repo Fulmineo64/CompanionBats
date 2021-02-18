@@ -16,12 +16,18 @@ public abstract class BundleItemMixin extends Item implements CompanionBatBundle
     private static int addToBundle(ItemStack bundle, ItemStack stack) { return 0; }
     @Shadow
     private static int getItemOccupancy(ItemStack stack) { return 0; }
+	@Shadow
+    private static int getBundleOccupancy(ItemStack stack) { return 0; }
     @Shadow
-    private static Optional<ItemStack> method_32759(ItemStack stack) { return null; }
+    private static Optional<ItemStack> removeFirstStack(ItemStack stack) { return null; }
 
     public BundleItemMixin(Item.Settings settings) {
         super(settings);
     }
+
+	public float companionBatsGetAmountFilled(ItemStack stack) {
+		return (float)getBundleOccupancy(stack) / 64.0F;
+	}
 
     public int companionBatsAddToBundle(ItemStack bundle, ItemStack stack){
         return addToBundle(bundle, stack);
@@ -31,7 +37,7 @@ public abstract class BundleItemMixin extends Item implements CompanionBatBundle
         return getItemOccupancy(stack);
     }
 
-    public Optional<ItemStack> companionBatsGetFirstStack(ItemStack stack){
-        return method_32759(stack);
+    public Optional<ItemStack> companionBatsRemoveFirstStack(ItemStack stack){
+        return removeFirstStack(stack);
     }
 }

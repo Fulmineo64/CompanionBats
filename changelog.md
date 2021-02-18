@@ -1,3 +1,7 @@
+# 1.0.6 - 1.1.2
+- Companion Bats can now be tamed on servers!
+- Updated the bundle's integration to work server side.
+
 # 1.0.5
 - Updated to Minecraft snapshot 21w07a
 

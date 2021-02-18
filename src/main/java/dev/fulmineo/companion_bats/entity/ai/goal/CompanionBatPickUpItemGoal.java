@@ -107,11 +107,11 @@ public class CompanionBatPickUpItemGoal extends Goal {
     }
 
     private boolean isBundleAvailable(){
-        return this.bundleStack != null && this.bundleStack.isOf(Items.BUNDLE) && BundleItem.getAmountFilled(this.bundleStack) != 1;
+        return this.bundleStack != null && this.bundleStack.isOf(Items.BUNDLE) && ((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsGetAmountFilled(this.bundleStack) != 1;
     }
 
     private boolean canItemFitInBundle(ItemStack itemStack) {
-        return BundleItem.getAmountFilled(this.bundleStack) + (((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsGetItemOccupancy(itemStack) / 64 * itemStack.getCount()) <= 1;
+        return ((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsGetAmountFilled(this.bundleStack) + (((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsGetItemOccupancy(itemStack) / 64 * itemStack.getCount()) <= 1;
     }
 
     class ProximityComparator implements Comparator<ItemEntity> {

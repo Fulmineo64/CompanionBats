@@ -64,7 +64,7 @@ public class CompanionBatTransferItemsToOwnerGoal extends Goal {
         if (--this.updateCountdownTicks <= 0) {
             this.updateCountdownTicks = 5;
 			this.canContinue = false;
-            Optional<ItemStack> firstStack = ((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsGetFirstStack(this.bundleStack);
+            Optional<ItemStack> firstStack = ((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsRemoveFirstStack(this.bundleStack);
 			if (firstStack.isPresent()){
                 if (owner.getInventory().insertStack(firstStack.get())){
 					this.entity.world.playSound(null, this.entity.getBlockPos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.AMBIENT, 0.3F, 2F);

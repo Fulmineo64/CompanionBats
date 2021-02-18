@@ -1,3 +1,10 @@
+# 1.0.6 - 1.1.2
+- Companion Bats can now be tamed on servers!
+- Updated the bundle's integration to work server side.
+
+# 1.0.5
+- Updated to Minecraft snapshot 21w07a
+
 # 1.0.4 - 1.1.1
 - Fixed spawning of the Companion Bat on path blocks and other non-full blocks
 - The alchemist's potions cooldown will now be kept when the bat is recalled

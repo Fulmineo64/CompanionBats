@@ -2,6 +2,7 @@
 A Fabric Minecraft mod.
 
 This mod adds your new best sidekick: a companion bat!
+
 Companion bats can:
 - Level up and get stronger as you explore the world with them
 - Pick up items and transfer them to your inventory, if given a Bundle

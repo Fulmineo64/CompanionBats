@@ -45,7 +45,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 				if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
 					CompoundTag tag = batItemStack.getTag();
 					CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
-					entityData.put("armor", stack.toTag(new CompoundTag()));
+					entityData.put("armor", stack.writeNbt(new CompoundTag()));
 					tag.put("entityData", entityData);
 				}
             }
@@ -70,7 +70,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
                     if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
                         CompoundTag tag = batItemStack.getTag();
                         CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
-                        entityData.put("bundle", stack.toTag(new CompoundTag()));
+                        entityData.put("bundle", stack.writeNbt(new CompoundTag()));
                         tag.put("entityData", entityData);
                     }
                 }

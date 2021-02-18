@@ -64,7 +64,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 	}
 
 	private void setClassLevel(CompoundTag entityData){
-		this.armorStack = ItemStack.fromTag(entityData.getCompound("armor"));
+		this.armorStack = ItemStack.fromNbt(entityData.getCompound("armor"));
 		if (this.armorStack.getItem() instanceof CompanionBatArmorItem){
 			this.currentClass = ((CompanionBatArmorItem)this.armorStack.getItem()).getBatClass();
 			if (this.currentClass != null){
@@ -150,7 +150,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		ItemStack batItemStack = this.inventory.player.getStackInHand(handler.hand);
 		CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
-		ItemStack armorStack = ItemStack.fromTag(entityData.getCompound("armor"));
+		ItemStack armorStack = ItemStack.fromNbt(entityData.getCompound("armor"));
 		if (!this.armorStack.getItem().equals(armorStack.getItem())) this.setClassLevel(entityData);
 		this.renderBackground(matrices);
 		super.render(matrices, mouseX, mouseY, delta);

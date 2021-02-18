@@ -160,15 +160,15 @@ public class CompanionBatEntity extends TameableEntity {
 		this.goalSelector.add(5, new CompanionBatRoostGoal(this, 0.75F, 4.0F, ROOST_START_TICKS));
 	}
 
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putInt("exp", this.getExp());
 		this.writeExpToTag(tag);
 		this.writePotionTicks(tag);
 	}
 
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.setLevel(tag.getInt("exp"));
 		this.setLevelAttributes(this.level);
 		this.setBatClass();
@@ -848,8 +848,8 @@ public class CompanionBatEntity extends TameableEntity {
 		CompoundTag entityData = CompanionBatItem.createEntityData(batItemStack);
 		entityData.putFloat("health", this.getHealth());
 		this.writeExpToTag(entityData);
-		entityData.put("armor", this.getArmorType().toTag(new CompoundTag()));
-		entityData.put("bundle", this.getBundle().toTag(new CompoundTag()));
+		entityData.put("armor", this.getArmorType().writeNbt(new CompoundTag()));
+		entityData.put("bundle", this.getBundle().writeNbt(new CompoundTag()));
 		this.writePotionTicks(entityData);
 		return batItemStack;
 	}
@@ -858,8 +858,8 @@ public class CompanionBatEntity extends TameableEntity {
 		this.setOwner(owner);
 		this.setLevel(entityData.getInt("exp"));
 		this.setLevelAttributes(this.level);
-		this.equipArmor(ItemStack.fromTag(entityData.getCompound("armor")));
-		this.equipBundle(ItemStack.fromTag(entityData.getCompound("bundle")));
+		this.equipArmor(ItemStack.fromNbt(entityData.getCompound("armor")));
+		this.equipBundle(ItemStack.fromNbt(entityData.getCompound("bundle")));
 		this.setHealth(entityData.getFloat("health"));
 		this.setBatClass();
 		this.setClasses(entityData);

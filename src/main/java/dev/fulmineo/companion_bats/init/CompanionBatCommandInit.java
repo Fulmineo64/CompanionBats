@@ -58,7 +58,7 @@ public class CompanionBatCommandInit {
 							if (player != null && player.getStackInHand(Hand.MAIN_HAND).isOf(CompanionBats.BAT_ITEM)) {
 								ItemStack stack = player.getStackInHand(Hand.MAIN_HAND);
 								CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(stack);
-								ItemStack armorStack = ItemStack.fromTag(entityData.getCompound("armor"));
+								ItemStack armorStack = ItemStack.fromNbt(entityData.getCompound("armor"));
 								if (armorStack.getItem() instanceof CompanionBatArmorItem){
 									CompanionBatClass cls = ((CompanionBatArmorItem)armorStack.getItem()).getBatClass();
 									int exp = IntegerArgumentType.getInteger(context, "exp");

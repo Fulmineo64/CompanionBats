@@ -1,3 +1,8 @@
+# 1.0.7 - 1.1.3
+- When taming, the Companion Bat item will now be dropped if the tamer's inventory is full
+- Reduced max health (18 -> 16) and added more movement speed (0.40 -> 0.45) at max level
+- The Companion Bat can now find a roost spot farther away from the player
+
 # 1.0.6 - 1.1.2
 - Companion Bats can now be tamed on servers!
 - Updated the bundle's integration to work server side.

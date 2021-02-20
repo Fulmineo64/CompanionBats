@@ -6,6 +6,7 @@ import dev.fulmineo.companion_bats.CompanionBats;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.mob.AmbientEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.world.World;
@@ -37,7 +38,14 @@ public abstract class BatEntityMixin extends AmbientEntity {
 
                 if (this.random.nextInt(1) == 0) {
                     this.discard();
-                    player.giveItemStack(new ItemStack(CompanionBats.BAT_ITEM));
+					ItemStack batItemStack = new ItemStack(CompanionBats.BAT_ITEM);
+                    if (!player.giveItemStack(batItemStack)){
+						ItemEntity itemEntity = player.dropItem(batItemStack, false);
+						if (itemEntity != null) {
+						   itemEntity.resetPickupDelay();
+						   itemEntity.setOwner(player.getUuid());
+						}
+					}
                 } else {
                     this.world.sendEntityStatus(this, (byte)6);
                 }

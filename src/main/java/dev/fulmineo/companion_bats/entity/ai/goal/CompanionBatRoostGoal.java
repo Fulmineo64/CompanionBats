@@ -56,12 +56,12 @@ public class CompanionBatRoostGoal extends Goal {
 
     public void start() {
         BlockPos pos = this.entity.getBlockPos();
-        for (int y = 1; y <= 5; y++){
+        for (int y = 1; y <= 10; y++){
             pos = pos.up();
-            if (this.validateAndSetPos(pos.north((int)(y / 1.5)))) return;
-            if (this.validateAndSetPos(pos.east((int)(y / 1.5)))) return;
-            if (this.validateAndSetPos(pos.south((int)(y / 1.5)))) return;
-            if (this.validateAndSetPos(pos.west((int)(y / 1.5)))) return;
+            if (this.validateAndSetPos(pos.north((int)(y / 1.75)))) return;
+            if (this.validateAndSetPos(pos.east((int)(y / 1.75)))) return;
+            if (this.validateAndSetPos(pos.south((int)(y / 1.75)))) return;
+            if (this.validateAndSetPos(pos.west((int)(y / 1.75)))) return;
             if (this.validateAndSetPos(pos)) return;
 		}
     }

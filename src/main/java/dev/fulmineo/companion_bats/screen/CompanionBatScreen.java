@@ -90,7 +90,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		this.currentHealth = Math.round(entityData.getFloat("health") * 10F) / 10F;
 		this.maxHealth = CompanionBatEntity.getLevelHealth(this.level);
 		this.attack = CompanionBatEntity.getLevelAttack(this.level);
-		this.speed = CompanionBatEntity.getLevelSpeed(this.level);
+		this.speed = Math.round(CompanionBatEntity.getLevelSpeed(this.level) * 100F) / 100F;
 	}
 
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
@@ -109,7 +109,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		float x = i + 28;
 		float y = j + 20;
 		int strideY = 10;
-		int strideX = 62;
+		int strideX = 59;
 
 		// Draws the text
 		this.textRenderer.draw(matrices, new TranslatableText("gui.companion_bats.bat.level"), x, y, 0xFFFFFFFF);
@@ -131,20 +131,20 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 
 		y += strideY * 2;
 
-		strideX = 12;
+		strideX = 11;
 
 		this.textRenderer.draw(matrices, "❤", x, y, 0xFFFFFFFF);
 		int offset = this.textRenderer.draw(matrices, this.currentHealth+" / "+this.maxHealth, x + strideX, y, 0xFFFFFFFF) - (int)x;
+		int speedOffset = 110 + (String.valueOf(this.speed).length() <= 3 ? 6 : 0);
+
 		int digits = (String.valueOf(this.attack).length() - 2) * 3;
-		offset += ((112 - offset) / 2) - digits - 10;
+		offset += ((speedOffset - offset) / 2) - digits - 10;
 
 		this.textRenderer.draw(matrices, "🗡", x + offset , y, 0xFFFFFFFF);
 		this.textRenderer.draw(matrices, ""+this.attack, x + offset + strideX, y, 0xFFFFFFFF);
 
-		offset = 112;
-
-		this.textRenderer.draw(matrices, "⬈", x + offset, y, 0xFFFFFFFF);
-		this.textRenderer.draw(matrices, ""+this.speed, x + offset + strideX, y, 0xFFFFFFFF);
+		this.textRenderer.draw(matrices, "⬈", x + speedOffset, y, 0xFFFFFFFF);
+		this.textRenderer.draw(matrices, ""+this.speed, x + speedOffset + strideX - 2, y, 0xFFFFFFFF);
 	}
 
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {

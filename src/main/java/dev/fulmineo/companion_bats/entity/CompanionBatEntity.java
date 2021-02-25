@@ -759,8 +759,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void tryLevelUp() {
-		if (CompanionBatLevels.LEVELS.length > this.level + 1
-				&& CompanionBatLevels.LEVELS[this.level + 1].totalExpNeeded <= this.exp) {
+		if (CompanionBatLevels.LEVELS.length > this.level + 1 && CompanionBatLevels.LEVELS[this.level + 1].totalExpNeeded <= this.exp) {
 			this.level++;
 			this.setLevelAttributes(this.level);
 			this.heal(this.getMaxHealth());
@@ -799,7 +798,7 @@ public class CompanionBatEntity extends TameableEntity {
 				message.append(new TranslatableText("entity.companion_bats.bat.level_up_attack", (int) (CompanionBatLevels.LEVELS[level].attackBonus - CompanionBatLevels.LEVELS[level - 1].attackBonus))).append(" ");
 			}
 			if (CompanionBatLevels.LEVELS[level].speedBonus > CompanionBatLevels.LEVELS[level - 1].speedBonus) {
-				message.append(new TranslatableText("entity.companion_bats.bat.level_up_speed", Math.round(100 - (CompanionBatLevels.LEVELS[level - 1].speedBonus / CompanionBatLevels.LEVELS[level].speedBonus * 100)))).append(" ");
+				message.append(new TranslatableText("entity.companion_bats.bat.level_up_speed", Math.round(100 - ((BASE_SPEED + CompanionBatLevels.LEVELS[level - 1].speedBonus) / (BASE_SPEED + CompanionBatLevels.LEVELS[level].speedBonus) * 100)))).append(" ");
 			}
 			((PlayerEntity) this.getOwner()).sendMessage(message, false);
 		}

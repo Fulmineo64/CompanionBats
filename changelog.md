@@ -1,3 +1,7 @@
+# 1.0.8 - 1.1.4
+- Fixed speed level up notification
+- Updated to Minecraft snapshot 21w08b
+
 # 1.0.7 - 1.1.3
 - When taming, the Companion Bat item will now be dropped if the tamer's inventory is full
 - Reduced max health (18 -> 16) and added more movement speed (0.40 -> 0.45) at max level

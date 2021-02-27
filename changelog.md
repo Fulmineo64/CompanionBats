@@ -1,3 +1,11 @@
+# 1.0.9 - 1.1.5
+- Looters and Alchemists can now attack
+- Looters will receive an added Looting bonus that scales with class levels, up to Looting IV
+- Looters' permanent ability now grants looting instead of speed
+- Alchemists can now use effect potions and emergency potions a little more often
+- Fixed armor duplication glitch
+- Improved shift-clicking items around in the Companion Bat's GUI
+
 # 1.0.8 - 1.1.4
 - Fixed speed level up notification
 - Updated to Minecraft snapshot 21w08b

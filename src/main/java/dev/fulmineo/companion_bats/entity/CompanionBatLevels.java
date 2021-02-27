@@ -123,19 +123,19 @@ public class CompanionBatLevels {
 		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.VAMPIRE, new CompanionBatClassLevel(2250, CompanionBatAbility.LIFESTEAL, 1));
 
 		CompanionBatClassLevel[] LOOTER_LEVELS = new CompanionBatClassLevel[10];
-		LOOTER_LEVELS[0] = new CompanionBatClassLevel(0, CompanionBatAbility.CANNOT_ATTACK, 1);
+		LOOTER_LEVELS[0] = new CompanionBatClassLevel(0, null, 0);
 		LOOTER_LEVELS[1] = new CompanionBatClassLevel(50, CompanionBatAbility.INCREASED_SPEED, 1);
-		LOOTER_LEVELS[2] = new CompanionBatClassLevel(150, null, 0);
+		LOOTER_LEVELS[2] = new CompanionBatClassLevel(150, CompanionBatAbility.LOOTING, 1);
 		LOOTER_LEVELS[3] = new CompanionBatClassLevel(300, CompanionBatAbility.INCREASED_SPEED, 2);
-		LOOTER_LEVELS[4] = new CompanionBatClassLevel(500, null, 0);
+		LOOTER_LEVELS[4] = new CompanionBatClassLevel(500, CompanionBatAbility.LOOTING, 2);
 		LOOTER_LEVELS[5] = new CompanionBatClassLevel(750, CompanionBatAbility.INCREASED_SPEED, 3);
-		LOOTER_LEVELS[6] = new CompanionBatClassLevel(1050, null, 0);
+		LOOTER_LEVELS[6] = new CompanionBatClassLevel(1050, CompanionBatAbility.LOOTING, 3);
 		LOOTER_LEVELS[7] = new CompanionBatClassLevel(1400, CompanionBatAbility.INCREASED_SPEED, 4);
-		LOOTER_LEVELS[8] = new CompanionBatClassLevel(1800, null, 0);
+		LOOTER_LEVELS[8] = new CompanionBatClassLevel(1800, CompanionBatAbility.LOOTING, 4);
 		LOOTER_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.ADVENTURER_AURA, 1);
 
 		CLASS_LEVELS.put(CompanionBatClass.LOOTER, LOOTER_LEVELS);
-		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.LOOTER, new CompanionBatClassLevel(2250, CompanionBatAbility.INCREASED_SPEED, 1));
+		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.LOOTER, new CompanionBatClassLevel(2250, CompanionBatAbility.LOOTING, 1));
 
 		CompanionBatClassLevel[] KNIGHT_LEVELS = new CompanionBatClassLevel[10];
 		KNIGHT_LEVELS[0] = new CompanionBatClassLevel(0, null, 0);
@@ -153,7 +153,7 @@ public class CompanionBatLevels {
 		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.KNIGHT, new CompanionBatClassLevel(2250, CompanionBatAbility.INCREASED_ARMOR, 1));
 
 		CompanionBatClassLevel[] ALCHEMIST_LEVELS = new CompanionBatClassLevel[10];
-		ALCHEMIST_LEVELS[0] = new CompanionBatClassLevel(0, CompanionBatAbility.CANNOT_ATTACK, 1);
+		ALCHEMIST_LEVELS[0] = new CompanionBatClassLevel(0, null, 0);
 		ALCHEMIST_LEVELS[1] = new CompanionBatClassLevel(50, CompanionBatAbility.EFFECT_POTION, 1);
 		ALCHEMIST_LEVELS[2] = new CompanionBatClassLevel(150, null, 0);
 		ALCHEMIST_LEVELS[3] = new CompanionBatClassLevel(300, CompanionBatAbility.EFFECT_POTION, 2);

@@ -92,7 +92,11 @@ public class CompanionBatScreenHandler extends ScreenHandler {
         }
 
         for(o = 0; o < 9; ++o) {
-            this.addSlot(new Slot(playerInventory, o, 8 + o * 18, 142));
+			if (playerInventory.getStack(o).isOf(CompanionBats.BAT_ITEM)){
+				this.addSlot(new DisabledSlot(playerInventory, o, 8 + o * 18, 142));
+			} else {
+				this.addSlot(new Slot(playerInventory, o, 8 + o * 18, 142));
+			}
         }
     }
 
@@ -104,11 +108,11 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 		ItemStack itemStack = ItemStack.EMPTY;
 		Slot slot = (Slot)this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
-		   ItemStack itemStack2 = slot.getStack();
-		   itemStack = itemStack2.copy();
-		   int i = this.inventory.size();
-			if (index < i) {
-				if (!this.insertItem(itemStack2, i, this.slots.size(), true)) {
+		   	ItemStack itemStack2 = slot.getStack();
+		   	itemStack = itemStack2.copy();
+		   	int invSize = 2;
+			if (index < invSize) {
+				if (!this.insertItem(itemStack2, invSize, this.slots.size(), true)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (this.getSlot(0).canInsert(itemStack2) && !this.getSlot(0).hasStack()) {
@@ -119,36 +123,38 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 				if (!this.insertItem(itemStack2, 1, 2, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (i <= 2 || !this.insertItem(itemStack2, 2, i, false)) {
-				int k = i + 27;
-				int m = k + 9;
-				if (index >= k && index < m) {
-					if (!this.insertItem(itemStack2, i, k, false)) {
-						return ItemStack.EMPTY;
-					}
-				} else if (index >= i && index < k) {
-					if (!this.insertItem(itemStack2, k, m, false)) {
-						return ItemStack.EMPTY;
-					}
-				} else if (!this.insertItem(itemStack2, k, k, false)) {
-					return ItemStack.EMPTY;
+			}  else if (index >= invSize && index < 27 + invSize) {
+				if (!this.insertItem(itemStack2, 27 + invSize, 36 + invSize, false)) {
+				   return ItemStack.EMPTY;
 				}
-
+			} else if (index >= (27 + invSize) && index < (36 + invSize) && !this.insertItem(itemStack2, invSize, 27 + invSize, false)) {
 				return ItemStack.EMPTY;
 			}
-
 			if (itemStack2.isEmpty()) {
 				slot.setStack(ItemStack.EMPTY);
 			} else {
 				slot.markDirty();
 			}
 		}
-
 		return itemStack;
-	 }
+	}
 
     public void close(PlayerEntity player) {
         super.close(player);
         this.inventory.onClose(player);
     }
+
+	public class DisabledSlot extends Slot {
+		public DisabledSlot(Inventory inventory, int index, int x, int y) {
+			super(inventory, index, x, y);
+		}
+
+		public boolean canTakeItems(PlayerEntity playerEntity) {
+			return false;
+		}
+
+		public boolean canInsert(ItemStack stack) {
+			return false;
+		}
+	}
 }

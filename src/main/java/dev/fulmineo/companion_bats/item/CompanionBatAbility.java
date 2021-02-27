@@ -11,7 +11,7 @@ public enum CompanionBatAbility {
 
 	// Looter
 
-	CANNOT_ATTACK, INCREASED_SPEED, ADVENTURER_AURA,
+	INCREASED_SPEED, LOOTING, ADVENTURER_AURA,
 
 	// Knight
 

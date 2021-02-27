@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.entity.ai.control.CompanionBatMoveControl;
-import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatAvoidHostilesGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatFollowOwnerGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatPickUpItemGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatRoostGoal;
@@ -24,6 +23,7 @@ import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.item.CompanionBatClass;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -100,9 +100,8 @@ public class CompanionBatEntity extends TameableEntity {
 
 	private static final int ROOST_START_TICKS = 200;
 	private static final int HEAL_TICKS = 600;
-	private static final int EMERGENCY_POTION_TICKS = 6000;
-	private static final int EFFECT_POTION_TICKS = 2400;
-	private static final int PASSIVE_EXP_TICKS = 600;
+	private static final int EMERGENCY_POTION_TICKS = 5000;
+	private static final int EFFECT_POTION_TICKS = 2000;
 	private static final int COMBO_ATTACK_RESET_TICKS = 600;
 	private static final int TELEPORT_TICKS = 100;
 	private static final int RETRY_TELEPORT_TICKS = 10;
@@ -129,11 +128,9 @@ public class CompanionBatEntity extends TameableEntity {
 	private int classExp = 0;
 	private int level = -1;
 	private int classLevel = -1;
-	private boolean hasPassiveExp;
 	private boolean hasTeleport;
 	private boolean hasAdventurerAura;
 	private boolean hasPotionGoal;
-	private int passiveExpTicks = PASSIVE_EXP_TICKS;
 	private int comboAttackResetTicks = COMBO_ATTACK_RESET_TICKS;
 	private int comboLevel = 0;
 	private int teleportTicks = TELEPORT_TICKS;
@@ -258,14 +255,6 @@ public class CompanionBatEntity extends TameableEntity {
 			this.comboAttackResetTicks = 0;
 		} else {
 			this.setVelocity(this.getVelocity().multiply(1.0D, 0.6D, 1.0D));
-
-			if (this.hasPassiveExp) {
-				this.passiveExpTicks--;
-				if (this.passiveExpTicks <= 0) {
-					this.gainExp();
-					this.passiveExpTicks = PASSIVE_EXP_TICKS;
-				}
-			}
 
 			if (this.comboAttackResetTicks > 0) {
 				this.comboAttackResetTicks--;
@@ -691,15 +680,10 @@ public class CompanionBatEntity extends TameableEntity {
 			CompanionBats.info(entry.getKey() + " " + entry.getValue());
 		}
 		if (firstTime) {
-			if (this.hasAbility(CompanionBatAbility.CANNOT_ATTACK)) {
-				this.goalSelector.add(1, new CompanionBatAvoidHostilesGoal(this, 3.0F, 1.0F));
-				this.hasPassiveExp = true;
-			} else {
-				this.goalSelector.add(1, new MeleeAttackGoal(this, 1.0D, true));
-				this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
-				this.targetSelector.add(2, new AttackWithOwnerGoal(this));
-				this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge());
-			}
+			this.goalSelector.add(1, new MeleeAttackGoal(this, 1.0D, true));
+			this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
+			this.targetSelector.add(2, new AttackWithOwnerGoal(this));
+			this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge());
 		}
 		if (this.hasAbility(CompanionBatAbility.EMERGENCY_POTION) || this.hasAbility(CompanionBatAbility.EFFECT_POTION)) {
 			if (!this.hasPotionGoal){
@@ -730,6 +714,11 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 		if (this.hasAbility(CompanionBatAbility.ADVENTURER_AURA)) {
 			this.hasAdventurerAura = true;
+		}
+		if (this.hasAbility(CompanionBatAbility.LOOTING)) {
+			ItemStack stack = new ItemStack(Items.STICK);
+			stack.addEnchantment(Enchantments.LOOTING, this.getAbilityValue(CompanionBatAbility.LOOTING));
+			this.equipStack(EquipmentSlot.MAINHAND, stack);
 		}
 	}
 

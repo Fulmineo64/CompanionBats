@@ -1,5 +1,6 @@
 package dev.fulmineo.companion_bats.item;
 
+import dev.fulmineo.companion_bats.CompanionBatClass;
 import dev.fulmineo.companion_bats.CompanionBats;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

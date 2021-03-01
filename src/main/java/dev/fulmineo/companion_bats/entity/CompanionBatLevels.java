@@ -3,8 +3,8 @@ package dev.fulmineo.companion_bats.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-import dev.fulmineo.companion_bats.item.CompanionBatAbility;
-import dev.fulmineo.companion_bats.item.CompanionBatClass;
+import dev.fulmineo.companion_bats.CompanionBatAbility;
+import dev.fulmineo.companion_bats.CompanionBatClass;
 
 public class CompanionBatLevels {
 	public static final CompanionBatLevel[] LEVELS;
@@ -140,13 +140,13 @@ public class CompanionBatLevels {
 		CompanionBatClassLevel[] KNIGHT_LEVELS = new CompanionBatClassLevel[10];
 		KNIGHT_LEVELS[0] = new CompanionBatClassLevel(0, null, 0);
 		KNIGHT_LEVELS[1] = new CompanionBatClassLevel(50, CompanionBatAbility.INCREASED_ARMOR, 1);
-		KNIGHT_LEVELS[2] = new CompanionBatClassLevel(150, null, 0);
+		KNIGHT_LEVELS[2] = new CompanionBatClassLevel(150, CompanionBatAbility.BLOCK_ATTACK, 1);
 		KNIGHT_LEVELS[3] = new CompanionBatClassLevel(300, CompanionBatAbility.INCREASED_ARMOR, 2);
-		KNIGHT_LEVELS[4] = new CompanionBatClassLevel(500, CompanionBatAbility.BLOCK_ATTACK, 1);
+		KNIGHT_LEVELS[4] = new CompanionBatClassLevel(500, CompanionBatAbility.BLOCK_ATTACK, 2);
 		KNIGHT_LEVELS[5] = new CompanionBatClassLevel(750, CompanionBatAbility.INCREASED_ARMOR, 3);
-		KNIGHT_LEVELS[6] = new CompanionBatClassLevel(1050, CompanionBatAbility.BLOCK_ATTACK, 2);
+		KNIGHT_LEVELS[6] = new CompanionBatClassLevel(1050, CompanionBatAbility.BLOCK_ATTACK, 3);
 		KNIGHT_LEVELS[7] = new CompanionBatClassLevel(1400, CompanionBatAbility.INCREASED_ARMOR, 4);
-		KNIGHT_LEVELS[8] = new CompanionBatClassLevel(1800, CompanionBatAbility.BLOCK_ATTACK, 3);
+		KNIGHT_LEVELS[8] = new CompanionBatClassLevel(1800, CompanionBatAbility.BLOCK_ATTACK, 4);
 		KNIGHT_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.INCREASED_ARMOR, 5);
 
 		CLASS_LEVELS.put(CompanionBatClass.KNIGHT, KNIGHT_LEVELS);

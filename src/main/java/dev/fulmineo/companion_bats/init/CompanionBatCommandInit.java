@@ -7,7 +7,7 @@ import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatLevel;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
-import dev.fulmineo.companion_bats.item.CompanionBatClass;
+import dev.fulmineo.companion_bats.CompanionBatClass;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.minecraft.item.ItemStack;

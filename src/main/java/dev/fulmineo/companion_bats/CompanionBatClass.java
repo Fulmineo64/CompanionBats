@@ -1,4 +1,4 @@
-package dev.fulmineo.companion_bats.item;
+package dev.fulmineo.companion_bats;
 
 public enum CompanionBatClass {
 	INFERNO,

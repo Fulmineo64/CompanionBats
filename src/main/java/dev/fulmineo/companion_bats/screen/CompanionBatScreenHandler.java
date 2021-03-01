@@ -42,10 +42,10 @@ public class CompanionBatScreenHandler extends ScreenHandler {
                 super.setStack(stack);
                 PlayerEntity player = playerInventory.player;
 				ItemStack batItemStack = player.getStackInHand(hand);
-				if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
+				if (batItemStack.getItem() == CompanionBats.BAT_ITEM){
 					CompoundTag tag = batItemStack.getTag();
 					CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
-					entityData.put("accessory", stack.writeNbt(new CompoundTag()));
+					entityData.put("accessory", stack.toTag(new CompoundTag()));
 					tag.put("entityData", entityData);
 				}
             }

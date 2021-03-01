@@ -24,7 +24,7 @@ import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.init.CompanionBatCommandInit;
 import dev.fulmineo.companion_bats.init.CompanionBatLootTableInit;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
-import dev.fulmineo.companion_bats.item.CompanionBatClass;
+import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatFluteItem;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
@@ -32,7 +32,7 @@ import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
 public class CompanionBats implements ModInitializer {
 
 	public static Logger LOGGER = LogManager.getLogger();
-	public static boolean PROD = true;
+	public static boolean PROD = false;
 
     // Identifiers
 
@@ -58,6 +58,11 @@ public class CompanionBats implements ModInitializer {
     public static final Item SPIRIT_SHARD = new Item(new FabricItemSettings().group(GROUP));
     public static final Item SPIRIT_CRYSTAL = new Item(new FabricItemSettings().group(GROUP));
 
+	public static final Item BUNNY_EARS = new CompanionBatAccessoryItem("bunny_ears", CompanionBatAbility.CANNOT_ATTACK, 1, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item WITHER_MASK = new CompanionBatAccessoryItem("wither_mask", CompanionBatAbility.ATTACK_EVERYONE, 1, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item IRON_GOLEM_POPPY = new CompanionBatAccessoryItem("iron_golem_poppy", CompanionBatAbility.ATTACK_HOSTILES, 1, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item WOLF_EARS = new CompanionBatAccessoryItem("wolf_ears", CompanionBatAbility.ATTACK_PASSIVE, 1, new FabricItemSettings().group(GROUP).maxCount(1));
+
 	public static final Item INFERNO_SUIT = new CompanionBatArmorItem("inferno_suit", CompanionBatClass.INFERNO, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item VAMPIRIC_ATTIRE = new CompanionBatArmorItem("vampiric_attire", CompanionBatClass.VAMPIRE, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item LOOTER_JACKET = new CompanionBatArmorItem("looter_jacket", CompanionBatClass.LOOTER, new FabricItemSettings().group(GROUP).maxCount(1));
@@ -73,6 +78,11 @@ public class CompanionBats implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_flute"), 	 	BAT_FLUTE_ITEM);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_shard"), 	SPIRIT_SHARD);
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_crystal"),  SPIRIT_CRYSTAL);
+
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bunny_ears"), 		BUNNY_EARS);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wither_mask"), 	WITHER_MASK);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "iron_golem_poppy"),IRON_GOLEM_POPPY);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wolf_ears"), 		WOLF_EARS);
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "inferno_suit"), 	INFERNO_SUIT);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "vampiric_attire"), VAMPIRIC_ATTIRE);

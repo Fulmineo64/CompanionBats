@@ -2,6 +2,7 @@ package dev.fulmineo.companion_bats.screen;
 
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
+import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -34,6 +35,30 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 
 		this.addSlot(new Slot(inventory, 0, 8, 18) {
             public boolean canInsert(ItemStack stack) {
+				return stack.getItem() instanceof CompanionBatAccessoryItem;
+            }
+
+			@Override
+            public void setStack(ItemStack stack) {
+                super.setStack(stack);
+                PlayerEntity player = playerInventory.player;
+				ItemStack batItemStack = player.getStackInHand(hand);
+				if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
+					CompoundTag tag = batItemStack.getTag();
+					CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
+					entityData.put("accessory", stack.writeNbt(new CompoundTag()));
+					tag.put("entityData", entityData);
+				}
+            }
+
+            @Environment(EnvType.CLIENT)
+            public boolean doDrawHoveringEffect() {
+                return true;
+            }
+		});
+
+		this.addSlot(new Slot(inventory, 1, 8, 36) {
+            public boolean canInsert(ItemStack stack) {
 				return stack.getItem() instanceof CompanionBatArmorItem;
             }
 
@@ -56,7 +81,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
             }
 		});
 
-        this.addSlot(new Slot(inventory, 1, 8, 36) {
+        this.addSlot(new Slot(inventory, 2, 8, 54) {
             public boolean canInsert(ItemStack stack) {
                 return stack.isOf(Items.BUNDLE);
             }
@@ -110,7 +135,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 		if (slot != null && slot.hasStack()) {
 		   	ItemStack itemStack2 = slot.getStack();
 		   	itemStack = itemStack2.copy();
-		   	int invSize = 2;
+		   	int invSize = this.inventory.size();
 			if (index < invSize) {
 				if (!this.insertItem(itemStack2, invSize, this.slots.size(), true)) {
 					return ItemStack.EMPTY;

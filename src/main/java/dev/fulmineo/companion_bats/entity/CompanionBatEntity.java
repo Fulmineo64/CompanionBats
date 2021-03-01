@@ -16,11 +16,13 @@ import dev.fulmineo.companion_bats.entity.ai.control.CompanionBatMoveControl;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatFollowOwnerGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatPickUpItemGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatRoostGoal;
+import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatTargetSelectorGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatThrowPotionGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatTransferItemsToOwnerGoal;
-import dev.fulmineo.companion_bats.item.CompanionBatAbility;
+import dev.fulmineo.companion_bats.CompanionBatAbility;
+import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
-import dev.fulmineo.companion_bats.item.CompanionBatClass;
+import dev.fulmineo.companion_bats.CompanionBatClass;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantments;
@@ -168,6 +170,7 @@ public class CompanionBatEntity extends TameableEntity {
 		super.readCustomDataFromNbt(tag);
 		this.setLevel(tag.getInt("exp"));
 		this.setLevelAttributes(this.level);
+		this.setAccessoryAbility();
 		this.setBatClass();
 		this.setClasses(tag);
 		this.setClassesAbilities(tag);
@@ -317,6 +320,8 @@ public class CompanionBatEntity extends TameableEntity {
 				}
 			}
 
+			CompanionBats.info("health before damage "+this.getHealth());
+
 			if (!source.isUnblockable() && this.hasAbility(CompanionBatAbility.BLOCK_ATTACK)) {
 				int roll = this.world.random.nextInt(100);
 				if (roll < this.getAbilityValue(CompanionBatAbility.BLOCK_ATTACK)) {
@@ -324,9 +329,9 @@ public class CompanionBatEntity extends TameableEntity {
 						LivingEntity target = (LivingEntity) source.getAttacker();
 						LivingEntity owner = this.getOwner();
 						if (target != owner && this.canAttackWithOwner(target, this.getOwner()) && this.isWithinDistanceToAttack(target)){
-							this.world.playSound(null, this.getBlockPos(), SoundEvents.BLOCK_ANVIL_LAND , SoundCategory.PLAYERS, 0.2F, this.getSoundPitch() + 2F);
+							this.world.playSound(null, this.getBlockPos(), SoundEvents.BLOCK_ANVIL_LAND , SoundCategory.PLAYERS, 0.15F, this.getSoundPitch() + 2F);
 							float targetHealth = target.getHealth();
-							target.damage(source, amount * this.getAbilityValue(CompanionBatAbility.COUNTER_ATTACK) / 4);
+							target.damage(source, ((float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) + amount) * this.getAbilityValue(CompanionBatAbility.COUNTER_ATTACK) / 4);
 							this.onAttack(target, targetHealth - target.getHealth());
 							return false;
 						}
@@ -433,12 +438,12 @@ public class CompanionBatEntity extends TameableEntity {
 		this.comboLevel++;
 		CompanionBats.info("Increased combo level to: "+this.comboLevel);
 
-		if (comboAttackLevel >= 3 && this.comboLevel % 25 == 0) {
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, this.comboLevel == 100 ? 1 : 0));
+		if (comboAttackLevel >= 3 && this.comboLevel % 15 == 0) {
+			this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, (int)(this.comboLevel / 33) + 2));
 		} else if (comboAttackLevel >= 2 && this.comboLevel % 10 == 0) {
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 100, this.comboLevel > 50 ? 1 : 0));
+			this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 100, (int)(this.comboLevel / 33)));
 		} else if (this.comboLevel % 5 == 0) {
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 100, this.comboLevel > 50 ? 1 : 0));
+			this.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 100, (int)(this.comboLevel / 33)));
 		}
 
 		if (this.comboLevel == 100){
@@ -614,6 +619,14 @@ public class CompanionBatEntity extends TameableEntity {
 		this.setClassExp(this.classExp + expToAdd);
 	}
 
+	private void setAccessoryAbility(){
+		ItemStack headStack = this.getEquippedStack(EquipmentSlot.HEAD);
+		if (headStack.getItem() instanceof CompanionBatAccessoryItem) {
+			CompanionBatAccessoryItem accessory = (CompanionBatAccessoryItem) headStack.getItem();
+			this.addAbility(accessory.getAbility(), accessory.getAbilityLevel());
+		}
+	}
+
 	private void setBatClass() {
 		ItemStack chestStack = this.getEquippedStack(EquipmentSlot.CHEST);
 		if (chestStack.getItem() instanceof CompanionBatArmorItem) {
@@ -640,16 +653,12 @@ public class CompanionBatEntity extends TameableEntity {
 					if (level.totalExpNeeded > classExp) {
 						break;
 					}
-					Integer current = this.abilityLevels.get(level.ability);
-					if (level.ability != null && (current == null || current < level.abilityLevel)) {
-						this.abilityLevels.put(level.ability, level.abilityLevel);
-					}
+					this.addAbility(level.ability, level.abilityLevel);
 				}
 			} else {
 				CompanionBatClassLevel level = CompanionBatLevels.GLOBAL_CLASS_LEVELS.get(batClass);
-				Integer current = this.abilityLevels.get(level.ability);
-				if (level != null && classExp >= level.totalExpNeeded && (current == null || current < level.abilityLevel)) {
-					this.abilityLevels.put(level.ability, level.abilityLevel);
+				if (level != null && classExp >= level.totalExpNeeded) {
+					this.addAbility(level.ability, level.abilityLevel);
 				}
 			}
 		}
@@ -666,10 +675,17 @@ public class CompanionBatEntity extends TameableEntity {
 					if (level.totalExpNeeded > classExp) {
 						return;
 					}
-					if (level.ability != null) {
-						this.abilityLevels.put(level.ability, level.abilityLevel);
-					}
+					this.addAbility(level.ability, level.abilityLevel);
 				}
+			}
+		}
+	}
+
+	private void addAbility(CompanionBatAbility ability, Integer level){
+		if (ability != null && level != null){
+			Integer current = this.abilityLevels.get(ability);
+			if (ability != null && (current == null || current < level)) {
+				this.abilityLevels.put(ability, level);
 			}
 		}
 	}
@@ -679,11 +695,18 @@ public class CompanionBatEntity extends TameableEntity {
 		for (Map.Entry<CompanionBatAbility, Integer> entry : this.abilityLevels.entrySet()) {
 			CompanionBats.info(entry.getKey() + " " + entry.getValue());
 		}
-		if (firstTime) {
+		if (firstTime && !this.hasAbility(CompanionBatAbility.CANNOT_ATTACK)){
 			this.goalSelector.add(1, new MeleeAttackGoal(this, 1.0D, true));
 			this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
 			this.targetSelector.add(2, new AttackWithOwnerGoal(this));
 			this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge());
+			if (this.hasAbility(CompanionBatAbility.ATTACK_EVERYONE)){
+				this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_EVERYONE));
+			} else if (this.hasAbility(CompanionBatAbility.ATTACK_HOSTILES)){
+				this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_HOSTILES));
+			} else if (this.hasAbility(CompanionBatAbility.ATTACK_PASSIVE)){
+				this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_PASSIVE));
+			}
 		}
 		if (this.hasAbility(CompanionBatAbility.EMERGENCY_POTION) || this.hasAbility(CompanionBatAbility.EFFECT_POTION)) {
 			if (!this.hasPotionGoal){
@@ -836,6 +859,7 @@ public class CompanionBatEntity extends TameableEntity {
 		CompoundTag entityData = CompanionBatItem.createEntityData(batItemStack);
 		entityData.putFloat("health", this.getHealth());
 		this.writeExpToTag(entityData);
+		entityData.put("accessory", this.getAccessory().writeNbt(new CompoundTag()));
 		entityData.put("armor", this.getArmorType().writeNbt(new CompoundTag()));
 		entityData.put("bundle", this.getBundle().writeNbt(new CompoundTag()));
 		this.writePotionTicks(entityData);
@@ -846,14 +870,20 @@ public class CompanionBatEntity extends TameableEntity {
 		this.setOwner(owner);
 		this.setLevel(entityData.getInt("exp"));
 		this.setLevelAttributes(this.level);
+		this.equipAccessory(ItemStack.fromNbt(entityData.getCompound("accessory")));
 		this.equipArmor(ItemStack.fromNbt(entityData.getCompound("armor")));
 		this.equipBundle(ItemStack.fromNbt(entityData.getCompound("bundle")));
 		this.setHealth(entityData.getFloat("health"));
+		this.setAccessoryAbility();
 		this.setBatClass();
 		this.setClasses(entityData);
 		this.setClassesAbilities(entityData);
 		this.setAbilitiesEffects(true);
 		this.setPotionTicks(entityData);
+	}
+
+	private void equipAccessory(ItemStack stack) {
+		this.equipStack(EquipmentSlot.HEAD, stack);
 	}
 
 	private void equipArmor(ItemStack stack) {
@@ -875,6 +905,10 @@ public class CompanionBatEntity extends TameableEntity {
 	private void equipBundle(ItemStack stack) {
 		this.equipStack(EquipmentSlot.FEET, stack);
 		this.setEquipmentDropChance(EquipmentSlot.FEET, 0.0F);
+	}
+
+	public ItemStack getAccessory() {
+		return this.getEquippedStack(EquipmentSlot.HEAD);
 	}
 
 	public ItemStack getArmorType() {

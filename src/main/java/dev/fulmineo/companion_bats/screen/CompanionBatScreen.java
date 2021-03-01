@@ -7,7 +7,7 @@ import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
-import dev.fulmineo.companion_bats.item.CompanionBatClass;
+import dev.fulmineo.companion_bats.CompanionBatClass;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
@@ -105,6 +105,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		// Draws the additional slots
 		this.drawTexture(matrices, i + 7, j + 35 - 18, 0, this.backgroundHeight, 18, 18);
 		this.drawTexture(matrices, i + 7, j + 35, 18, this.backgroundHeight, 18, 18);
+		this.drawTexture(matrices, i + 7, j + 35 + 18, 36, this.backgroundHeight, 18, 18);
 
 		float x = i + 28;
 		float y = j + 20;

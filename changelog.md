@@ -1,3 +1,8 @@
+# 1.0.10 - 1.1.6
+- Knights can block attacks more often at max level
+- Duelists gain regeneration more often
+- Duelists now gain even stronger potion effects as their combo level raises
+
 # 1.0.9 - 1.1.5
 - Looters and Alchemists can now attack
 - Looters will receive an added Looting bonus that scales with class levels, up to Looting IV

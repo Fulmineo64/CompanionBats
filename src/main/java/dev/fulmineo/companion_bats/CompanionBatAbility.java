@@ -1,4 +1,4 @@
-package dev.fulmineo.companion_bats.item;
+package dev.fulmineo.companion_bats;
 
 public enum CompanionBatAbility {
 	// Inferno
@@ -27,5 +27,9 @@ public enum CompanionBatAbility {
 
 	// Ninja
 
-	SNEAK_ATTACK, TELEPORT;
+	SNEAK_ATTACK, TELEPORT,
+
+	// Headpiece
+
+	CANNOT_ATTACK, ATTACK_EVERYONE, ATTACK_HOSTILES, ATTACK_PASSIVE;
 }

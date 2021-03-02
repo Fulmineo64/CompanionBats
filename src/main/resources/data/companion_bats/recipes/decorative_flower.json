@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		" p ",
+		"prp",
+		" p "
+	],
+	"key": {
+		"p": {
+			"item": "minecraft:poppy"
+		},
+		"r": {
+			"item": "minecraft:rose_bush"
+		}
+	},
+	"result": {
+		"item": "companion_bats:decorative_flower"
+	}
+}

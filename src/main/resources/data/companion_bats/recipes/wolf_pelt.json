@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"wbw",
+		" w "
+	],
+	"key": {
+		"w": {
+			"item": "minecraft:white_wool"
+		},
+		"b": {
+			"item": "minecraft:bone_block"
+		}
+	},
+	"result": {
+		"item": "companion_bats:wolf_pelt"
+	}
+}

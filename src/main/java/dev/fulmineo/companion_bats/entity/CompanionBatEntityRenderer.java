@@ -13,16 +13,17 @@ public class CompanionBatEntityRenderer extends MobEntityRenderer<CompanionBatEn
     public CompanionBatEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new CompanionBatEntityModel(context.getPart(EntityModelLayers.BAT)), 0.25F);
         this.addFeature(new CompanionBatArmorFeatureRenderer(this, context.getModelLoader()));
+        this.addFeature(new CompanionBatAccessoryFeatureRenderer(this, context.getModelLoader()));
     }
- 
+
     public Identifier getTexture(CompanionBatEntity batEntity) {
        return TEXTURE;
     }
- 
+
     protected void scale(CompanionBatEntity batEntity, MatrixStack matrixStack, float f) {
        matrixStack.scale(0.35F, 0.35F, 0.35F);
     }
- 
+
     protected void setupTransforms(CompanionBatEntity batEntity, MatrixStack matrixStack, float f, float g, float h) {
         if (batEntity.isRoosting()) {
             matrixStack.translate(0.0D, -0.10000000149011612D, 0.0D);

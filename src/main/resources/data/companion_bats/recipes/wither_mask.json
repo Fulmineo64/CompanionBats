@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"c  ",
+		"cwc"
+	],
+	"key": {
+		"c": {
+			"item": "minecraft:coal"
+		},
+		"w": {
+			"item": "minecraft:wither_skeleton_skull"
+		}
+	},
+	"result": {
+		"item": "companion_bats:wither_mask"
+	}
+}

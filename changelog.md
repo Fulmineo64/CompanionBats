@@ -2,6 +2,8 @@
 - Knights can block attacks more often at max level
 - Duelists gain regeneration more often
 - Duelists now gain even stronger potion effects as their combo level raises
+- Added a new accessory system
+- Added 4 new accessories that alter the bat's behaviour towards other entities
 
 # 1.0.9 - 1.1.5
 - Looters and Alchemists can now attack

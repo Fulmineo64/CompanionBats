@@ -43,8 +43,8 @@ public class CompanionBatItem extends Item {
             if (user.isSneaking()){
                 SimpleInventory inventory = new SimpleInventory(3);
 				inventory.setStack(0, ItemStack.fromTag(entityData.getCompound("accessory")));
-				inventory.setStack(0, ItemStack.fromTag(entityData.getCompound("armor")));
-				inventory.setStack(1, ItemStack.fromTag(entityData.getCompound("bundle")));
+				inventory.setStack(1, ItemStack.fromTag(entityData.getCompound("armor")));
+				inventory.setStack(2, ItemStack.fromTag(entityData.getCompound("bundle")));
                 user.openHandledScreen(new ExtendedScreenHandlerFactory() {
                     @Override
                     public void writeScreenOpeningData(ServerPlayerEntity serverPlayerEntity, PacketByteBuf packetByteBuf) {

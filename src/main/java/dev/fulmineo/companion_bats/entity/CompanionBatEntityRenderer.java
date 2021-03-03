@@ -12,6 +12,7 @@ public class CompanionBatEntityRenderer extends MobEntityRenderer<CompanionBatEn
     public CompanionBatEntityRenderer(EntityRenderDispatcher context) {
         super(context, new CompanionBatEntityModel(), 0.25F);
         this.addFeature(new CompanionBatArmorFeatureRenderer(this));
+		this.addFeature(new CompanionBatAccessoryFeatureRenderer(this));
     }
 
     public Identifier getTexture(CompanionBatEntity batEntity) {

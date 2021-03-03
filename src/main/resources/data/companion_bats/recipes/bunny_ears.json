@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"r r",
+		"prp"
+	],
+	"key": {
+		"r": {
+			"item": "minecraft:rabbit_hide"
+		},
+		"p": {
+			"item": "minecraft:pink_dye"
+		}
+	},
+	"result": {
+		"item": "companion_bats:bunny_ears"
+	}
+}

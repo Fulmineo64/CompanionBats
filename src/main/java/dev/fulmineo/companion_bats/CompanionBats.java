@@ -32,7 +32,7 @@ import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
 public class CompanionBats implements ModInitializer {
 
 	public static Logger LOGGER = LogManager.getLogger();
-	public static boolean PROD = false;
+	public static boolean PROD = true;
 
     // Identifiers
 

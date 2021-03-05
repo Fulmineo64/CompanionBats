@@ -1,3 +1,6 @@
+# 1.2.1 - 1.3.1
+- When the owner attacks or is attacked, the Companion bat will try to find the enemy even if it isn't directly visible
+
 # 1.2.0 - 1.3.0
 - Added a new accessory system
 - Added 4 new accessories that alter the bat's behaviour towards other entities

@@ -13,11 +13,13 @@ import org.jetbrains.annotations.Nullable;
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.entity.ai.control.CompanionBatMoveControl;
+import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatAttackWithOwnerGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatFollowOwnerGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatPickUpItemGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatRoostGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatTargetSelectorGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatThrowPotionGoal;
+import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatTrackOwnerAttackerGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatTransferItemsToOwnerGoal;
 import dev.fulmineo.companion_bats.CompanionBatAbility;
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
@@ -33,10 +35,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.AttackWithOwnerGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
-import net.minecraft.entity.ai.goal.TrackOwnerAttackerGoal;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -697,8 +697,8 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 		if (firstTime && !this.hasAbility(CompanionBatAbility.CANNOT_ATTACK)){
 			this.goalSelector.add(1, new MeleeAttackGoal(this, 1.0D, true));
-			this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
-			this.targetSelector.add(2, new AttackWithOwnerGoal(this));
+			this.targetSelector.add(1, new CompanionBatTrackOwnerAttackerGoal(this));
+			this.targetSelector.add(2, new CompanionBatAttackWithOwnerGoal(this));
 			this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge());
 			if (this.hasAbility(CompanionBatAbility.ATTACK_EVERYONE)){
 				this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_EVERYONE));

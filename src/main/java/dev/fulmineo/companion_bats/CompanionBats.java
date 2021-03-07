@@ -9,11 +9,13 @@ import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
 import org.apache.logging.log4j.Level;
@@ -50,9 +52,9 @@ public class CompanionBats implements ModInitializer {
         FabricEntityTypeBuilder.<CompanionBatEntity>create(SpawnGroup.CREATURE, CompanionBatEntity::new).dimensions(EntityDimensions.fixed(0.75f, 0.75f)).build()
     );
 
-    // Items
-
 	public static final ItemGroup GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID,"group"), () -> new ItemStack(Registry.ITEM.get(new Identifier(MOD_ID,"bat_item"))));
+
+    // Items
 
     public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage((int)CompanionBatEntity.getMaxLevelHealth()).group(GROUP));
 	public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
@@ -60,11 +62,16 @@ public class CompanionBats implements ModInitializer {
 
     public static final Item SPIRIT_SHARD = new Item(new FabricItemSettings().group(GROUP));
     public static final Item SPIRIT_CRYSTAL = new Item(new FabricItemSettings().group(GROUP));
+    public static final Item EXPERIENCE_PIE = new Item(new FabricItemSettings().food((new FoodComponent.Builder()).hunger(10).saturationModifier(0.5F).build()).rarity(Rarity.UNCOMMON).group(GROUP));
+
+	// Accessories
 
 	public static final Item BUNNY_EARS = new CompanionBatAccessoryItem("bunny_ears", CompanionBatAbility.CANNOT_ATTACK, 1, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item WITHER_MASK = new CompanionBatAccessoryItem("wither_mask", CompanionBatAbility.ATTACK_EVERYONE, 1, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item DECORATIVE_FLOWER = new CompanionBatAccessoryItem("decorative_flower", CompanionBatAbility.ATTACK_HOSTILES, 1, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item WOLF_PELT = new CompanionBatAccessoryItem("wolf_pelt", CompanionBatAbility.ATTACK_PASSIVE, 1, new FabricItemSettings().group(GROUP).maxCount(1));
+
+	// Armors
 
 	public static final Item INFERNO_SUIT = new CompanionBatArmorItem("inferno_suit", CompanionBatClass.INFERNO, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item VAMPIRIC_ATTIRE = new CompanionBatArmorItem("vampiric_attire", CompanionBatClass.VAMPIRE, new FabricItemSettings().group(GROUP).maxCount(1));
@@ -77,25 +84,32 @@ public class CompanionBats implements ModInitializer {
     @Override
     public void onInitialize() {
         FabricDefaultAttributeRegistry.register(COMPANION_BAT, CompanionBatEntity.createMobAttributes());
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_item"), 		BAT_ITEM);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_flute"), 	 	BAT_FLUTE_ITEM);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_pouch"), 	 	BAT_POUCH_ITEM);
 
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_shard"), 	SPIRIT_SHARD);
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_crystal"),  SPIRIT_CRYSTAL);
+		// Items
 
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bunny_ears"), 		  BUNNY_EARS);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wither_mask"), 	  WITHER_MASK);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "decorative_flower"), DECORATIVE_FLOWER);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wolf_pelt"), 		  WOLF_PELT);
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_item"), 		  	BAT_ITEM);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_flute"), 	 	  	BAT_FLUTE_ITEM);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_pouch"), 	 		BAT_POUCH_ITEM);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_shard"), 	  	SPIRIT_SHARD);
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_crystal"),    	SPIRIT_CRYSTAL);
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "experience_pie"),  	EXPERIENCE_PIE);
 
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "inferno_suit"), 	INFERNO_SUIT);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "vampiric_attire"), VAMPIRIC_ATTIRE);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "looter_jacket"), 	LOOTER_JACKET);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "knight_plate"), 	KNIGHT_PLATE);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "alchemist_robe"), 	ALCHEMIST_ROBE);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "duelist_costume"),	DUELIST_COSTUME);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "ninja_garb"),		NINJA_GARB);
+		// Accessories
+
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bunny_ears"), 		  	BUNNY_EARS);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wither_mask"), 	  	WITHER_MASK);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "decorative_flower"), 	DECORATIVE_FLOWER);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wolf_pelt"), 		  	WOLF_PELT);
+
+		// Armors
+
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "inferno_suit"), 	  	INFERNO_SUIT);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "vampiric_attire"),   	VAMPIRIC_ATTIRE);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "looter_jacket"), 	  	LOOTER_JACKET);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "knight_plate"), 	  	KNIGHT_PLATE);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "alchemist_robe"), 	  	ALCHEMIST_ROBE);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "duelist_costume"),	  	DUELIST_COSTUME);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "ninja_garb"),		  	NINJA_GARB);
 
 		CompanionBatLootTableInit.init();
 		CompanionBatCommandInit.init();

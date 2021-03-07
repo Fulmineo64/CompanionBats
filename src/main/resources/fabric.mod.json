@@ -9,7 +9,7 @@
 	],
 	"contributors": [],
 	"contact": {},
-	"license": "MIT",
+	"license": "https://github.com/Fulmineo64/CompanionBats/blob/master/LICENSE",
 	"icon": "assets/companion-bats/icon.png",
 	"environment": "*",
 	"entrypoints": {

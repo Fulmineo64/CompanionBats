@@ -20,6 +20,8 @@
 	"item.companion_bats.ninja_garb": "Ninja Garb",
 	"item.companion_bats.spirit_shard": "Spirit Shard",
 	"item.companion_bats.spirit_crystal": "Spirit Crystal",
+	"item.companion_bats.experience_pie": "Pie o' Enchanting",
+	"item.companion_bats.experience_pie.tooltip": "Grants the Companion Bat %d combat and class exp",
 	"itemGroup.companion_bats.group": "Companion Bats",
 	"entity.companion_bats.bat": "Companion Bat",
 	"entity.companion_bats.bat.your_bat": "Your bat",

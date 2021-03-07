@@ -1,3 +1,6 @@
+# 1.2.2 - 1.3.2
+- Added the Pie o' Enchanting, a craftable food that grants a moderate amount of exp to the Companion Bat
+
 # 1.2.1 - 1.3.1
 - When the owner attacks or is attacked, the Companion bat will try to find the enemy even if it isn't directly visible
 

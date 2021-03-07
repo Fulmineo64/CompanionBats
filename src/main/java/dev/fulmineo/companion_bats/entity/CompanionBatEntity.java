@@ -26,6 +26,8 @@ import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.CompanionBatClass;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -99,6 +101,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private static final float BASE_SPEED = 0.3F;
 
 	private static final int EXP_GAIN = 1;
+	private static final int EXPERIENCE_PIE_GAIN = 100;
 
 	private static final int ROOST_START_TICKS = 200;
 	private static final int HEAL_TICKS = 600;
@@ -418,7 +421,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private void onAttack(Entity target, float damageDealt) {
 		CompanionBats.info("damage dealt " + damageDealt);
 		if (damageDealt > 0) {
-			this.gainExp();
+			this.gainExp(EXP_GAIN);
 			if (this.hasAbility(CompanionBatAbility.LIFESTEAL)) {
 				this.heal(damageDealt * this.getAbilityValue(CompanionBatAbility.LIFESTEAL) / 100);
 			}
@@ -455,25 +458,16 @@ public class CompanionBatEntity extends TameableEntity {
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (this.world.isClient) {
-			if (this.isInjured() && IS_FOOD_ITEM.test(itemStack)) {
-				for (int i = 0; i < 3; i++) {
-					double d = this.random.nextGaussian() * 0.01D;
-					double e = this.random.nextGaussian() * 0.01D;
-					double f = this.random.nextGaussian() * 0.01D;
-					this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(0.5D), this.getRandomBodyY(), this.getParticleZ(1.0D), d, e, f);
-				}
-				return ActionResult.CONSUME;
-			} else {
-				return ActionResult.PASS;
-			}
+			return this.canEat(itemStack) ? ActionResult.CONSUME : ActionResult.PASS;
 		} else {
 			boolean res = this.healWithItem(itemStack);
 			if (res) {
 				if (!player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
+				this.world.sendEntityStatus(this, (byte)8);
 				return ActionResult.SUCCESS;
-			} else if (itemStack.isOf(Items.PUMPKIN_PIE) && player == this.getOwner()){
+			} else if (IS_FOOD_ITEM.test(itemStack) && player == this.getOwner()){
 				ItemStack fluteStack = this.getFluteItemStack();
 				if (fluteStack == null){
 					this.discard();
@@ -486,8 +480,10 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public boolean healWithItem(ItemStack stack) {
-		if (this.getHealth() == this.getMaxHealth())
-			return false;
+		if (!this.canEat(stack)) return false;
+		if (stack.isOf(CompanionBats.EXPERIENCE_PIE)){
+			this.gainExp(EXPERIENCE_PIE_GAIN);
+		}
 		float amount = getItemHealAmount(stack);
 		if (amount > 0) {
 			this.heal(amount);
@@ -497,7 +493,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public static float getItemHealAmount(ItemStack stack) {
-		if (stack.isOf(Items.PUMPKIN_PIE)) {
+		if (stack.isOf(Items.PUMPKIN_PIE) || stack.isOf(CompanionBats.EXPERIENCE_PIE)) {
 			return 6.0F;
 		}
 		return 0;
@@ -529,6 +525,20 @@ public class CompanionBatEntity extends TameableEntity {
 
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return dimensions.height / 2.0F;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public void handleStatus(byte status) {
+		if (status == 8) {
+			for (int i = 0; i < 3; i++) {
+				double d = this.random.nextGaussian() * 0.01D;
+				double e = this.random.nextGaussian() * 0.01D;
+				double f = this.random.nextGaussian() * 0.01D;
+				this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(0.5D), this.getRandomBodyY(), this.getParticleZ(1.0D), d, e, f);
+			}
+		} else {
+			super.handleStatus(status);
+		}
 	}
 
 	public boolean returnToPlayerInventory() {
@@ -579,7 +589,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void setExp(int exp) {
-		if (this.exp > CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length - 1].totalExpNeeded) {
+		if (exp > CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length - 1].totalExpNeeded) {
 			exp = CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length - 1].totalExpNeeded;
 		}
 		this.exp = exp;
@@ -590,14 +600,14 @@ public class CompanionBatEntity extends TameableEntity {
 		this.setExp(this.exp + expToAdd);
 	}
 
-	private void gainExp() {
+	private void gainExp(int expToAdd) {
 		if (this.exp < CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length - 1].totalExpNeeded) {
-			this.addExp(EXP_GAIN);
+			this.addExp(expToAdd);
 		}
 		if (this.currentClass != null) {
 			CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
 			if (this.classExp < classLevels[classLevels.length - 1].totalExpNeeded) {
-				this.addClassExp(EXP_GAIN);
+				this.addClassExp(expToAdd);
 			}
 		}
 	}
@@ -608,7 +618,7 @@ public class CompanionBatEntity extends TameableEntity {
 
 	private void setClassExp(int classExp) {
 		CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
-		if (this.classExp > classLevels[classLevels.length - 1].totalExpNeeded) {
+		if (classExp > classLevels[classLevels.length - 1].totalExpNeeded) {
 			classExp = classLevels[classLevels.length - 1].totalExpNeeded;
 		}
 		this.classExp = classExp;
@@ -957,6 +967,18 @@ public class CompanionBatEntity extends TameableEntity {
 		return 0;
 	}
 
+	public boolean canEat(ItemStack stack){
+		if (stack.isOf(CompanionBats.EXPERIENCE_PIE)){
+			if (this.currentClass != null) {
+				CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
+				if (this.classExp < classLevels[classLevels.length - 1].totalExpNeeded) return true;
+			}
+			return this.exp < CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length - 1].totalExpNeeded;
+		} else {
+			return this.isInjured() && IS_FOOD_ITEM.test(stack);
+		}
+	}
+
 	public static int getClassLevelByTag(CompoundTag entityData, CompanionBatClass batClass) {
 		int exp = entityData.getInt(batClass.getExpTagName());
 		CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(batClass);
@@ -975,7 +997,7 @@ public class CompanionBatEntity extends TameableEntity {
 
 	static {
 		BAT_FLAGS = DataTracker.registerData(CompanionBatEntity.class, TrackedDataHandlerRegistry.BYTE);
-		IS_FOOD_ITEM = (itemStack) -> itemStack.isOf(Items.PUMPKIN_PIE);
+		IS_FOOD_ITEM = (itemStack) -> itemStack.isOf(Items.PUMPKIN_PIE) || itemStack.isOf(CompanionBats.EXPERIENCE_PIE);
 		IS_FOOD_ITEM_ENTITY = (itemEntity) -> IS_FOOD_ITEM.test(itemEntity.getStack());
 	}
 }

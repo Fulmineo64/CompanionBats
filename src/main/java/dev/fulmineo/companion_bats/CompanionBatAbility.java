@@ -1,5 +1,7 @@
 package dev.fulmineo.companion_bats;
 
+import net.minecraft.text.TranslatableText;
+
 public enum CompanionBatAbility {
 	// Inferno
 
@@ -32,4 +34,8 @@ public enum CompanionBatAbility {
 	// Headpiece
 
 	CANNOT_ATTACK, ATTACK_EVERYONE, ATTACK_HOSTILES, ATTACK_PASSIVE;
+
+	public TranslatableText toTranslatedText() {
+		return new TranslatableText("ability.companion_bats."+this.toString());
+	}
 }

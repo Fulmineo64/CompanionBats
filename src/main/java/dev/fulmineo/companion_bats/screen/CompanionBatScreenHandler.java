@@ -147,7 +147,11 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 				if (!this.insertItem(itemStack2, 1, 2, false)) {
 					return ItemStack.EMPTY;
 				}
-			}  else if (index >= invSize && index < 27 + invSize) {
+			} else if (this.getSlot(2).canInsert(itemStack2) && !this.getSlot(2).hasStack()) {
+				if (!this.insertItem(itemStack2, 2, 3, false)) {
+					return ItemStack.EMPTY;
+				}
+			} else if (index >= invSize && index < 27 + invSize) {
 				if (!this.insertItem(itemStack2, 27 + invSize, 36 + invSize, false)) {
 				   return ItemStack.EMPTY;
 				}

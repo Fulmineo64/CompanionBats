@@ -46,8 +46,8 @@ public class CompanionBatThrowPotionGoal extends Goal {
 			if (this.entity.emergencyPotionTicks > 0) this.entity.emergencyPotionTicks--;
 			if (this.entity.effectPotionTicks > 0) this.entity.effectPotionTicks--;
 			if (this.entity.emergencyPotionTicks <= 0 || this.entity.effectPotionTicks <= 0){
-				this.effectPotionLevel = this.entity.getAbilityValue(CompanionBatAbility.EFFECT_POTION);
-				this.emergencyPotionLevel = this.entity.getAbilityValue(CompanionBatAbility.EMERGENCY_POTION);
+				this.effectPotionLevel = this.entity.abilities.getValue(CompanionBatAbility.EFFECT_POTION);
+				this.emergencyPotionLevel = this.entity.abilities.getValue(CompanionBatAbility.EMERGENCY_POTION);
 				if (this.effectPotionLevel == null || this.effectPotionLevel < 1) this.entity.effectPotionTicks = this.effectPotionCooldown;
 				if (this.emergencyPotionLevel == null || this.emergencyPotionLevel < 1) this.entity.emergencyPotionTicks = this.emergencyPotionCooldown;
 				if (this.entity.emergencyPotionTicks <= 0 || this.entity.effectPotionTicks <= 0){

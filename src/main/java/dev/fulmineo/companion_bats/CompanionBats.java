@@ -26,6 +26,7 @@ import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.init.CompanionBatCommandInit;
 import dev.fulmineo.companion_bats.init.CompanionBatLootTableInit;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
+import dev.fulmineo.companion_bats.item.CompanionBatExperiencePieItem;
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatFluteItem;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
@@ -59,7 +60,7 @@ public class CompanionBats implements ModInitializer {
 	public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
     public static final Item SPIRIT_SHARD = new Item(new FabricItemSettings().group(GROUP));
     public static final Item SPIRIT_CRYSTAL = new Item(new FabricItemSettings().group(GROUP));
-    public static final Item EXPERIENCE_PIE = new Item(new FabricItemSettings().food((new FoodComponent.Builder()).hunger(10).saturationModifier(0.5F).build()).rarity(Rarity.UNCOMMON).group(GROUP));
+    public static final Item EXPERIENCE_PIE = new CompanionBatExperiencePieItem(new FabricItemSettings().food((new FoodComponent.Builder()).hunger(10).saturationModifier(0.5F).build()).rarity(Rarity.UNCOMMON).group(GROUP));
 
 	// Accessories
 

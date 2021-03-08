@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
+import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
@@ -21,6 +22,6 @@ public class CompanionBatExperiencePieItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		tooltip.add(new TranslatableText("item.companion_bats.experience_pie.tooltip").formatted(Formatting.GRAY));
+		tooltip.add(new TranslatableText("item.companion_bats.experience_pie.tooltip", CompanionBatEntity.EXPERIENCE_PIE_GAIN).formatted(Formatting.GRAY));
 	}
 }

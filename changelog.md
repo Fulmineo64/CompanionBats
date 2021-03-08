@@ -1,3 +1,8 @@
+# 1.2.3 - 1.3.3
+- Added new tooltip to the Companion Bat Item that shows the Companion Bat Abilities owned
+- The new Pie o' Enchanting can now be found in: dungeons, shipwrecks, pillager outposts, woodland mansions and abandoned mineshafts
+- Fixed shift clicking the Bundle and the Bat Pouch in the bat's Gui
+
 # 1.2.2 - 1.3.2
 - Added the Pie o' Enchanting, a craftable food that grants a moderate amount of exp to the Companion Bat
 

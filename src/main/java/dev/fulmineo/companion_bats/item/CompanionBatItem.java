@@ -1,14 +1,22 @@
 package dev.fulmineo.companion_bats.item;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.jetbrains.annotations.Nullable;
 
+import dev.fulmineo.companion_bats.CompanionBatAbilities;
+import dev.fulmineo.companion_bats.CompanionBatAbility;
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,6 +31,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
@@ -88,6 +97,19 @@ public class CompanionBatItem extends Item {
         }
         return TypedActionResult.success(itemStack);
     }
+
+	@Environment(EnvType.CLIENT)
+	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+		CompanionBatAbilities abilities = new CompanionBatAbilities();
+		abilities.setFromNbt(getOrCreateEntityData(stack));
+		Set<Entry<CompanionBatAbility, Integer>> entrySet = abilities.entrySet();
+		if (entrySet.size() > 0){
+			tooltip.add(new TranslatableText("item.companion_bats.bat_item.abilities").append(":").formatted(Formatting.AQUA));
+			for (Map.Entry<CompanionBatAbility, Integer> entry : entrySet) {
+				tooltip.add(entry.getKey().toTranslatedText().append(" " + entry.getValue()).formatted(Formatting.GRAY));
+			}
+		}
+	}
 
     public boolean isUsedOnRelease(ItemStack stack) {
         return true;

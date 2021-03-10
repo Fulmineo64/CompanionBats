@@ -24,6 +24,7 @@ public class CompanionBatLootTableInit {
 
 	public static void init(){
 		LootTableLoadingCallback.EVENT.register((resourceManager, lootManager, id, supplier, setter) -> {
+			// Armors
 			if (BASTION_TREASURE_ID.equals(id)) {
 				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(CompanionBats.INFERNO_SUIT));
 				supplier.pool(poolBuilder);
@@ -45,7 +46,9 @@ public class CompanionBatLootTableInit {
 			} else if (END_CITY_TREASURE_ID.equals(id)) {
 				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(BinomialLootTableRange.create(1, 0.35F)).with(ItemEntry.builder(CompanionBats.NINJA_GARB));
 				supplier.pool(poolBuilder);
-			} else if (WOODLAND_MANSION_ID.equals(id) || PILLAGER_OUTPOST_ID.equals(id) || SIMPLE_DUNGEON_ID.equals(id) || ABANDONED_MINESHAFT_ID.equals(id) || SHIPWRECK_TREASURE_ID.equals(id) || STRONGHOLD_CORRIDOR_ID.equals(id)) {
+			}
+			// Pie o' Enchanting
+			if (WOODLAND_MANSION_ID.equals(id) || PILLAGER_OUTPOST_ID.equals(id) || SIMPLE_DUNGEON_ID.equals(id) || ABANDONED_MINESHAFT_ID.equals(id) || SHIPWRECK_TREASURE_ID.equals(id) || STRONGHOLD_CORRIDOR_ID.equals(id)) {
 				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(BinomialLootTableRange.create(WOODLAND_MANSION_ID.equals(id) ? 4 : 2, 0.35F)).with(ItemEntry.builder(CompanionBats.EXPERIENCE_PIE));
 				supplier.pool(poolBuilder);
 			}

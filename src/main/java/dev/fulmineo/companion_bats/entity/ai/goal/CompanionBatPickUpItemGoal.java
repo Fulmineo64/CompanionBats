@@ -49,7 +49,8 @@ public class CompanionBatPickUpItemGoal extends Goal {
                 return false;
             } else if (this.isBundleAvailable()) {
                 this.owner = livingEntity;
-                this.itemList = this.entity.world.getEntitiesByClass(ItemEntity.class, this.entity.getBoundingBox().expand(12.0D, 12.0D, 12.0D), (itemEntity) -> true);
+				if (this.owner.handSwinging) return false;
+                this.itemList = this.entity.world.getEntitiesByClass(ItemEntity.class, this.entity.getBoundingBox().expand(12.0D), (itemEntity) -> true);
                 this.itemList.sort(new ProximityComparator());
                 return this.itemList.size() > 0;
             }

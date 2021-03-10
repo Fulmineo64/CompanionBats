@@ -33,7 +33,7 @@
     "entity.companion_bats.bat.level_up_attack": "[+] %d attack",
     "entity.companion_bats.bat.level_up_speed": "[+] %d%% mov. speed",
     "entity.companion_bats.bat.level_up_lifesteal": "[+] %d%% lifesteal",
-	"entity.companion_bats.bat.ability_level_up": "[Ability] %s has levelled up!",
+	"entity.companion_bats.bat.ability_level_up": "[Ability] %s has leveled up!",
 	"entity.companion_bats.bat.new_ability_gained": "[Ability] obtained %s!",
 	"gui.companion_bats.bat.level": "Level",
     "gui.companion_bats.bat.class": "Class",

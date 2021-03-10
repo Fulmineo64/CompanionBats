@@ -46,6 +46,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
                 return false;
             } else if (this.isBundleAvailable()) {
                 this.owner = livingEntity;
+				if (this.owner.handSwinging) return false;
                 return true;
             }
         }

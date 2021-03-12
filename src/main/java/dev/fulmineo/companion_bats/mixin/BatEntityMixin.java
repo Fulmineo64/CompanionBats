@@ -3,6 +3,7 @@ package dev.fulmineo.companion_bats.mixin;
 import org.spongepowered.asm.mixin.Mixin;
 
 import dev.fulmineo.companion_bats.CompanionBats;
+import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.mob.AmbientEntity;
@@ -11,7 +12,6 @@ import net.minecraft.world.World;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
@@ -25,9 +25,9 @@ public abstract class BatEntityMixin extends AmbientEntity {
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
         if (this.world.isClient){
-            return itemStack.getItem() == Items.PUMPKIN_PIE ? ActionResult.CONSUME : ActionResult.PASS;
+            return CompanionBatEntity.IS_FOOD_ITEM.test(itemStack) ? ActionResult.CONSUME : ActionResult.PASS;
         } else {
-            if (itemStack.getItem() == Items.PUMPKIN_PIE) {
+            if (CompanionBatEntity.IS_FOOD_ITEM.test(itemStack)) {
                 if (!player.abilities.creativeMode) {
                     itemStack.decrement(1);
                 }

@@ -1,3 +1,8 @@
+# 1.2.5 - 1.3.5
+- Added new armor tooltips that show obtainable class abilities
+- Added hints to where to find each armor
+- Bats can now be tamed with the Pie o' Enchanting, but without gaining any experience bonus
+
 # 1.2.4 - 1.3.4
 - The Companion Bat won't pick up items when the owner is mining, digging, chopping, etc. to avoid getting in the way
 - Reduced the chance of finding a Pie o' Enchanting in chests

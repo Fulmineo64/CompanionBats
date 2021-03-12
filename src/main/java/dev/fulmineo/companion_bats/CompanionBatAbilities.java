@@ -56,6 +56,12 @@ public class CompanionBatAbilities {
 		}
 	}
 
+	public void setFromClass(CompanionBatClass batClass) {
+		for (CompanionBatClassLevel level : CompanionBatLevels.CLASS_LEVELS.get(batClass)){
+			this.add(level.ability, level.abilityLevel);
+		}
+	}
+
 	public Integer get(CompanionBatAbility ability) {
 		return this.levels.get(ability);
 	}

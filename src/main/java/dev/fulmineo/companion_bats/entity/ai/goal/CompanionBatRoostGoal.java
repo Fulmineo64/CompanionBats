@@ -21,25 +21,26 @@ public class CompanionBatRoostGoal extends Goal {
     private final float maxDistanceToBegin;
     protected final Random random;
     private int canStartCountdownTicks;
-	private int timeoutTicksToBegin;
+	private int timeoutTicks;
 
-    public CompanionBatRoostGoal(CompanionBatEntity entity, double speed, float maxDistanceToBegin, int timeoutTicksToBegin) {
+    public CompanionBatRoostGoal(CompanionBatEntity entity, double speed, float maxDistanceToBegin, int timeoutTicks) {
         this.entity = entity;
         this.speed = speed;
         this.navigation = entity.getNavigation();
 		this.maxDistanceToBegin = maxDistanceToBegin;
-		this.timeoutTicksToBegin = timeoutTicksToBegin;
-		this.canStartCountdownTicks = this.timeoutTicksToBegin;
+		this.timeoutTicks = timeoutTicks;
+		this.resetTimeoutTicks();
         this.random = new Random();
      }
 
     public boolean canStart() {
+		if (this.entity.isRoosting()) return false;
 		if (!this.navigation.isIdle()) {
-			this.canStartCountdownTicks = this.timeoutTicksToBegin;
+			this.resetTimeoutTicks();
 			return false;
 		}
 		if (--this.canStartCountdownTicks <= 0) {
-            this.canStartCountdownTicks = this.timeoutTicksToBegin;
+            this.resetTimeoutTicks();
 			LivingEntity livingEntity = this.entity.getOwner();
 			if (this.entity.isFleeing() || this.entity.isRoosting() || this.entity.isLeashed() || this.entity.hasVehicle() || this.entity.getTarget() != null){
 				return false;
@@ -51,6 +52,17 @@ public class CompanionBatRoostGoal extends Goal {
 		}
         return false;
     }
+
+	private void resetTimeoutTicks(){
+		float healthPercentage = this.entity.getHealth() / this.entity.getMaxHealth();
+		if (healthPercentage < 0.5F){
+			this.canStartCountdownTicks = (int)(this.timeoutTicks * 0.5F);
+		} else if (healthPercentage < 1.0F){
+			this.canStartCountdownTicks = this.timeoutTicks;
+		} else {
+			this.canStartCountdownTicks = this.timeoutTicks * 2;
+		}
+	}
 
     public boolean shouldContinue() {
         return !this.entity.isRoosting() && this.entity.hangingPosition != null;

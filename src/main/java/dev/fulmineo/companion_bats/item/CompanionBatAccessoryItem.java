@@ -36,8 +36,8 @@ public class CompanionBatAccessoryItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		tooltip.add( new TranslatableText("item.companion_bats.when_equipped").formatted(Formatting.GRAY) );
-		tooltip.add( new TranslatableText("item.companion_bats." + this.identifier + ".tooltip").formatted(Formatting.GRAY) );
+		tooltip.add( new TranslatableText("item.companion_bats.ability_when_equipped").formatted(Formatting.AQUA) );
+		tooltip.add(this.ability.toTranslatedText().formatted(Formatting.GRAY));
 	}
 
 	public CompanionBatAbility getAbility() {

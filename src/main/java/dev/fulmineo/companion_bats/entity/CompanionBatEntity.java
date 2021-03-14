@@ -99,7 +99,7 @@ public class CompanionBatEntity extends TameableEntity {
 
 	private static final float BASE_HEALTH = 6.0F;
 	private static final float BASE_ATTACK = 2.0F;
-	private static final float BASE_SPEED = 0.3F;
+	private static final float BASE_SPEED = 0.35F;
 
 	private static final int EXP_GAIN = 1;
 	public static final int EXPERIENCE_PIE_GAIN = 100;
@@ -146,13 +146,6 @@ public class CompanionBatEntity extends TameableEntity {
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.dataTracker.startTracking(BAT_FLAGS, (byte) 0);
-	}
-
-	protected void initGoals() {
-		this.goalSelector.add(2, new CompanionBatPickUpItemGoal(this, 1.0D, 16.0F));
-		this.goalSelector.add(3, new CompanionBatFollowOwnerGoal(this, 1.0D, 2.5F, 24.0F));
-		this.goalSelector.add(4, new CompanionBatTransferItemsToOwnerGoal(this, 2.5F));
-		this.goalSelector.add(5, new CompanionBatRoostGoal(this, 0.75F, 4.0F, ROOST_START_TICKS));
 	}
 
 	public void writeCustomDataToTag(CompoundTag tag) {
@@ -666,17 +659,23 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void setAbilitiesEffects(boolean firstTime) {
-		if (firstTime && !this.abilities.has(CompanionBatAbility.CANNOT_ATTACK)){
-			this.goalSelector.add(1, new MeleeAttackGoal(this, 1.0D, true));
-			this.targetSelector.add(1, new CompanionBatTrackOwnerAttackerGoal(this));
-			this.targetSelector.add(2, new CompanionBatAttackWithOwnerGoal(this));
-			this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge());
-			if (this.abilities.has(CompanionBatAbility.ATTACK_EVERYONE)){
-				this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_EVERYONE));
-			} else if (this.abilities.has(CompanionBatAbility.ATTACK_HOSTILES)){
-				this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_HOSTILES));
-			} else if (this.abilities.has(CompanionBatAbility.ATTACK_PASSIVE)){
-				this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_PASSIVE));
+		if (firstTime){
+			this.goalSelector.add(2, new CompanionBatPickUpItemGoal(this, 1.0D, 16.0F));
+			this.goalSelector.add(3, new CompanionBatFollowOwnerGoal(this, 1.0D, 2.5F, 24.0F));
+			this.goalSelector.add(4, new CompanionBatTransferItemsToOwnerGoal(this, 2.5F));
+			this.goalSelector.add(5, new CompanionBatRoostGoal(this, 0.75F, 4.0F, ROOST_START_TICKS));
+			if (!this.abilities.has(CompanionBatAbility.CANNOT_ATTACK)){
+				this.goalSelector.add(1, new MeleeAttackGoal(this, 1.0D, true));
+				this.targetSelector.add(1, new CompanionBatTrackOwnerAttackerGoal(this));
+				this.targetSelector.add(2, new CompanionBatAttackWithOwnerGoal(this));
+				this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge());
+				if (this.abilities.has(CompanionBatAbility.ATTACK_EVERYONE)){
+					this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_EVERYONE));
+				} else if (this.abilities.has(CompanionBatAbility.ATTACK_HOSTILES)){
+					this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_HOSTILES));
+				} else if (this.abilities.has(CompanionBatAbility.ATTACK_PASSIVE)){
+					this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_PASSIVE));
+				}
 			}
 		}
 		if (this.abilities.has(CompanionBatAbility.EMERGENCY_POTION) || this.abilities.has(CompanionBatAbility.EFFECT_POTION)) {
@@ -904,7 +903,7 @@ public class CompanionBatEntity extends TameableEntity {
 				CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
 				if (this.classExp < classLevels[classLevels.length - 1].totalExpNeeded) return true;
 			}
-			return this.exp < CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length - 1].totalExpNeeded;
+			return this.isInjured() || (this.exp < CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length - 1].totalExpNeeded);
 		} else {
 			return this.isInjured() && IS_FOOD_ITEM.test(stack);
 		}

@@ -1,3 +1,8 @@
+# 1.2.6 - 1.3.6
+- Increased the Companion Bat's base speed
+- The roosting timeout now varies according to the bat's current health (10s when injured, 30s at full health)
+- Changed the accessories tooltips to fit with the new ones  
+
 # 1.2.5 - 1.3.5
 - Added new armor tooltips that show obtainable class abilities
 - Added hints to where to find each armor

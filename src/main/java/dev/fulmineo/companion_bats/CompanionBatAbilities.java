@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLevel;
+import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -53,6 +54,11 @@ public class CompanionBatAbilities {
 					this.add(level.ability, level.abilityLevel);
 				}
 			}
+		}
+		ItemStack accessoryStack = ItemStack.fromTag(entityData.getCompound("accessory"));
+		if (accessoryStack.getItem() instanceof CompanionBatAccessoryItem) {
+			CompanionBatAccessoryItem accessory = (CompanionBatAccessoryItem) accessoryStack.getItem();
+			this.add(accessory.getAbility(), accessory.getAbilityLevel());
 		}
 	}
 

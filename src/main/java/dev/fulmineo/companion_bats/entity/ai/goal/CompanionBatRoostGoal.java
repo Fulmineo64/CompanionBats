@@ -55,12 +55,10 @@ public class CompanionBatRoostGoal extends Goal {
 
 	private void resetTimeoutTicks(){
 		float healthPercentage = this.entity.getHealth() / this.entity.getMaxHealth();
-		if (healthPercentage < 0.5F){
-			this.canStartCountdownTicks = (int)(this.timeoutTicks * 0.5F);
-		} else if (healthPercentage < 1.0F){
+		if (healthPercentage < 1.0F){
 			this.canStartCountdownTicks = this.timeoutTicks;
 		} else {
-			this.canStartCountdownTicks = this.timeoutTicks * 2;
+			this.canStartCountdownTicks = this.timeoutTicks * 3;
 		}
 	}
 

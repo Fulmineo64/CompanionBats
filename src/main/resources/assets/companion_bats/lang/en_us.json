@@ -3,7 +3,7 @@
     "item.companion_bats.bat_item.exausted": "%s is too exausted to come out, maybe some special food item on ground will help",
     "item.companion_bats.bat_item.abilities": "Abilities",
 	"item.companion_bats.bat_flute": "Bat Flute",
-	"item.companion_bats.when_equipped": "When equipped, the Companion Bat:",
+	"item.companion_bats.ability_when_equipped": "When equipped grants the following ability:",
 	"item.companion_bats.bunny_ears": "Bunny Ears",
 	"item.companion_bats.bunny_ears.tooltip": "will become passive and will not attack",
 	"item.companion_bats.wither_mask": "Wither Mask",

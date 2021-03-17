@@ -414,6 +414,18 @@ public class CompanionBatEntity extends TameableEntity {
 			if (this.abilities.has(CompanionBatAbility.BURN)) {
 				target.setOnFireFor(this.abilities.getValue(CompanionBatAbility.BURN));
 			}
+			if (target instanceof LivingEntity){
+				LivingEntity livingTarget = (LivingEntity)target;
+				if (this.abilities.has(CompanionBatAbility.SLOWNESS)) {
+					livingTarget.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, this.abilities.getValue(CompanionBatAbility.SLOWNESS)));
+				}
+				if (this.abilities.has(CompanionBatAbility.WEAKNESS)) {
+					livingTarget.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 60, this.abilities.getValue(CompanionBatAbility.WEAKNESS)));
+				}
+				if (this.abilities.has(CompanionBatAbility.WITHER)) {
+					livingTarget.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 60, this.abilities.getValue(CompanionBatAbility.WITHER)));
+				}
+			}
 			if (this.abilities.has(CompanionBatAbility.COMBO_ATTACK)) {
 				this.increaseComboLevel();
 			}

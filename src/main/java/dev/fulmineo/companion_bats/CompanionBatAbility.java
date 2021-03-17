@@ -31,7 +31,11 @@ public enum CompanionBatAbility {
 
 	SNEAK_ATTACK, TELEPORT,
 
-	// Headpiece
+	// Mummy
+
+	SLOWNESS, WEAKNESS, WITHER,
+
+	// Accessory
 
 	CANNOT_ATTACK, ATTACK_EVERYONE, ATTACK_HOSTILES, ATTACK_PASSIVE;
 

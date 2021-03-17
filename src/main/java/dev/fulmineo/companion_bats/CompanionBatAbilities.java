@@ -97,6 +97,11 @@ public class CompanionBatAbilities {
 				case TELEPORT: {
 					return level * TELEPORT_MULTIPLIER;
 				}
+				case SLOWNESS:
+				case WEAKNESS:
+				case WITHER: {
+					return level -1;
+				}
 				default: {
 					return level;
 				}

@@ -196,5 +196,21 @@ public class CompanionBatLevels {
 
 		CLASS_LEVELS.put(CompanionBatClass.NINJA, NINJA_LEVELS);
 		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.NINJA, new CompanionBatClassLevel(2250, CompanionBatAbility.SNEAK_ATTACK, 1));
+
+		CompanionBatClassLevel[] MUMMY_LEVELS = new CompanionBatClassLevel[10];
+		MUMMY_LEVELS[0] = new CompanionBatClassLevel(0, null, 0);
+		MUMMY_LEVELS[1] = new CompanionBatClassLevel(50, null, 0);
+		MUMMY_LEVELS[2] = new CompanionBatClassLevel(150, CompanionBatAbility.SLOWNESS, 1);
+		MUMMY_LEVELS[3] = new CompanionBatClassLevel(300, CompanionBatAbility.WEAKNESS, 1);
+		MUMMY_LEVELS[4] = new CompanionBatClassLevel(500, null, 0);
+		MUMMY_LEVELS[5] = new CompanionBatClassLevel(750, CompanionBatAbility.SLOWNESS, 2);
+		MUMMY_LEVELS[6] = new CompanionBatClassLevel(1050, CompanionBatAbility.WITHER, 1);
+		MUMMY_LEVELS[7] = new CompanionBatClassLevel(1400, null, 0);
+		MUMMY_LEVELS[8] = new CompanionBatClassLevel(1800, CompanionBatAbility.SLOWNESS, 3);
+		MUMMY_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.WITHER, 2);
+
+		CLASS_LEVELS.put(CompanionBatClass.MUMMY, MUMMY_LEVELS);
+		GLOBAL_CLASS_LEVELS.put(CompanionBatClass.MUMMY, new CompanionBatClassLevel(2250, CompanionBatAbility.SLOWNESS, 1));
+
 	}
 }

@@ -1,3 +1,6 @@
+# 1.4.0 - 1.5.0
+- Added new class: Mummy
+
 # 1.2.6 - 1.3.6
 - Increased the Companion Bat's base speed
 - The roosting timeout now varies according to the bat's current health (10s when injured, 30s at full health)

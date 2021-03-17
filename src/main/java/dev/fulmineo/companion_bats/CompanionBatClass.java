@@ -7,7 +7,8 @@ public enum CompanionBatClass {
 	KNIGHT,
 	ALCHEMIST,
 	DUELIST,
-	NINJA;
+	NINJA,
+	MUMMY;
 
 	public String getExpTagName(){
 		return this.toString().toLowerCase()+"_exp";

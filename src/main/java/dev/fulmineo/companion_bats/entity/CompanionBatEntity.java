@@ -423,7 +423,7 @@ public class CompanionBatEntity extends TameableEntity {
 					livingTarget.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 60, this.abilities.getValue(CompanionBatAbility.WEAKNESS)));
 				}
 				if (this.abilities.has(CompanionBatAbility.WITHER)) {
-					livingTarget.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 60, this.abilities.getValue(CompanionBatAbility.WITHER)));
+					livingTarget.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 80, this.abilities.getValue(CompanionBatAbility.WITHER)));
 				}
 			}
 			if (this.abilities.has(CompanionBatAbility.COMBO_ATTACK)) {

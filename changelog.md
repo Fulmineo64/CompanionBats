@@ -1,3 +1,5 @@
+- The Companion Bat will now retaliate against its owner's attackers only if the owner has half health or less
+
 # 1.4.0 - 1.5.0
 - Added new class: Mummy
 

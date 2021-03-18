@@ -20,13 +20,13 @@ public class CompanionBatTrackOwnerAttackerGoal extends TrackTargetGoal {
 
 	public boolean canStart() {
 		if (this.entity.isTamed() && !this.entity.isSitting()) {
-			LivingEntity livingEntity = this.entity.getOwner();
-			if (livingEntity == null) {
+			LivingEntity owner = this.entity.getOwner();
+			if (owner == null) {
 				return false;
 			} else {
-				this.attacker = livingEntity.getAttacker();
-				int i = livingEntity.getLastAttackedTime();
-				return i != this.lastAttackedTime && this.canTrack(this.attacker, new TargetPredicate().includeHidden()) && this.entity.canAttackWithOwner(this.attacker, livingEntity);
+				this.attacker = owner.getAttacker();
+				int i = owner.getLastAttackedTime();
+				return i != this.lastAttackedTime && owner.getHealth() < (owner.getMaxHealth() / 2) && this.canTrack(this.attacker, new TargetPredicate().includeHidden()) && this.entity.canAttackWithOwner(this.attacker, owner);
 			}
 		} else {
 			return false;

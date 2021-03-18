@@ -1,3 +1,5 @@
+- The Companion Bat will now retaliate against its owner's attackers only if the owner has half health or less
+
 # 1.5.1
 - Increased slightly wither's ability effect duration
 

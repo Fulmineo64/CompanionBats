@@ -1,11 +1,21 @@
 package dev.fulmineo.companion_bats.item;
 
+import java.util.List;
+
+import org.jetbrains.annotations.Nullable;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -29,6 +39,17 @@ public class CompanionBatPouchItem extends Item {
         return TypedActionResult.success(itemStack);
     }
 
+	@Environment(EnvType.CLIENT)
+	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+		CompoundTag tag = stack.getOrCreateTag();
+		ItemStack containedItemStack = ItemStack.fromTag(tag.getCompound("item"));
+		if (!containedItemStack.isEmpty()){
+			MutableText itemText = containedItemStack.getName().shallowCopy();
+			itemText.append(" x").append(String.valueOf(containedItemStack.getCount()));
+			tooltip.add(itemText.formatted(Formatting.GRAY));
+		}
+	}
+
 	public static boolean isEmpty(ItemStack pouchItemStack){
 		CompoundTag tag = pouchItemStack.getOrCreateTag();
 		if (tag.contains("item")){
@@ -50,7 +71,6 @@ public class CompanionBatPouchItem extends Item {
 		CompoundTag tag = pouchItemStack.getTag();
 		if (tag.contains("item")){
 			ItemStack result = ItemStack.fromTag(tag.getCompound("item"));
-			result.setTag(null);
 			tag.remove("item");
 			return result;
 		}

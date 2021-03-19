@@ -1,5 +1,6 @@
 # 1.4.1 - 1.5.2
 - The Companion Bat will now retaliate against its owner's attackers only if the owner has half health or less
+- Fixed bug relative to the Bat Pouch that transformed the picked up potions into Uncraftable potions
 - The Bat pouch now shows the contained item if present
 
 # 1.5.1

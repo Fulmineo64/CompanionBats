@@ -1,4 +1,9 @@
+# 1.4.1 - 1.5.2
 - The Companion Bat will now retaliate against its owner's attackers only if the owner has half health or less
+- The Bat pouch now shows the contained item if present
+
+# 1.5.1
+- Increased slightly wither's ability effect duration
 
 # 1.4.0 - 1.5.0
 - Added new class: Mummy

@@ -39,20 +39,33 @@ public class CompanionBatArmorItem extends Item {
 	@Environment(EnvType.CLIENT)
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		CompanionBatAbilities abilities = new CompanionBatAbilities();
-		abilities.setFromClass(this.batClass);
+		CompanionBatAbilities permanentAbilities = new CompanionBatAbilities();
+		for (CompanionBatClassLevel level : CompanionBatLevels.CLASS_LEVELS.get(batClass)){
+			abilities.addFromClassLevel(level);
+			if (level.permanent){
+				permanentAbilities.addFromClassLevel(level);
+			}
+		}
+
+		tooltip.add(new TranslatableText("item.companion_bats.armor").formatted(Formatting.GOLD));
+
 		Set<Entry<CompanionBatAbility, Integer>> entrySet = abilities.entrySet();
 		if (entrySet.size() > 0){
-			tooltip.add(new TranslatableText("item.companion_bats.armor_item.abilities").append(":").formatted(Formatting.AQUA));
+			tooltip.add(new TranslatableText("item.companion_bats.armor.abilities").formatted(Formatting.AQUA));
 			for (Map.Entry<CompanionBatAbility, Integer> entry : entrySet) {
 				tooltip.add(entry.getKey().toTranslatedText().formatted(Formatting.GRAY));
 			}
-			CompanionBatClassLevel level = CompanionBatLevels.GLOBAL_CLASS_LEVELS.get(this.batClass);
-			if (level != null){
-				tooltip.add(new TranslatableText("item.companion_bats.armor_item.permanent_ability").append(":").formatted(Formatting.AQUA));
-				tooltip.add(level.ability.toTranslatedText().formatted(Formatting.GRAY));
-			}
-			tooltip.add(new TranslatableText("item.companion_bats."+this.identifier+".tooltip").formatted(Formatting.DARK_GRAY).formatted(Formatting.ITALIC));
 		}
+
+		entrySet = permanentAbilities.entrySet();
+		if (entrySet.size() > 0){
+			tooltip.add(new TranslatableText("item.companion_bats.armor.permanent_ability").formatted(Formatting.AQUA));
+			for (Map.Entry<CompanionBatAbility, Integer> entry : entrySet) {
+				tooltip.add(entry.getKey().toTranslatedText().formatted(Formatting.GRAY));
+			}
+		}
+
+		tooltip.add(new TranslatableText("item.companion_bats."+this.identifier+".tooltip").formatted(Formatting.DARK_GRAY).formatted(Formatting.ITALIC));
 	}
 
     @Environment(EnvType.CLIENT)

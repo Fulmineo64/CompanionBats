@@ -23,12 +23,22 @@ public class CompanionBatAbilities {
 
 	private Map<CompanionBatAbility, Integer> levels = new HashMap<>();
 
-	public void add(CompanionBatAbility ability, Integer level){
-		if (ability != null && level != null){
+	public void add(CompanionBatAbility ability, Integer levelIncrease){
+		if (ability != null && levelIncrease != null){
 			Integer current = this.levels.get(ability);
-			if (ability != null && (current == null || current < level)) {
-				this.levels.put(ability, level);
-			}
+			this.levels.put(ability, (current != null ? current : 0) + levelIncrease);
+		}
+	}
+
+	public void addFromAccessory(CompanionBatAccessoryItem accessoryItem){
+		if (accessoryItem != null){
+			this.add(accessoryItem.getAbility(), accessoryItem.getAbilityLevel());
+		}
+	}
+
+	public void addFromClassLevel(CompanionBatClassLevel classLevel){
+		if (classLevel != null){
+			this.add(classLevel.ability, classLevel.abilityLevelIncrease);
 		}
 	}
 
@@ -41,30 +51,18 @@ public class CompanionBatAbilities {
 		}
 		for (CompanionBatClass batClass : CompanionBatClass.values()) {
 			float classExp = entityData.getInt(batClass.getExpTagName());
-			if (currentClass == batClass) {
-				for (CompanionBatClassLevel level : CompanionBatLevels.CLASS_LEVELS.get(batClass)) {
-					if (level.totalExpNeeded > classExp) {
-						break;
-					}
-					this.add(level.ability, level.abilityLevel);
+			for (CompanionBatClassLevel level : CompanionBatLevels.CLASS_LEVELS.get(batClass)) {
+				if (level.totalExpNeeded > classExp) {
+					break;
 				}
-			} else {
-				CompanionBatClassLevel level = CompanionBatLevels.GLOBAL_CLASS_LEVELS.get(batClass);
-				if (level != null && classExp >= level.totalExpNeeded) {
-					this.add(level.ability, level.abilityLevel);
+				if (currentClass == batClass || level.permanent) {
+					this.addFromClassLevel(level);
 				}
 			}
 		}
 		ItemStack accessoryStack = ItemStack.fromNbt(entityData.getCompound("accessory"));
 		if (accessoryStack.getItem() instanceof CompanionBatAccessoryItem) {
-			CompanionBatAccessoryItem accessory = (CompanionBatAccessoryItem) accessoryStack.getItem();
-			this.add(accessory.getAbility(), accessory.getAbilityLevel());
-		}
-	}
-
-	public void setFromClass(CompanionBatClass batClass) {
-		for (CompanionBatClassLevel level : CompanionBatLevels.CLASS_LEVELS.get(batClass)){
-			this.add(level.ability, level.abilityLevel);
+			this.addFromAccessory((CompanionBatAccessoryItem) accessoryStack.getItem());
 		}
 	}
 

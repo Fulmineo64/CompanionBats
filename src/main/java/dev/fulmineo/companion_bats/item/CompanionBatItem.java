@@ -104,7 +104,7 @@ public class CompanionBatItem extends Item {
 		abilities.setFromNbt(getOrCreateEntityData(stack));
 		Set<Entry<CompanionBatAbility, Integer>> entrySet = abilities.entrySet();
 		if (entrySet.size() > 0){
-			tooltip.add(new TranslatableText("item.companion_bats.bat_item.abilities").append(":").formatted(Formatting.AQUA));
+			tooltip.add(new TranslatableText("item.companion_bats.bat_item.abilities").formatted(Formatting.AQUA));
 			for (Map.Entry<CompanionBatAbility, Integer> entry : entrySet) {
 				tooltip.add(entry.getKey().toTranslatedText().append(" " + entry.getValue()).formatted(Formatting.GRAY));
 			}

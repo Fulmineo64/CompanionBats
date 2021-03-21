@@ -1,3 +1,15 @@
+# 1.6.0 - 1.7.0
+- Redefined completely the Class Leveling System and the Companion Bat Ability System
+- Now abilities of the same type obtained by different sources can stack
+- Improved combat level up notifications
+- Improved class level up notifications
+- Added a new notification for Permanent Abilities
+- Improved the Pie o' Enchanting tooltip
+- Added the type of equipment for Accessories and Armors in their respective tooltips
+- Added one extra level of Slowness to the Mummy class
+- Changed the order of obtaining abilities for some classes, the final number of abilities remains the same
+- The alchemist will now wait at least 3 seconds before throwing a potion when summoned
+
 # 1.4.1 - 1.5.2
 - The Companion Bat will now retaliate against its owner's attackers only if the owner has half health or less
 - Fixed bug relative to the Bat Pouch that transformed the picked up potions into Uncraftable potions

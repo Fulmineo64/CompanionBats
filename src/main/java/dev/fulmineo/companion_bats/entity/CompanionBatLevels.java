@@ -217,5 +217,18 @@ public class CompanionBatLevels {
 
 		CLASS_LEVELS.put(CompanionBatClass.MUMMY, MUMMY_LEVELS);
 
+		CompanionBatClassLevel[] DESTROYER_LEVELS = new CompanionBatClassLevel[10];
+		DESTROYER_LEVELS[0] = new CompanionBatClassLevel(0);
+		DESTROYER_LEVELS[1] = new CompanionBatClassLevel(50);
+		DESTROYER_LEVELS[2] = new CompanionBatClassLevel(150, CompanionBatAbility.DYNAMITE);
+		DESTROYER_LEVELS[3] = new CompanionBatClassLevel(300);
+		DESTROYER_LEVELS[4] = new CompanionBatClassLevel(500, CompanionBatAbility.DYNAMITE);
+		DESTROYER_LEVELS[5] = new CompanionBatClassLevel(750, CompanionBatAbility.INCREASED_HEALTH);
+		DESTROYER_LEVELS[6] = new CompanionBatClassLevel(1050, CompanionBatAbility.DYNAMITE);
+		DESTROYER_LEVELS[7] = new CompanionBatClassLevel(1400);
+		DESTROYER_LEVELS[8] = new CompanionBatClassLevel(1800, CompanionBatAbility.DESTROYER_AURA);
+		DESTROYER_LEVELS[9] = new CompanionBatClassLevel(2250, CompanionBatAbility.INCREASED_HEALTH, true);
+
+		CLASS_LEVELS.put(CompanionBatClass.DESTROYER, DESTROYER_LEVELS);
 	}
 }

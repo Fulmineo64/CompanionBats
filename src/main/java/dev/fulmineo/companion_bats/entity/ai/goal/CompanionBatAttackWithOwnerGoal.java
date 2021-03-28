@@ -34,7 +34,7 @@ public class CompanionBatAttackWithOwnerGoal extends TrackTargetGoal {
 	}
 
 	public void start() {
-		this.mob.setTarget(this.attacking);
+		this.entity.setTarget(this.attacking);
 		LivingEntity livingEntity = this.entity.getOwner();
 		if (livingEntity != null) {
 			this.lastAttackTime = livingEntity.getLastAttackTime();

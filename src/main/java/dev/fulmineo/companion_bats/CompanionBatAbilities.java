@@ -18,6 +18,7 @@ public class CompanionBatAbilities {
 	public static final int INCREASED_ARMOR_MULTIPLIER = 2;
 	public static final int INCREASED_ATTACK_MULTIPLIER = 10;
 	public static final int INCREASED_SPEED_MULTIPLIER = 15;
+	public static final int INCREASED_HEALTH_MULTIPLIER = 2;
 	public static final int LIFESTEAL_MULTIPLIER = 10;
 	public static final int TELEPORT_MULTIPLIER = 25;
 
@@ -88,6 +89,9 @@ public class CompanionBatAbilities {
 				}
 				case INCREASED_SPEED: {
 					return level * INCREASED_SPEED_MULTIPLIER;
+				}
+				case INCREASED_HEALTH: {
+					return level * INCREASED_HEALTH_MULTIPLIER;
 				}
 				case LIFESTEAL: {
 					return level * LIFESTEAL_MULTIPLIER;

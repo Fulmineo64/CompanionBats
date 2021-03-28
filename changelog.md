@@ -1,3 +1,6 @@
+- Added new class: Destroyer
+- The Companion Bat won't pick up anymore the items thrown away by the owner
+
 # 1.6.0 - 1.7.0
 - Redefined completely the Class Leveling System and the Companion Bat Ability System
 - Now abilities of the same type obtained by different sources can stack

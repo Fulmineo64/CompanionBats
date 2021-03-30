@@ -8,7 +8,7 @@ import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.CompanionBatClass;
-import dev.fulmineo.companion_bats.item.CompanionBatItem;
+import dev.fulmineo.companion_bats.nbt.EntityData;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
@@ -41,7 +41,8 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 
 		this.inventory = inventory;
 		ItemStack batItemStack = inventory.player.getStackInHand(handler.hand);
-		CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
+		EntityData.createIfMissing(batItemStack);
+		EntityData entityData = new EntityData(batItemStack);
 
 		this.setLevel(entityData);
 		this.setClassLevel(entityData);
@@ -50,25 +51,25 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		this.passEvents = false;
    	}
 
-	private void setLevel(CompoundTag entityData){
-		this.level = CompanionBatLevels.getLevelByExp(entityData.getInt("exp"));
+	private void setLevel(EntityData entityData){
+		this.level = CompanionBatLevels.getLevelByExp(entityData.getExp());
 
 		if (this.level+1 < CompanionBatLevels.LEVELS.length){
-			this.currentLevelExp = entityData.getInt("exp") - CompanionBatLevels.LEVELS[this.level].totalExpNeeded;
+			this.currentLevelExp = entityData.getExp() - CompanionBatLevels.LEVELS[this.level].totalExpNeeded;
 			this.nextLevelExp = CompanionBatLevels.LEVELS[this.level+1].totalExpNeeded - CompanionBatLevels.LEVELS[this.level].totalExpNeeded;
 		} else {
-			this.currentLevelExp = entityData.getInt("exp");
+			this.currentLevelExp = entityData.getExp();
 			this.nextLevelExp = CompanionBatLevels.LEVELS[this.level].totalExpNeeded;
 			this.maxExpReached = this.currentLevelExp == this.nextLevelExp;
 		}
 	}
 
-	private void setClassLevel(CompoundTag entityData){
-		this.armorStack = ItemStack.fromNbt(entityData.getCompound("armor"));
+	private void setClassLevel(EntityData entityData){
+		this.armorStack = ItemStack.fromNbt((CompoundTag)entityData.getArmor());
 		if (this.armorStack.getItem() instanceof CompanionBatArmorItem){
 			this.currentClass = ((CompanionBatArmorItem)this.armorStack.getItem()).getBatClass();
 			if (this.currentClass != null){
-				int classExp = entityData.getInt(this.currentClass.getExpTagName());
+				int classExp = entityData.getClassExp(this.currentClass);
 				this.classLevel = CompanionBatLevels.getClassLevelByExp(this.currentClass, classExp);
 				CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
 				if (this.classLevel+1 < classLevels.length){
@@ -86,8 +87,8 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		}
 	}
 
-	private void setAttributes(CompoundTag entityData){
-		this.currentHealth = Math.round(entityData.getFloat("health") * 10F) / 10F;
+	private void setAttributes(EntityData entityData){
+		this.currentHealth = Math.round(entityData.getHealth() * 10F) / 10F;
 		this.maxHealth = CompanionBatEntity.getLevelHealth(this.level);
 		this.attack = CompanionBatEntity.getLevelAttack(this.level);
 		this.speed = Math.round(CompanionBatEntity.getLevelSpeed(this.level) * 100F) / 100F;
@@ -150,8 +151,8 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		ItemStack batItemStack = this.inventory.player.getStackInHand(handler.hand);
-		CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
-		ItemStack armorStack = ItemStack.fromNbt(entityData.getCompound("armor"));
+		EntityData entityData = new EntityData(batItemStack);
+		ItemStack armorStack = ItemStack.fromNbt(entityData.getArmor());
 		if (!this.armorStack.getItem().equals(armorStack.getItem())) this.setClassLevel(entityData);
 		this.renderBackground(matrices);
 		super.render(matrices, mouseX, mouseY, delta);

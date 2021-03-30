@@ -28,7 +28,7 @@ import dev.fulmineo.companion_bats.CompanionBatAbility;
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.CompanionBatClass;
-import dev.fulmineo.companion_bats.item.CompanionBatItem;
+import dev.fulmineo.companion_bats.nbt.EntityData;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -40,6 +40,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
@@ -101,9 +102,9 @@ public class CompanionBatEntity extends TameableEntity {
 	// Configurable values
 	// TODO: Add configuration for these values and levels
 
-	private static final float BASE_HEALTH = 6.0F;
-	private static final float BASE_ATTACK = 2.0F;
-	private static final float BASE_SPEED = 0.35F;
+	public static final float BASE_HEALTH = 6.0F;
+	public static final float BASE_ATTACK = 2.0F;
+	public static final float BASE_SPEED = 0.35F;
 
 	private static final int EXP_GAIN = 1;
 	public static final int EXPERIENCE_PIE_GAIN = 100;
@@ -159,21 +160,23 @@ public class CompanionBatEntity extends TameableEntity {
 
 	public void writeCustomDataToNbt(CompoundTag tag) {
 		super.writeCustomDataToNbt(tag);
-		tag.putInt("exp", this.getExp());
-		this.writeExpToTag(tag);
-		this.writePotionTicks(tag);
+		EntityData entityData = new EntityData(tag);
+		entityData.putExp(this.getExp());
+		this.writeExpToTag(entityData);
+		this.writePotionTicks(entityData);
 	}
 
 	public void readCustomDataFromNbt(CompoundTag tag) {
-		super.readCustomDataFromNbt(tag);
-		this.setLevel(tag.getInt("exp"));
+		EntityData entityData = new EntityData(tag);
+		this.setLevel(entityData.getExp());
 		this.setLevelAttributes(this.level);
+		super.readCustomDataFromNbt(tag);
 		this.setAccessoryAbility();
-		this.setBatClass();
-		this.setClasses(tag);
-		this.abilities.setFromNbt(tag);
+		this.setArmorAndClass();
+		this.setClassesExp(entityData);
+		this.abilities.setFromNbt(entityData);
 		this.setAbilitiesEffects(true);
-		this.setPotionTicks(tag);
+		this.setPotionTicks(entityData);
 	}
 
 	protected float getSoundVolume() {
@@ -403,7 +406,6 @@ public class CompanionBatEntity extends TameableEntity {
 
 	public boolean tryRangedAttack(Entity target) {
 		double ownerDistance = target.squaredDistanceTo(this.getOwner());
-		// TODO: use a constant here
 		if (ownerDistance > 25.0D) {
 			Vec3d vec3d = target.getVelocity();
 			double d = target.getX() + vec3d.x - this.getX();
@@ -515,7 +517,7 @@ public class CompanionBatEntity extends TameableEntity {
 				ItemStack fluteStack = this.getFluteItemStack();
 				if (fluteStack == null){
 					this.discard();
-					player.giveItemStack(this.toItem());
+					player.giveItemStack(this.toItemStack());
 					return ActionResult.SUCCESS;
 				}
 			}
@@ -594,9 +596,9 @@ public class CompanionBatEntity extends TameableEntity {
 			while (iterator.hasNext()) {
 				DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
 				for (int i = 0; i < defaultedList.size(); ++i) {
-					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getTag().getUuid("entityUuid").equals(this.getUuid())) {
+					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getTag().getUuid("EntityUUID").equals(this.getUuid())) {
+						defaultedList.set(i, this.toItemStack());
 						this.discard();
-						defaultedList.set(i, this.toItem());
 						world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.AMBIENT, 1F, 1F);
 						return true;
 					}
@@ -615,7 +617,7 @@ public class CompanionBatEntity extends TameableEntity {
 			while (iterator.hasNext()) {
 				DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
 				for (int i = 0; i < defaultedList.size(); ++i) {
-					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getTag().getUuid("entityUuid").equals(this.getUuid())) {
+					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getTag().getUuid("EntityUUID").equals(this.getUuid())) {
 						return defaultedList.get(i);
 					}
 				}
@@ -680,17 +682,22 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 	}
 
-	private void setBatClass() {
+	private void setArmorAndClass() {
 		ItemStack chestStack = this.getEquippedStack(EquipmentSlot.CHEST);
 		if (chestStack.getItem() instanceof CompanionBatArmorItem) {
 			CompanionBatArmorItem armor = (CompanionBatArmorItem) chestStack.getItem();
 			this.currentClass = armor.getBatClass();
+			this.currentClass = armor.getBatClass();
+			int armorToAdd = armor.getProtectionAmount();
+			if (armorToAdd != 0) {
+				this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addTemporaryModifier(new EntityAttributeModifier(BAT_EQUIPMENT_ARMOR_BONUS_ID, "Equipment armor bonus", (double) armorToAdd, EntityAttributeModifier.Operation.ADDITION));
+			}
 		}
 	}
 
-	private void setClasses(CompoundTag entityData) {
+	private void setClassesExp(EntityData entityData) {
 		for (CompanionBatClass cls : CompanionBatClass.values()) {
-			this.classesExp.put(cls, entityData.getInt(cls.getExpTagName()));
+			this.classesExp.put(cls, entityData.getClassExp(cls));
 		}
 		if (this.currentClass != null) {
 			this.classExp = this.classesExp.get(this.currentClass);
@@ -773,6 +780,7 @@ public class CompanionBatEntity extends TameableEntity {
 			ItemStack stack = new ItemStack(Items.STICK);
 			stack.addEnchantment(Enchantments.LOOTING, this.abilities.getValue(CompanionBatAbility.LOOTING));
 			this.equipStack(EquipmentSlot.MAINHAND, stack);
+			this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0F);
 		}
 	}
 
@@ -868,34 +876,34 @@ public class CompanionBatEntity extends TameableEntity {
 		((PlayerEntity) this.getOwner()).sendMessage(message, false);
 	}
 
-	private void writeExpToTag(CompoundTag entityData) {
-		entityData.putInt("exp", this.getExp());
+	private void writeExpToTag(EntityData entityData) {
+		entityData.putExp(this.getExp());
 		for (Map.Entry<CompanionBatClass, Integer> entry : this.classesExp.entrySet()) {
 			if (entry.getValue() > 0) {
-				entityData.putInt(entry.getKey().getExpTagName(), entry.getValue());
+				entityData.putClassExp(entry.getKey(), entry.getValue());
 			}
 		}
 		if (this.currentClass != null) {
-			entityData.putInt(this.currentClass.getExpTagName(), this.getClassExp());
+			entityData.putClassExp(this.currentClass, this.getClassExp());
 		}
 	}
 
-	private void writePotionTicks(CompoundTag entityData) {
-		entityData.putInt("emergencyPotionTicks", this.emergencyPotionTicks);
-		entityData.putInt("effectPotionTicks", this.effectPotionTicks);
+	private void writePotionTicks(EntityData entityData) {
+		entityData.putEmergencyPotionTicks(this.emergencyPotionTicks);
+		entityData.putEffectPotionTicks(this.effectPotionTicks);
 	}
 
-	private void setPotionTicks(CompoundTag entityData) {
-		if (entityData.contains("emergencyPotionTicks")){
-			this.emergencyPotionTicks = Math.max(60, entityData.getInt("emergencyPotionTicks"));
-			this.effectPotionTicks = Math.max(60, entityData.getInt("effectPotionTicks"));
+	private void setPotionTicks(EntityData entityData) {
+		if (entityData.hasPotionTicks()){
+			this.emergencyPotionTicks = Math.max(60, entityData.getEmergencyPotionTicks());
+			this.effectPotionTicks = Math.max(60, entityData.getEffectPotionTicks());
 		} else {
 			this.emergencyPotionTicks = EMERGENCY_POTION_TICKS;
 			this.effectPotionTicks = EFFECT_POTION_TICKS;
 		}
 	}
 
-	protected ItemStack toItem() {
+	protected ItemStack toItemStack() {
 		ItemStack batItemStack = new ItemStack(CompanionBats.BAT_ITEM);
 		if (this.hasCustomName()) {
 			batItemStack.setCustomName(this.getCustomName());
@@ -903,55 +911,16 @@ public class CompanionBatEntity extends TameableEntity {
 		// Set companion bat item durability realtive to the bat health
 		float percentage = 1 - (this.getHealth() / this.getMaxHealth());
 		batItemStack.setDamage(Math.round(percentage * batItemStack.getMaxDamage()));
-		CompoundTag entityData = CompanionBatItem.createEntityData(batItemStack);
-		entityData.putFloat("health", Math.min(this.getHealth(), this.getMaxHealth()));
-		this.writeExpToTag(entityData);
-		entityData.put("accessory", this.getAccessory().writeNbt(new CompoundTag()));
-		entityData.put("armor", this.getArmorType().writeNbt(new CompoundTag()));
-		entityData.put("bundle", this.getBundle().writeNbt(new CompoundTag()));
-		this.writePotionTicks(entityData);
+
+		EntityData.fromCompanionBatEntity(this).toStack(batItemStack);
 		return batItemStack;
 	}
 
-	public void fromItem(PlayerEntity owner, CompoundTag entityData) {
-		this.setOwner(owner);
-		this.setLevel(entityData.getInt("exp"));
-		this.setLevelAttributes(this.level);
-		this.equipAccessory(ItemStack.fromNbt(entityData.getCompound("accessory")));
-		this.equipArmor(ItemStack.fromNbt(entityData.getCompound("armor")));
-		this.equipBundle(ItemStack.fromNbt(entityData.getCompound("bundle")));
-		this.setHealth(entityData.getFloat("health"));
-		this.setAccessoryAbility();
-		this.setBatClass();
-		this.setClasses(entityData);
-		this.abilities.setFromNbt(entityData);
-		this.setAbilitiesEffects(true);
-		this.setPotionTicks(entityData);
-	}
-
-	private void equipAccessory(ItemStack stack) {
-		this.equipStack(EquipmentSlot.HEAD, stack);
-	}
-
-	private void equipArmor(ItemStack stack) {
-		this.equipStack(EquipmentSlot.CHEST, stack);
-		this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0F);
-		if (!this.world.isClient) {
-			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(BAT_EQUIPMENT_ARMOR_BONUS_ID);
-			if (stack.getItem() instanceof CompanionBatArmorItem) {
-				CompanionBatArmorItem armor = (CompanionBatArmorItem) stack.getItem();
-				this.currentClass = armor.getBatClass();
-				int armorToAdd = armor.getProtectionAmount();
-				if (armorToAdd != 0) {
-					this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addTemporaryModifier(new EntityAttributeModifier(BAT_EQUIPMENT_ARMOR_BONUS_ID, "Equipment armor bonus", (double) armorToAdd, EntityAttributeModifier.Operation.ADDITION));
-				}
-			}
-		}
-	}
-
-	private void equipBundle(ItemStack stack) {
-		this.equipStack(EquipmentSlot.FEET, stack);
-		this.setEquipmentDropChance(EquipmentSlot.FEET, 0.0F);
+	public static CompanionBatEntity spawnFromItemStack(ServerWorld world, ItemStack itemStack, PlayerEntity player){
+		Vec3d pos = player.getPos();
+		EntityData entityData = new EntityData(itemStack);
+		entityData.putOwner(player);
+		return (CompanionBatEntity)CompanionBats.COMPANION_BAT.spawnFromItemStack(world, itemStack, player, new BlockPos(pos.x, Math.ceil(pos.y), pos.z), SpawnReason.SPAWN_EGG, false, false);
 	}
 
 	public ItemStack getAccessory() {
@@ -976,17 +945,6 @@ public class CompanionBatEntity extends TameableEntity {
 		} else {
 			return this.isInjured() && IS_FOOD_ITEM.test(stack);
 		}
-	}
-
-	public static int getClassLevelByTag(CompoundTag entityData, CompanionBatClass batClass) {
-		int exp = entityData.getInt(batClass.getExpTagName());
-		CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(batClass);
-		for (int i = classLevels.length - 1; i >= 0; i--) {
-			if (classLevels[i].totalExpNeeded <= exp) {
-				return i;
-			}
-		}
-		return classLevels.length - 1;
 	}
 
 	public static void setDefaultEntityData(CompoundTag tag) {

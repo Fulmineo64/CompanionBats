@@ -12,19 +12,18 @@ import dev.fulmineo.companion_bats.CompanionBatAbility;
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
+import dev.fulmineo.companion_bats.nbt.EntityData;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -35,8 +34,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class CompanionBatItem extends Item {
@@ -48,12 +45,13 @@ public class CompanionBatItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
         if (world instanceof ServerWorld) {
-            CompoundTag entityData = getOrCreateEntityData(itemStack);
+			EntityData.createIfMissing(itemStack);
+			EntityData entityData = new EntityData(itemStack);
             if (user.isSneaking()){
                 SimpleInventory inventory = new SimpleInventory(3);
-                inventory.setStack(0, ItemStack.fromNbt(entityData.getCompound("accessory")));
-                inventory.setStack(1, ItemStack.fromNbt(entityData.getCompound("armor")));
-				inventory.setStack(2, ItemStack.fromNbt(entityData.getCompound("bundle")));
+                inventory.setStack(0, ItemStack.fromNbt(entityData.getAccessory()));
+                inventory.setStack(1, ItemStack.fromNbt(entityData.getArmor()));
+				inventory.setStack(2, ItemStack.fromNbt(entityData.getBundle()));
                 user.openHandledScreen(new ExtendedScreenHandlerFactory() {
                     @Override
                     public void writeScreenOpeningData(ServerPlayerEntity serverPlayerEntity, PacketByteBuf packetByteBuf) {
@@ -71,23 +69,21 @@ public class CompanionBatItem extends Item {
                     }
                 });
             } else {
-                float entityHealth = entityData.getFloat("health");
+                float entityHealth = entityData.getHealth();
                 if (entityHealth == 0){
                     List<ItemEntity> list = world.getEntitiesByClass(ItemEntity.class, user.getBoundingBox().expand(8.0D, 8.0D, 8.0D), CompanionBatEntity.IS_FOOD_ITEM_ENTITY);
                     if (list.size() > 0){
                         ItemEntity foodItemEntity = list.get(0);
                         ItemStack stack = foodItemEntity.getStack();
                         entityHealth += CompanionBatEntity.getItemHealAmount(stack);
-                        entityData.putFloat("health",entityHealth);
+                        entityData.putHealth(entityHealth);
                         stack.decrement(1);
                     }
                 }
                 if (entityHealth > 0){
-					Vec3d pos = user.getPos();
-                    CompanionBatEntity batEntity = (CompanionBatEntity)CompanionBats.COMPANION_BAT.spawnFromItemStack((ServerWorld)world, itemStack, user, new BlockPos(pos.x, Math.ceil(pos.y), pos.z), SpawnReason.SPAWN_EGG, false, false);
-                    batEntity.fromItem(user, entityData);
+					CompanionBatEntity batEntity = CompanionBatEntity.spawnFromItemStack((ServerWorld)world, itemStack, user);
                     ItemStack fluteItemStack = new ItemStack(CompanionBats.BAT_FLUTE_ITEM);
-                    fluteItemStack.getOrCreateTag().putUuid("entityUuid", batEntity.getUuid());
+					fluteItemStack.getOrCreateTag().putUuid("EntityUUID", batEntity.getUuid());
                     return TypedActionResult.success(fluteItemStack, world.isClient());
                 } else {
                     user.sendMessage(new TranslatableText("item.companion_bats.bat_item.exausted", itemStack.hasCustomName() ? itemStack.getName() : new TranslatableText("entity.companion_bats.bat.your_bat")), false);
@@ -101,7 +97,7 @@ public class CompanionBatItem extends Item {
 	@Environment(EnvType.CLIENT)
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		CompanionBatAbilities abilities = new CompanionBatAbilities();
-		abilities.setFromNbt(getOrCreateEntityData(stack));
+		abilities.setFromNbt(new EntityData(stack));
 		Set<Entry<CompanionBatAbility, Integer>> entrySet = abilities.entrySet();
 		if (entrySet.size() > 0){
 			tooltip.add(new TranslatableText("item.companion_bats.bat_item.abilities").formatted(Formatting.AQUA));
@@ -115,33 +111,9 @@ public class CompanionBatItem extends Item {
         return true;
     }
 
-    public static CompoundTag getEntityData(ItemStack stack) {
-        return stack.getSubTag("entityData");
-    }
-
-    public static CompoundTag createEntityData(ItemStack stack) {
-        CompoundTag subTag = new CompoundTag();
-        stack.putSubTag("entityData", subTag);
-        CompanionBatEntity.setDefaultEntityData(subTag);
-        return subTag;
-    }
-
-    public static CompoundTag getOrCreateEntityData(ItemStack stack) {
-        stack.getOrCreateTag(); // Insures that the tag exists
-        CompoundTag subTag = getEntityData(stack);
-        if (subTag == null) {
-            subTag = createEntityData(stack);
-        }
-        return subTag;
-    }
-
-    static {
-
-    }
-
     public Rarity getRarity(ItemStack stack) {
-		CompoundTag entityData = getOrCreateEntityData(stack);
-		int level = CompanionBatLevels.getLevelByExp(entityData.getInt("exp"));
+		EntityData entityData = new EntityData(stack);
+		int level = CompanionBatLevels.getLevelByExp(entityData.getExp());
 		float levelProgression = level / CompanionBatLevels.LEVELS.length;
 		if (levelProgression < 0.5) {
 			return Rarity.COMMON;

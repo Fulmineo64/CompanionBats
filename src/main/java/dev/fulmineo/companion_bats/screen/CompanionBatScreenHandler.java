@@ -3,7 +3,7 @@ package dev.fulmineo.companion_bats.screen;
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
-import dev.fulmineo.companion_bats.item.CompanionBatItem;
+import dev.fulmineo.companion_bats.nbt.EntityData;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
@@ -44,10 +44,9 @@ public class CompanionBatScreenHandler extends ScreenHandler {
                 PlayerEntity player = playerInventory.player;
 				ItemStack batItemStack = player.getStackInHand(hand);
 				if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
-					CompoundTag tag = batItemStack.getTag();
-					CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
-					entityData.put("accessory", stack.writeNbt(new CompoundTag()));
-					tag.put("entityData", entityData);
+					EntityData entityData = new EntityData(batItemStack);
+					entityData.putAccessory(stack.writeNbt(new CompoundTag()));
+					entityData.toStack(batItemStack);
 				}
             }
 
@@ -68,10 +67,9 @@ public class CompanionBatScreenHandler extends ScreenHandler {
                 PlayerEntity player = playerInventory.player;
 				ItemStack batItemStack = player.getStackInHand(hand);
 				if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
-					CompoundTag tag = batItemStack.getTag();
-					CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
-					entityData.put("armor", stack.writeNbt(new CompoundTag()));
-					tag.put("entityData", entityData);
+					EntityData entityData = new EntityData(batItemStack);
+					entityData.putArmor(stack.writeNbt(new CompoundTag()));
+					entityData.toStack(batItemStack);
 				}
             }
 
@@ -93,10 +91,9 @@ public class CompanionBatScreenHandler extends ScreenHandler {
                 if (player.world instanceof ServerWorld){
                     ItemStack batItemStack = player.getStackInHand(hand);
                     if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
-                        CompoundTag tag = batItemStack.getTag();
-                        CompoundTag entityData = CompanionBatItem.getOrCreateEntityData(batItemStack);
-                        entityData.put("bundle", stack.writeNbt(new CompoundTag()));
-                        tag.put("entityData", entityData);
+						EntityData entityData = new EntityData(batItemStack);
+						entityData.putBundle(stack.writeNbt(new CompoundTag()));
+						entityData.toStack(batItemStack);
                     }
                 }
 			}

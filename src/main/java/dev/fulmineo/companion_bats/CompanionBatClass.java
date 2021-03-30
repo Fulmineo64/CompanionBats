@@ -10,8 +10,4 @@ public enum CompanionBatClass {
 	NINJA,
 	MUMMY,
 	DESTROYER;
-
-	public String getExpTagName(){
-		return this.toString().toLowerCase()+"_exp";
-	}
 }

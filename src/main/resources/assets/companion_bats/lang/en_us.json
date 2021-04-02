@@ -28,6 +28,8 @@
 	"item.companion_bats.ninja_garb.tooltip": "Originary of very distant cities",
 	"item.companion_bats.mummy_bandages": "Mummy Bandages",
 	"item.companion_bats.mummy_bandages.tooltip": "Buried away by the sands of time",
+	"item.companion_bats.destroyer_gear": "Destroyer gear",
+	"item.companion_bats.destroyer_gear.tooltip": "Guardian of an ancient temple",
 	"item.companion_bats.spirit_shard": "Spirit Shard",
 	"item.companion_bats.spirit_crystal": "Spirit Crystal",
 	"item.companion_bats.experience_pie": "Pie o' Enchanting",
@@ -74,5 +76,6 @@
 	"ability.companion_bats.ATTACK_PASSIVE": "Attack Passive",
 	"ability.companion_bats.SLOWNESS": "Slowness",
 	"ability.companion_bats.WEAKNESS": "Weakness",
-	"ability.companion_bats.WITHER": "Wither"
+	"ability.companion_bats.WITHER": "Wither",
+	"ability.companion_bats.DYNAMITE": "Dynamite"
 }

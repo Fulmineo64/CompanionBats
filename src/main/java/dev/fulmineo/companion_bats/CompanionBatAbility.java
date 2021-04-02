@@ -37,7 +37,7 @@ public enum CompanionBatAbility {
 
 	// Destroyer
 
-	DYNAMITE, INCREASED_HEALTH, DESTROYER_AURA,
+	DYNAMITE, DESTROYER_AURA,
 
 	// Accessory
 

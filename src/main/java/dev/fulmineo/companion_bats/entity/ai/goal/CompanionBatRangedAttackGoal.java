@@ -38,10 +38,11 @@ public class CompanionBatRangedAttackGoal extends Goal {
     }
 
     public boolean shouldContinue() {
-		return !this.navigation.isIdle() && this.entity.getTarget() != null && this.entity.getTarget().isAlive() && this.isWithinDistanceToAttack(this.entity.getTarget());
+		return this.canStartCountdownTicks <= 0 && !this.navigation.isIdle() && this.entity.getTarget() != null && this.entity.getTarget().isAlive() && this.isWithinDistanceToAttack(this.entity.getTarget());
     }
 
     public void start() {
+		this.updateCountdownTicks = 0;
     }
 
     public void stop() {
@@ -52,7 +53,7 @@ public class CompanionBatRangedAttackGoal extends Goal {
 			this.updateCountdownTicks = 10;
             if (!this.entity.isLeashed() && !this.entity.hasVehicle()) {
 				LivingEntity target = this.entity.getTarget();
-				if (target != null && target.isAlive() && this.entity.tryRangedAttack(target)){
+				if (target != null && target.isAlive() && this.entity.getVisibilityCache().canSee(target) && this.entity.tryRangedAttack(target)){
 					this.canStartCountdownTicks = this.rangedAttackCooldown;
 				}
             }
@@ -61,7 +62,7 @@ public class CompanionBatRangedAttackGoal extends Goal {
 
 	private boolean isWithinDistanceToAttack(LivingEntity target){
 		double distance = this.entity.squaredDistanceTo(target);
-		CompanionBats.info("distance = "+distance+ " min: "+this.minDistanceSquared+ " max:"+this.maxDistanceSquared);
+		CompanionBats.info((distance > this.minDistanceSquared && distance < this.maxDistanceSquared)+" distance = "+distance+ " min: "+this.minDistanceSquared+ " max:"+this.maxDistanceSquared);
 		return distance > this.minDistanceSquared && distance < this.maxDistanceSquared;
 	}
 }

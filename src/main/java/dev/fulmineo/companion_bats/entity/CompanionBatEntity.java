@@ -15,7 +15,6 @@ import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLe
 import dev.fulmineo.companion_bats.entity.ai.control.CompanionBatMoveControl;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatAttackWithOwnerGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatFollowOwnerGoal;
-import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatMeleeAttackGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatPickUpItemGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatRangedAttackGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatRoostGoal;
@@ -41,6 +40,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
@@ -97,7 +97,6 @@ public class CompanionBatEntity extends TameableEntity {
 	private static final UUID BAT_ARMOR_BONUS_ID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F297");
 	private static final UUID BAT_ATTACK_BONUS_ID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F298");
 	private static final UUID BAT_SPEED_BONUS_ID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F299");
-	private static final UUID BAT_HEALTH_BONUS_ID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F2A0");
 
 	// Configurable values
 	// TODO: Add configuration for these values and levels
@@ -721,9 +720,9 @@ public class CompanionBatEntity extends TameableEntity {
 			this.goalSelector.add(6, new CompanionBatRoostGoal(this, 0.75F, 4.0F, ROOST_START_TICKS));
 			if (!this.abilities.has(CompanionBatAbility.CANNOT_ATTACK)){
 				if (this.abilities.has(CompanionBatAbility.DYNAMITE)){
-					this.goalSelector.add(1, new CompanionBatRangedAttackGoal(this, 5.0F, 8.0F, RANGED_ATTACK_TICKS));
+					this.goalSelector.add(1, new CompanionBatRangedAttackGoal(this, 5.0F, 9.0F, RANGED_ATTACK_TICKS));
 				}
-				this.goalSelector.add(2, new CompanionBatMeleeAttackGoal(this, 1.0D, true));
+				this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0D, true));
 				this.targetSelector.add(1, new CompanionBatTrackOwnerAttackerGoal(this));
 				this.targetSelector.add(2, new CompanionBatAttackWithOwnerGoal(this));
 				this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge());
@@ -756,13 +755,6 @@ public class CompanionBatEntity extends TameableEntity {
 			EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 			if (!firstTime) attr.removeModifier(BAT_SPEED_BONUS_ID);
 			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_SPEED_BONUS_ID, "Ability speed bonus", (double) (attr.getBaseValue() * this.abilities.getValue(CompanionBatAbility.INCREASED_SPEED) / 100), EntityAttributeModifier.Operation.ADDITION));
-		}
-		if (this.abilities.has(CompanionBatAbility.INCREASED_HEALTH)) {
-			EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
-			if (!firstTime) attr.removeModifier(BAT_HEALTH_BONUS_ID);
-			int healthBonus = this.abilities.getValue(CompanionBatAbility.INCREASED_HEALTH);
-			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_HEALTH_BONUS_ID, "Ability health bonus", healthBonus, EntityAttributeModifier.Operation.ADDITION));
-			this.heal(healthBonus);
 		}
 		if (this.abilities.has(CompanionBatAbility.FIRE_RESISTANCE)) {
 			this.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 1000000000, 1, false, false));

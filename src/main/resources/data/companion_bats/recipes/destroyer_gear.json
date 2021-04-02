@@ -1,0 +1,28 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"tct",
+		"oCo",
+		"tBt"
+	],
+	"key": {
+		"t": {
+			"item": "minecraft:tnt"
+		},
+		"c": {
+			"item": "minecraft:carved_pumpkin"
+		},
+		"o": {
+			"item": "minecraft:orange_wool"
+		},
+		"C": {
+			"item": "companion_bats:spirit_crystal"
+		},
+		"B": {
+			"item": "minecraft:blue_wool"
+		}
+	},
+	"result": {
+		"item": "companion_bats:destroyer_gear"
+	}
+}

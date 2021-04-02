@@ -58,7 +58,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
     }
 
     public void start() {
-		this.itemList = this.entity.world.getEntitiesByClass(ItemEntity.class, this.entity.getBoundingBox().expand(12.0D, 12.0D, 12.0D), (itemEntity) -> true);
+		this.itemList = this.entity.world.getEntitiesByClass(ItemEntity.class, this.entity.getBoundingBox().expand(12.0D, 12.0D, 12.0D), (itemEntity) -> itemEntity.getThrower() != this.owner.getUuid());
 		this.itemList.sort(new ProximityComparator());
 		if (this.itemList.size() > 0){
 			this.targetItem = this.itemList.get(0);

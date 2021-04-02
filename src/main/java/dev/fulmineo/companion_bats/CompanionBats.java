@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
+import dev.fulmineo.companion_bats.entity.DynamiteEntity;
 import dev.fulmineo.companion_bats.init.CompanionBatCommandInit;
 import dev.fulmineo.companion_bats.init.CompanionBatLootTableInit;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
@@ -36,7 +37,6 @@ import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
 public class CompanionBats implements ModInitializer {
 
 	public static Logger LOGGER = LogManager.getLogger();
-	public static boolean PROD = true;
 
     // Identifiers
 
@@ -52,10 +52,15 @@ public class CompanionBats implements ModInitializer {
         new Identifier(MOD_ID, "bat"),
         FabricEntityTypeBuilder.<CompanionBatEntity>create(SpawnGroup.CREATURE, CompanionBatEntity::new).dimensions(EntityDimensions.fixed(0.75f, 0.75f)).build()
     );
-
-	public static final ItemGroup GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID,"group"), () -> new ItemStack(Registry.ITEM.get(new Identifier(MOD_ID,"bat_item"))));
+    public static final EntityType<DynamiteEntity> DYNAMITE = Registry.register(
+        Registry.ENTITY_TYPE,
+        new Identifier(MOD_ID, "dynamite"),
+		FabricEntityTypeBuilder.<DynamiteEntity>create(SpawnGroup.MISC, DynamiteEntity::new).dimensions(EntityDimensions.fixed(0.25F, 0.25F)).trackRangeChunks(4).trackedUpdateRate(10).build()
+	);
 
     // Items
+
+	public static final ItemGroup GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID,"group"), () -> new ItemStack(Registry.ITEM.get(new Identifier(MOD_ID,"bat_item"))));
 
     public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage((int)CompanionBatEntity.getMaxLevelHealth()).group(GROUP));
 	public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
@@ -82,6 +87,7 @@ public class CompanionBats implements ModInitializer {
 	public static final Item DUELIST_COSTUME = new CompanionBatArmorItem("duelist_costume", CompanionBatClass.DUELIST, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item NINJA_GARB = new CompanionBatArmorItem("ninja_garb", CompanionBatClass.NINJA, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item MUMMY_BANDAGES = new CompanionBatArmorItem("mummy_bandages", CompanionBatClass.MUMMY, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item DESTROYER_GEAR = new CompanionBatArmorItem("destroyer_gear", CompanionBatClass.DESTROYER, new FabricItemSettings().group(GROUP).maxCount(1));
 
     @Override
     public void onInitialize() {
@@ -113,12 +119,13 @@ public class CompanionBats implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "duelist_costume"),	  	DUELIST_COSTUME);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "ninja_garb"),		  	NINJA_GARB);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "mummy_bandages"),		MUMMY_BANDAGES);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "destroyer_gear"),		DESTROYER_GEAR);
 
 		CompanionBatLootTableInit.init();
 		CompanionBatCommandInit.init();
     }
 
 	public static void info(String message){
-        if (!PROD) LOGGER.log(Level.INFO, message);
+        LOGGER.log(Level.INFO, message);
     }
 }

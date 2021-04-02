@@ -1,16 +1,20 @@
 {
 	"schemaVersion": 1,
-	"id": "companion-bats",
+	"id": "companion_bats",
 	"version": "${version}",
-	"name": "Companion bats",
+	"name": "Companion Bats",
 	"description": "Meet your new best friend, a companion bat!",
 	"authors": [
 		"Fulmineo"
 	],
 	"contributors": [],
-	"contact": {},
+	"contact": {
+		"homepage": "https://www.curseforge.com/minecraft/mc-mods/companion-bats",
+		"sources": "https://github.com/Fulmineo64/CompanionBats",
+		"issues": "https://github.com/Fulmineo64/CompanionBats/issues"
+	},
 	"license": "https://github.com/Fulmineo64/CompanionBats/blob/master/LICENSE",
-	"icon": "assets/companion-bats/icon.png",
+	"icon": "assets/companion_bats/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [

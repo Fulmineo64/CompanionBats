@@ -16,6 +16,7 @@ import dev.fulmineo.companion_bats.entity.ai.control.CompanionBatMoveControl;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatAttackWithOwnerGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatFollowOwnerGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatPickUpItemGoal;
+import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatRangedAttackGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatRoostGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatTargetSelectorGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatThrowPotionGoal;
@@ -26,7 +27,7 @@ import dev.fulmineo.companion_bats.CompanionBatAbility;
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.CompanionBatClass;
-import dev.fulmineo.companion_bats.item.CompanionBatItem;
+import dev.fulmineo.companion_bats.nbt.EntityData;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -38,6 +39,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
@@ -99,9 +101,9 @@ public class CompanionBatEntity extends TameableEntity {
 	// Configurable values
 	// TODO: Add configuration for these values and levels
 
-	private static final float BASE_HEALTH = 6.0F;
-	private static final float BASE_ATTACK = 2.0F;
-	private static final float BASE_SPEED = 0.35F;
+	public static final float BASE_HEALTH = 6.0F;
+	public static final float BASE_ATTACK = 2.0F;
+	public static final float BASE_SPEED = 0.35F;
 
 	private static final int EXP_GAIN = 1;
 	public static final int EXPERIENCE_PIE_GAIN = 100;
@@ -113,7 +115,10 @@ public class CompanionBatEntity extends TameableEntity {
 	private static final int COMBO_ATTACK_RESET_TICKS = 600;
 	private static final int TELEPORT_TICKS = 100;
 	private static final int RETRY_TELEPORT_TICKS = 10;
-	private static final int ADVENTURER_AURA_TICKS = 420;
+	private static final int RANGED_ATTACK_TICKS = 100;
+
+	private static int ADVENTURER_AURA_TICKS = 420;
+	private static int DESTROYER_AURA_TICKS = 420;
 
 	public static final Predicate<ItemStack> IS_FOOD_ITEM;
 	public static final Predicate<ItemEntity> IS_FOOD_ITEM_ENTITY;
@@ -130,11 +135,13 @@ public class CompanionBatEntity extends TameableEntity {
 	private int classLevel = -1;
 	private boolean hasTeleport;
 	private boolean hasAdventurerAura;
+	private boolean hasDestroyerAura;
 	private boolean hasPotionGoal;
 	private int comboAttackResetTicks = COMBO_ATTACK_RESET_TICKS;
 	private int comboLevel = 0;
 	private int teleportTicks = TELEPORT_TICKS;
 	private int adventurerAuraTicks = 1;
+	private int destroyerAuraTicks = 1;
 
 	public CompanionBatEntity(EntityType<? extends TameableEntity> entityType, World world) {
 		super(entityType, world);
@@ -152,21 +159,23 @@ public class CompanionBatEntity extends TameableEntity {
 
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
-		tag.putInt("exp", this.getExp());
-		this.writeExpToTag(tag);
-		this.writePotionTicks(tag);
+		EntityData entityData = new EntityData(tag);
+		entityData.putExp(this.getExp());
+		this.writeExpToTag(entityData);
+		this.writePotionTicks(entityData);
 	}
 
 	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.setLevel(tag.getInt("exp"));
+		EntityData entityData = new EntityData(tag);
+		this.setLevel(entityData.getExp());
 		this.setLevelAttributes(this.level);
+		super.readCustomDataFromTag(tag);
 		this.setAccessoryAbility();
-		this.setBatClass();
-		this.setClasses(tag);
-		this.abilities.setFromNbt(tag);
+		this.setArmorAndClass();
+		this.setClassesExp(entityData);
+		this.abilities.setFromNbt(entityData);
 		this.setAbilitiesEffects(true);
-		this.setPotionTicks(tag);
+		this.setPotionTicks(entityData);
 	}
 
 	protected float getSoundVolume() {
@@ -204,7 +213,8 @@ public class CompanionBatEntity extends TameableEntity {
 		return MobEntity.createMobAttributes()
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, BASE_HEALTH)
 			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, BASE_ATTACK)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, BASE_SPEED);
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, BASE_SPEED)
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 24.0D);
 	}
 
 	/**
@@ -279,6 +289,17 @@ public class CompanionBatEntity extends TameableEntity {
 					}
 				}
 			}
+
+			if (this.hasDestroyerAura){
+				this.destroyerAuraTicks--;
+				if (this.destroyerAuraTicks == 0) {
+					this.destroyerAuraTicks = DESTROYER_AURA_TICKS > 200 ? DESTROYER_AURA_TICKS - 200 : DESTROYER_AURA_TICKS;
+					LivingEntity owner = this.getOwner();
+					if (owner != null){
+						owner.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, DESTROYER_AURA_TICKS, 0, false, false));
+					}
+				}
+			}
 		}
 	}
 
@@ -311,7 +332,7 @@ public class CompanionBatEntity extends TameableEntity {
 				}
 			}
 
-			CompanionBats.info("health before damage "+this.getHealth());
+			// CompanionBats.info("health before damage "+this.getHealth());
 
 			if (!source.isUnblockable() && this.abilities.has(CompanionBatAbility.BLOCK_ATTACK)) {
 				int roll = this.world.random.nextInt(100);
@@ -382,6 +403,31 @@ public class CompanionBatEntity extends TameableEntity {
 		return null;
 	}
 
+	public boolean tryRangedAttack(Entity target) {
+		double ownerDistance = target.squaredDistanceTo(this.getOwner());
+		if (ownerDistance > 25.0D) {
+			Vec3d vec3d = target.getVelocity();
+			double d = target.getX() + vec3d.x - this.getX();
+			double e = target.getEyeY() - 1.100000023841858D - this.getY();
+			double f = target.getZ() + vec3d.z - this.getZ();
+			float g = MathHelper.sqrt(d * d + f * f);
+
+			DynamiteEntity dynamite = new DynamiteEntity(this.world, this);
+			dynamite.pitch -= -20.0F;
+			dynamite.setPower(this.abilities.getValue(CompanionBatAbility.DYNAMITE));
+			dynamite.setVelocity(d, e + (double)(g * 0.2F), f, 0.75F, 8.0F);
+
+			if (!this.isSilent()) {
+				this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.PLAYERS, 1.0F, 1F + this.world.random.nextFloat() * 0.4F);
+			}
+
+			this.world.spawnEntity(dynamite);
+			this.setVelocity(d * -0.4, 0, f * -0.4);
+			return true;
+		}
+		return false;
+	}
+
 	public boolean tryAttack(Entity target) {
 		float targetHealth = target instanceof LivingEntity ? ((LivingEntity) target).getHealth() : 0;
 		boolean bl = target.damage(DamageSource.mob(this), this.getAttackDamage(target));
@@ -407,7 +453,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void onAttack(Entity target, float damageDealt) {
-		CompanionBats.info("damage dealt " + damageDealt);
+		// CompanionBats.info("damage dealt " + damageDealt);
 		if (damageDealt > 0) {
 			this.gainExp(EXP_GAIN);
 			if (this.abilities.has(CompanionBatAbility.LIFESTEAL)) {
@@ -439,7 +485,6 @@ public class CompanionBatEntity extends TameableEntity {
 
 		int comboAttackLevel = this.abilities.getValue(CompanionBatAbility.COMBO_ATTACK);
 		this.comboLevel++;
-		CompanionBats.info("Increased combo level to: "+this.comboLevel);
 
 		if (comboAttackLevel >= 3 && this.comboLevel % 15 == 0) {
 			this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, (int)(this.comboLevel / 33) + 2));
@@ -471,7 +516,7 @@ public class CompanionBatEntity extends TameableEntity {
 				ItemStack fluteStack = this.getFluteItemStack();
 				if (fluteStack == null){
 					this.remove();
-					player.giveItemStack(this.toItem());
+					player.giveItemStack(this.toItemStack());
 					return ActionResult.SUCCESS;
 				}
 			}
@@ -550,9 +595,9 @@ public class CompanionBatEntity extends TameableEntity {
 			while (iterator.hasNext()) {
 				DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
 				for (int i = 0; i < defaultedList.size(); ++i) {
-					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getTag().getUuid("entityUuid").equals(this.getUuid())) {
+					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getTag().getUuid("EntityUUID").equals(this.getUuid())) {
+						defaultedList.set(i, this.toItemStack());
 						this.remove();
-						defaultedList.set(i, this.toItem());
 						world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.AMBIENT, 1F, 1F);
 						return true;
 					}
@@ -571,7 +616,7 @@ public class CompanionBatEntity extends TameableEntity {
 			while (iterator.hasNext()) {
 				DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
 				for (int i = 0; i < defaultedList.size(); ++i) {
-					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getTag().getUuid("entityUuid").equals(this.getUuid())) {
+					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getTag().getUuid("EntityUUID").equals(this.getUuid())) {
 						return defaultedList.get(i);
 					}
 				}
@@ -601,12 +646,12 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void gainExp(int expToAdd) {
-		if (this.exp < CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length - 1].totalExpNeeded) {
+		if (this.exp != CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length - 1].totalExpNeeded) {
 			this.addExp(expToAdd);
 		}
 		if (this.currentClass != null) {
 			CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
-			if (this.classExp < classLevels[classLevels.length - 1].totalExpNeeded) {
+			if (this.classExp != classLevels[classLevels.length - 1].totalExpNeeded) {
 				this.addClassExp(expToAdd);
 			}
 		}
@@ -636,17 +681,22 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 	}
 
-	private void setBatClass() {
+	private void setArmorAndClass() {
 		ItemStack chestStack = this.getEquippedStack(EquipmentSlot.CHEST);
 		if (chestStack.getItem() instanceof CompanionBatArmorItem) {
 			CompanionBatArmorItem armor = (CompanionBatArmorItem) chestStack.getItem();
 			this.currentClass = armor.getBatClass();
+			this.currentClass = armor.getBatClass();
+			int armorToAdd = armor.getProtectionAmount();
+			if (armorToAdd != 0) {
+				this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addTemporaryModifier(new EntityAttributeModifier(BAT_EQUIPMENT_ARMOR_BONUS_ID, "Equipment armor bonus", (double) armorToAdd, EntityAttributeModifier.Operation.ADDITION));
+			}
 		}
 	}
 
-	private void setClasses(CompoundTag entityData) {
+	private void setClassesExp(EntityData entityData) {
 		for (CompanionBatClass cls : CompanionBatClass.values()) {
-			this.classesExp.put(cls, entityData.getInt(cls.getExpTagName()));
+			this.classesExp.put(cls, entityData.getClassExp(cls));
 		}
 		if (this.currentClass != null) {
 			this.classExp = this.classesExp.get(this.currentClass);
@@ -664,12 +714,15 @@ public class CompanionBatEntity extends TameableEntity {
 
 	private void setAbilitiesEffects(boolean firstTime) {
 		if (firstTime){
-			this.goalSelector.add(2, new CompanionBatPickUpItemGoal(this, 1.0D, 16.0F));
-			this.goalSelector.add(3, new CompanionBatFollowOwnerGoal(this, 1.0D, 2.5F, 24.0F));
-			this.goalSelector.add(4, new CompanionBatTransferItemsToOwnerGoal(this, 2.5F));
-			this.goalSelector.add(5, new CompanionBatRoostGoal(this, 0.75F, 4.0F, ROOST_START_TICKS));
+			this.goalSelector.add(3, new CompanionBatPickUpItemGoal(this, 1.0D, 16.0F));
+			this.goalSelector.add(4, new CompanionBatFollowOwnerGoal(this, 1.0D, 2.5F, 24.0F));
+			this.goalSelector.add(5, new CompanionBatTransferItemsToOwnerGoal(this, 2.5F));
+			this.goalSelector.add(6, new CompanionBatRoostGoal(this, 0.75F, 4.0F, ROOST_START_TICKS));
 			if (!this.abilities.has(CompanionBatAbility.CANNOT_ATTACK)){
-				this.goalSelector.add(1, new MeleeAttackGoal(this, 1.0D, true));
+				if (this.abilities.has(CompanionBatAbility.DYNAMITE)){
+					this.goalSelector.add(1, new CompanionBatRangedAttackGoal(this, 5.0F, 9.0F, RANGED_ATTACK_TICKS));
+				}
+				this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0D, true));
 				this.targetSelector.add(1, new CompanionBatTrackOwnerAttackerGoal(this));
 				this.targetSelector.add(2, new CompanionBatAttackWithOwnerGoal(this));
 				this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge());
@@ -684,7 +737,7 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 		if (this.abilities.has(CompanionBatAbility.EMERGENCY_POTION) || this.abilities.has(CompanionBatAbility.EFFECT_POTION)) {
 			if (!this.hasPotionGoal){
-				this.goalSelector.add(6, new CompanionBatThrowPotionGoal(this, 3.0F, EMERGENCY_POTION_TICKS, EFFECT_POTION_TICKS));
+				this.goalSelector.add(7, new CompanionBatThrowPotionGoal(this, 3.0F, EMERGENCY_POTION_TICKS, EFFECT_POTION_TICKS));
 				this.hasPotionGoal = true;
 			}
 		}
@@ -712,10 +765,14 @@ public class CompanionBatEntity extends TameableEntity {
 		if (this.abilities.has(CompanionBatAbility.ADVENTURER_AURA)) {
 			this.hasAdventurerAura = true;
 		}
+		if (this.abilities.has(CompanionBatAbility.DESTROYER_AURA)) {
+			this.hasDestroyerAura = true;
+		}
 		if (this.abilities.has(CompanionBatAbility.LOOTING)) {
 			ItemStack stack = new ItemStack(Items.STICK);
 			stack.addEnchantment(Enchantments.LOOTING, this.abilities.getValue(CompanionBatAbility.LOOTING));
 			this.equipStack(EquipmentSlot.MAINHAND, stack);
+			this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0F);
 		}
 	}
 
@@ -811,34 +868,34 @@ public class CompanionBatEntity extends TameableEntity {
 		((PlayerEntity) this.getOwner()).sendMessage(message, false);
 	}
 
-	private void writeExpToTag(CompoundTag entityData) {
-		entityData.putInt("exp", this.getExp());
+	private void writeExpToTag(EntityData entityData) {
+		entityData.putExp(this.getExp());
 		for (Map.Entry<CompanionBatClass, Integer> entry : this.classesExp.entrySet()) {
 			if (entry.getValue() > 0) {
-				entityData.putInt(entry.getKey().getExpTagName(), entry.getValue());
+				entityData.putClassExp(entry.getKey(), entry.getValue());
 			}
 		}
 		if (this.currentClass != null) {
-			entityData.putInt(this.currentClass.getExpTagName(), this.getClassExp());
+			entityData.putClassExp(this.currentClass, this.getClassExp());
 		}
 	}
 
-	private void writePotionTicks(CompoundTag entityData) {
-		entityData.putInt("emergencyPotionTicks", this.emergencyPotionTicks);
-		entityData.putInt("effectPotionTicks", this.effectPotionTicks);
+	private void writePotionTicks(EntityData entityData) {
+		entityData.putEmergencyPotionTicks(this.emergencyPotionTicks);
+		entityData.putEffectPotionTicks(this.effectPotionTicks);
 	}
 
-	private void setPotionTicks(CompoundTag entityData) {
-		if (entityData.contains("emergencyPotionTicks")){
-			this.emergencyPotionTicks = Math.max(60, entityData.getInt("emergencyPotionTicks"));
-			this.effectPotionTicks = Math.max(60, entityData.getInt("effectPotionTicks"));
+	private void setPotionTicks(EntityData entityData) {
+		if (entityData.hasPotionTicks()){
+			this.emergencyPotionTicks = Math.max(60, entityData.getEmergencyPotionTicks());
+			this.effectPotionTicks = Math.max(60, entityData.getEffectPotionTicks());
 		} else {
 			this.emergencyPotionTicks = EMERGENCY_POTION_TICKS;
 			this.effectPotionTicks = EFFECT_POTION_TICKS;
 		}
 	}
 
-	protected ItemStack toItem() {
+	protected ItemStack toItemStack() {
 		ItemStack batItemStack = new ItemStack(CompanionBats.BAT_ITEM);
 		if (this.hasCustomName()) {
 			batItemStack.setCustomName(this.getCustomName());
@@ -846,55 +903,16 @@ public class CompanionBatEntity extends TameableEntity {
 		// Set companion bat item durability realtive to the bat health
 		float percentage = 1 - (this.getHealth() / this.getMaxHealth());
 		batItemStack.setDamage(Math.round(percentage * batItemStack.getMaxDamage()));
-		CompoundTag entityData = CompanionBatItem.createEntityData(batItemStack);
-		entityData.putFloat("health", this.getHealth());
-		this.writeExpToTag(entityData);
-		entityData.put("accessory", this.getAccessory().toTag(new CompoundTag()));
-		entityData.put("armor", this.getArmorType().toTag(new CompoundTag()));
-		entityData.put("bundle", this.getBundle().toTag(new CompoundTag()));
-		this.writePotionTicks(entityData);
+
+		EntityData.fromCompanionBatEntity(this).toStack(batItemStack);
 		return batItemStack;
 	}
 
-	public void fromItem(PlayerEntity owner, CompoundTag entityData) {
-		this.setOwner(owner);
-		this.setLevel(entityData.getInt("exp"));
-		this.setLevelAttributes(this.level);
-		this.equipAccessory(ItemStack.fromTag(entityData.getCompound("accessory")));
-		this.equipArmor(ItemStack.fromTag(entityData.getCompound("armor")));
-		this.equipBundle(ItemStack.fromTag(entityData.getCompound("bundle")));
-		this.setHealth(entityData.getFloat("health"));
-		this.setAccessoryAbility();
-		this.setBatClass();
-		this.setClasses(entityData);
-		this.abilities.setFromNbt(entityData);
-		this.setAbilitiesEffects(true);
-		this.setPotionTicks(entityData);
-	}
-
-	private void equipAccessory(ItemStack stack) {
-		this.equipStack(EquipmentSlot.HEAD, stack);
-	}
-
-	private void equipArmor(ItemStack stack) {
-		this.equipStack(EquipmentSlot.CHEST, stack);
-		this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0F);
-		if (!this.world.isClient) {
-			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(BAT_EQUIPMENT_ARMOR_BONUS_ID);
-			if (stack.getItem() instanceof CompanionBatArmorItem) {
-				CompanionBatArmorItem armor = (CompanionBatArmorItem) stack.getItem();
-				this.currentClass = armor.getBatClass();
-				int armorToAdd = armor.getProtectionAmount();
-				if (armorToAdd != 0) {
-					this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addTemporaryModifier(new EntityAttributeModifier(BAT_EQUIPMENT_ARMOR_BONUS_ID, "Equipment armor bonus", (double) armorToAdd, EntityAttributeModifier.Operation.ADDITION));
-				}
-			}
-		}
-	}
-
-	private void equipBundle(ItemStack stack) {
-		this.equipStack(EquipmentSlot.FEET, stack);
-		this.setEquipmentDropChance(EquipmentSlot.FEET, 0.0F);
+	public static CompanionBatEntity spawnFromItemStack(ServerWorld world, ItemStack itemStack, PlayerEntity player){
+		Vec3d pos = player.getPos();
+		EntityData entityData = new EntityData(itemStack);
+		entityData.putOwner(player);
+		return (CompanionBatEntity)CompanionBats.COMPANION_BAT.spawnFromItemStack(world, itemStack, player, new BlockPos(pos.x, Math.ceil(pos.y), pos.z), SpawnReason.SPAWN_EGG, false, false);
 	}
 
 	public ItemStack getAccessory() {
@@ -919,17 +937,6 @@ public class CompanionBatEntity extends TameableEntity {
 		} else {
 			return this.isInjured() && IS_FOOD_ITEM.test(stack);
 		}
-	}
-
-	public static int getClassLevelByTag(CompoundTag entityData, CompanionBatClass batClass) {
-		int exp = entityData.getInt(batClass.getExpTagName());
-		CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(batClass);
-		for (int i = classLevels.length - 1; i >= 0; i--) {
-			if (classLevels[i].totalExpNeeded <= exp) {
-				return i;
-			}
-		}
-		return classLevels.length - 1;
 	}
 
 	public static void setDefaultEntityData(CompoundTag tag) {

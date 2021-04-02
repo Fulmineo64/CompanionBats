@@ -23,7 +23,7 @@ public class CompanionBatFluteItem extends Item {
         if (world instanceof ServerWorld) {
             CompoundTag tag = fluteItemStack.getTag();
             if (tag != null) {
-                CompanionBatEntity entity = (CompanionBatEntity) ((ServerWorld) world).getEntity(tag.getUuid("entityUuid"));
+                CompanionBatEntity entity = (CompanionBatEntity) ((ServerWorld) world).getEntity(tag.getUuid("EntityUUID"));
                 if (entity != null) {
                     entity.returnToPlayerInventory();
                     return TypedActionResult.success(fluteItemStack);

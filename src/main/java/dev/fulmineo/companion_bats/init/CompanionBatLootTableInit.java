@@ -17,6 +17,7 @@ public class CompanionBatLootTableInit {
 	private static final Identifier PILLAGER_OUTPOST_ID = new Identifier("minecraft", "chests/pillager_outpost");
 	private static final Identifier END_CITY_TREASURE_ID = new Identifier("minecraft", "chests/end_city_treasure");
 	private static final Identifier DESERT_PYRAMID_ID = new Identifier("minecraft", "chests/desert_pyramid");
+	private static final Identifier JUNGLE_TEMPLE_ID = new Identifier("minecraft", "chests/jungle_temple");
 
 	private static final Identifier SIMPLE_DUNGEON_ID = new Identifier("minecraft", "chests/simple_dungeon");
 	private static final Identifier ABANDONED_MINESHAFT_ID = new Identifier("minecraft", "chests/abandoned_mineshaft");
@@ -49,6 +50,9 @@ public class CompanionBatLootTableInit {
 				supplier.pool(poolBuilder);
 			} else if (DESERT_PYRAMID_ID.equals(id)) {
 				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(BinomialLootTableRange.create(1, 0.25F)).with(ItemEntry.builder(CompanionBats.MUMMY_BANDAGES));
+				supplier.pool(poolBuilder);
+			} else if (JUNGLE_TEMPLE_ID.equals(id)) {
+				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(CompanionBats.DESTROYER_GEAR));
 				supplier.pool(poolBuilder);
 			}
 			// Pie o' Enchanting

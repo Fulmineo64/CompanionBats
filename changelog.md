@@ -1,3 +1,12 @@
+- Added new class: Destroyer
+- The Companion Bat won't pick up the items thrown away by the owner
+- Positive and negative effects will now persist even when the bat is recalled
+- The bat will instantly be extinguished when returning to the owner's inventory
+
+### Technical changes
+- Redefined completely the bat entity storage, now all entity information will be saved with some exceptions
+- Position, Fire ticks and Attributes will be cleared when the Companion Bat is stored in item form
+
 # 1.6.0 - 1.7.0
 - Redefined completely the Class Leveling System and the Companion Bat Ability System
 - Now abilities of the same type obtained by different sources can stack

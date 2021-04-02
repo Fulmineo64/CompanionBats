@@ -9,8 +9,8 @@ import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
+import dev.fulmineo.companion_bats.nbt.EntityData;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
 
 public class CompanionBatAbilities {
 	public static final int BLOCK_ATTACK_MULTIPLIER = 10;
@@ -42,15 +42,15 @@ public class CompanionBatAbilities {
 		}
 	}
 
-	public void setFromNbt(CompoundTag entityData) {
+	public void setFromNbt(EntityData entityData) {
 		CompanionBatClass currentClass = null;
-		ItemStack armorStack = ItemStack.fromTag(entityData.getCompound("armor"));
+		ItemStack armorStack = ItemStack.fromTag(entityData.getArmor());
 		if (armorStack.getItem() instanceof CompanionBatArmorItem) {
 			CompanionBatArmorItem armor = (CompanionBatArmorItem) armorStack.getItem();
 			currentClass = armor.getBatClass();
 		}
 		for (CompanionBatClass batClass : CompanionBatClass.values()) {
-			float classExp = entityData.getInt(batClass.getExpTagName());
+			float classExp = entityData.getClassExp(batClass);
 			for (CompanionBatClassLevel level : CompanionBatLevels.CLASS_LEVELS.get(batClass)) {
 				if (level.totalExpNeeded > classExp) {
 					break;
@@ -60,7 +60,7 @@ public class CompanionBatAbilities {
 				}
 			}
 		}
-		ItemStack accessoryStack = ItemStack.fromTag(entityData.getCompound("accessory"));
+		ItemStack accessoryStack = ItemStack.fromTag(entityData.getAccessory());
 		if (accessoryStack.getItem() instanceof CompanionBatAccessoryItem) {
 			this.addFromAccessory((CompanionBatAccessoryItem) accessoryStack.getItem());
 		}

@@ -4,6 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
+import dev.fulmineo.companion_bats.nbt.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.mob.AmbientEntity;
@@ -32,8 +33,10 @@ public abstract class BatEntityMixin extends AmbientEntity {
                     itemStack.decrement(1);
                 }
 
-				this.remove();
 				ItemStack batItemStack = new ItemStack(CompanionBats.BAT_ITEM);
+				EntityData.fromRegularBatEntity(this).toStack(batItemStack);
+
+				this.remove();
 				if (!player.giveItemStack(batItemStack)){
 					ItemEntity itemEntity = player.dropItem(batItemStack, false);
 					if (itemEntity != null) {

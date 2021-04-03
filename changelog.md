@@ -1,3 +1,5 @@
+# 1.8.0 - 1.9.0
+- Updated to Minecraft snapshot 21w13a
 - Added new class: Destroyer
 - The Companion Bat won't pick up the items thrown away by the owner
 - Positive and negative effects will now persist even when the bat is recalled

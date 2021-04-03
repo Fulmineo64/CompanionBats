@@ -7,27 +7,27 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.FloatTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtFloat;
+import net.minecraft.nbt.NbtList;
 
 public class EntityData {
-	private CompoundTag tag;
+	private NbtCompound tag;
 
 	public EntityData(ItemStack itemStack){
 		this.tag = itemStack.getSubTag("EntityTag");
 		if (this.tag == null){
-			this.tag = new CompoundTag();
+			this.tag = new NbtCompound();
 		}
 	}
 
-	public EntityData(CompoundTag tag){
+	public EntityData(NbtCompound tag){
 		this.tag = tag;
 	}
 
 	public static EntityData fromRegularBatEntity(LivingEntity entity){
-		CompoundTag entityTag = new CompoundTag();
-		entity.saveSelfToTag(entityTag);
+		NbtCompound entityTag = new NbtCompound();
+		entity.saveSelfNbt(entityTag);
 		entityTag.putString("id", CompanionBats.MOD_ID+":bat");
 		EntityData entityData = new EntityData(entityTag);
 		entityData.init();
@@ -36,31 +36,31 @@ public class EntityData {
 	}
 
 	public static EntityData fromCompanionBatEntity(CompanionBatEntity entity){
-		CompoundTag entityTag = new CompoundTag();
-		entity.saveSelfToTag(entityTag);
+		NbtCompound entityTag = new NbtCompound();
+		entity.saveSelfNbt(entityTag);
 		EntityData entityData = new EntityData(entityTag);
 		entityData.clearAttributes();
 		return entityData;
 	}
 
-	public static CompoundTag getFromStack(ItemStack itemStack){
+	public static NbtCompound getFromStack(ItemStack itemStack){
 		return itemStack.getSubTag("EntityTag");
 	}
 
-	public static void toStack(ItemStack itemStack, CompoundTag entityTag){
+	public static void toStack(ItemStack itemStack, NbtCompound entityTag){
 		itemStack.putSubTag("EntityTag", entityTag);
 	}
 
 	public void init(){
-		ListTag armorDropChances = new ListTag();
+		NbtList armorDropChances = new NbtList();
 		for(int i = 0; i < 4; ++i) {
-		   armorDropChances.add(FloatTag.of(0.0F));
+		   armorDropChances.add(NbtFloat.of(0.0F));
 		}
 		tag.put("ArmorDropChances", armorDropChances);
 
-		ListTag handDropChances = new ListTag();
-		handDropChances.add(FloatTag.of(0.0F));
-		handDropChances.add(FloatTag.of(0.0F));
+		NbtList handDropChances = new NbtList();
+		handDropChances.add(NbtFloat.of(0.0F));
+		handDropChances.add(NbtFloat.of(0.0F));
 		tag.put("HandDropChances", handDropChances);
 	}
 
@@ -92,44 +92,44 @@ public class EntityData {
 		this.tag.putInt(getClassExpName(batClass), classExp);
 	}
 
-	public ListTag getArmorItems(){
+	public NbtList getArmorItems(){
 		if (!this.tag.contains("ArmorItems")) {
-			ListTag armorItems = new ListTag();
-			armorItems.add(new CompoundTag());
-			armorItems.add(new CompoundTag());
-			armorItems.add(new CompoundTag());
-			armorItems.add(new CompoundTag());
+			NbtList armorItems = new NbtList();
+			armorItems.add(new NbtCompound());
+			armorItems.add(new NbtCompound());
+			armorItems.add(new NbtCompound());
+			armorItems.add(new NbtCompound());
 			this.tag.put("ArmorItems", armorItems);
 		}
 		return this.tag.getList("ArmorItems", 10);
 	}
 
-	public void putArmorItem(int index, CompoundTag armorItemTag){
-		ListTag armorItems = this.getArmorItems();
+	public void putArmorItem(int index, NbtCompound armorItemTag){
+		NbtList armorItems = this.getArmorItems();
 		armorItems.set(index, armorItemTag);
 	}
 
-	public CompoundTag getAccessory(){
+	public NbtCompound getAccessory(){
 		return this.getArmorItems().getCompound(EquipmentSlot.HEAD.getEntitySlotId());
 	}
 
-	public CompoundTag getArmor(){
+	public NbtCompound getArmor(){
 		return this.getArmorItems().getCompound(EquipmentSlot.CHEST.getEntitySlotId());
 	}
 
-	public CompoundTag getBundle(){
+	public NbtCompound getBundle(){
 		return this.getArmorItems().getCompound(EquipmentSlot.FEET.getEntitySlotId());
 	}
 
-	public void putAccessory(CompoundTag accessoryTag){
+	public void putAccessory(NbtCompound accessoryTag){
 		this.putArmorItem(EquipmentSlot.HEAD.getEntitySlotId(), accessoryTag);
 	}
 
-	public void putArmor(CompoundTag armorTag){
+	public void putArmor(NbtCompound armorTag){
 		this.putArmorItem(EquipmentSlot.CHEST.getEntitySlotId(), armorTag);
 	}
 
-	public void putBundle(CompoundTag bundleTag){
+	public void putBundle(NbtCompound bundleTag){
 		this.putArmorItem(EquipmentSlot.FEET.getEntitySlotId(), bundleTag);
 	}
 
@@ -173,11 +173,11 @@ public class EntityData {
 	}
 
 	public static void createIfMissing(ItemStack batItemStack){
-		CompoundTag tag = batItemStack.getOrCreateTag();
+		NbtCompound tag = batItemStack.getOrCreateTag();
 		if (!tag.contains("EntityTag")) {
 			EntityData entityData = new EntityData(batItemStack);
 			if (tag.contains("entityData")){
-				CompoundTag oldEntityData = tag.getCompound("entityData");
+				NbtCompound oldEntityData = tag.getCompound("entityData");
 				entityData.init();
 				entityData.putHealth(oldEntityData.getFloat("health"));
 				entityData.putAccessory(oldEntityData.getCompound("accessory"));

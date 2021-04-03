@@ -62,7 +62,6 @@ public class CompanionBatRangedAttackGoal extends Goal {
 
 	private boolean isWithinDistanceToAttack(LivingEntity target){
 		double distance = this.entity.squaredDistanceTo(target);
-		CompanionBats.info((distance > this.minDistanceSquared && distance < this.maxDistanceSquared)+" distance = "+distance+ " min: "+this.minDistanceSquared+ " max:"+this.maxDistanceSquared);
 		return distance > this.minDistanceSquared && distance < this.maxDistanceSquared;
 	}
 }

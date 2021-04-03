@@ -5,7 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -21,7 +21,7 @@ public class CompanionBatFluteItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack fluteItemStack = user.getStackInHand(hand);
         if (world instanceof ServerWorld) {
-            CompoundTag tag = fluteItemStack.getTag();
+            NbtCompound tag = fluteItemStack.getTag();
             if (tag != null) {
                 CompanionBatEntity entity = (CompanionBatEntity) ((ServerWorld) world).getEntity(tag.getUuid("EntityUUID"));
                 if (entity != null) {

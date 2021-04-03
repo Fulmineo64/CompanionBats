@@ -65,7 +65,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -157,7 +157,7 @@ public class CompanionBatEntity extends TameableEntity {
 		this.dataTracker.startTracking(BAT_FLAGS, (byte) 0);
 	}
 
-	public void writeCustomDataToNbt(CompoundTag tag) {
+	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
 		EntityData entityData = new EntityData(tag);
 		entityData.putExp(this.getExp());
@@ -165,7 +165,7 @@ public class CompanionBatEntity extends TameableEntity {
 		this.writePotionTicks(entityData);
 	}
 
-	public void readCustomDataFromNbt(CompoundTag tag) {
+	public void readCustomDataFromNbt(NbtCompound tag) {
 		EntityData entityData = new EntityData(tag);
 		this.setLevel(entityData.getExp());
 		this.setLevelAttributes(this.level);
@@ -939,7 +939,7 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 	}
 
-	public static void setDefaultEntityData(CompoundTag tag) {
+	public static void setDefaultEntityData(NbtCompound tag) {
 		tag.putFloat("health", BASE_HEALTH);
 		tag.putInt("exp", 0);
 	}

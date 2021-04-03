@@ -11,8 +11,8 @@ import net.minecraft.item.BundleItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 
@@ -46,9 +46,9 @@ public class CompanionBatTransferItemsToOwnerGoal extends Goal {
                 return false;
             } else if (livingEntity instanceof PlayerEntity) {
                 this.owner = (PlayerEntity)livingEntity;
-                CompoundTag tag = this.bundleStack.getTag();
+                NbtCompound tag = this.bundleStack.getTag();
                 if (tag == null) return false;
-				ListTag listTag = tag.getList("Items", 10);
+				NbtList listTag = tag.getList("Items", 10);
 				this.canContinue = listTag.size() > 0;
                 return this.canContinue;
             }

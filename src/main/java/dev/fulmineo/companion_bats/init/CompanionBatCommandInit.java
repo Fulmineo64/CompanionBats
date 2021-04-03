@@ -11,8 +11,8 @@ import dev.fulmineo.companion_bats.CompanionBatClass;
 import dev.fulmineo.companion_bats.nbt.EntityData;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -59,9 +59,9 @@ public class CompanionBatCommandInit {
 							if (player != null && player.getStackInHand(Hand.MAIN_HAND).isOf(CompanionBats.BAT_ITEM)) {
 								ItemStack stack = player.getStackInHand(Hand.MAIN_HAND);
 								EntityData entityData = new EntityData(stack);
-								Tag armorItem = entityData.getArmor();
+								NbtElement armorItem = entityData.getArmor();
 								if (armorItem != null){
-									ItemStack armorStack = ItemStack.fromNbt((CompoundTag)armorItem);
+									ItemStack armorStack = ItemStack.fromNbt((NbtCompound)armorItem);
 									if (armorStack.getItem() instanceof CompanionBatArmorItem){
 										CompanionBatClass cls = ((CompanionBatArmorItem)armorStack.getItem()).getBatClass();
 										int exp = IntegerArgumentType.getInteger(context, "exp");

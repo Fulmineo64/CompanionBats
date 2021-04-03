@@ -12,7 +12,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -45,7 +45,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 				ItemStack batItemStack = player.getStackInHand(hand);
 				if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
 					EntityData entityData = new EntityData(batItemStack);
-					entityData.putAccessory(stack.writeNbt(new CompoundTag()));
+					entityData.putAccessory(stack.writeNbt(new NbtCompound()));
 					entityData.toStack(batItemStack);
 				}
             }
@@ -68,7 +68,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 				ItemStack batItemStack = player.getStackInHand(hand);
 				if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
 					EntityData entityData = new EntityData(batItemStack);
-					entityData.putArmor(stack.writeNbt(new CompoundTag()));
+					entityData.putArmor(stack.writeNbt(new NbtCompound()));
 					entityData.toStack(batItemStack);
 				}
             }
@@ -92,7 +92,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
                     ItemStack batItemStack = player.getStackInHand(hand);
                     if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
 						EntityData entityData = new EntityData(batItemStack);
-						entityData.putBundle(stack.writeNbt(new CompoundTag()));
+						entityData.putBundle(stack.writeNbt(new NbtCompound()));
 						entityData.toStack(batItemStack);
                     }
                 }

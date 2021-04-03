@@ -13,10 +13,13 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+
+import net.minecraft.client.gui.screen.ingame.HorseScreen;
+import net.minecraft.client.render.GameRenderer;
 
 public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier(CompanionBats.MOD_ID, "textures/gui/container/bat.png");
@@ -65,7 +68,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 	}
 
 	private void setClassLevel(EntityData entityData){
-		this.armorStack = ItemStack.fromNbt((CompoundTag)entityData.getArmor());
+		this.armorStack = ItemStack.fromNbt((NbtCompound)entityData.getArmor());
 		if (this.armorStack.getItem() instanceof CompanionBatArmorItem){
 			this.currentClass = ((CompanionBatArmorItem)this.armorStack.getItem()).getBatClass();
 			if (this.currentClass != null){
@@ -95,8 +98,9 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 	}
 
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(TEXTURE);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, TEXTURE);
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
 

@@ -137,6 +137,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private boolean hasAdventurerAura;
 	private boolean hasDestroyerAura;
 	private boolean hasPotionGoal;
+	private boolean hasNaturalRegeneration;
 	private int comboAttackResetTicks = COMBO_ATTACK_RESET_TICKS;
 	private int comboLevel = 0;
 	private int teleportTicks = TELEPORT_TICKS;
@@ -383,13 +384,16 @@ public class CompanionBatEntity extends TameableEntity {
 			if (this.getTarget() != null) {
 				this.setRoosting(false);
 			}
-			this.healTicks--;
 			if (this.hangingPosition == null || !this.world.getBlockState(this.hangingPosition).isSolidBlock(this.world, this.hangingPosition)) {
 				this.setRoosting(false);
 				if (!this.isSilent()) {
 					this.world.syncWorldEvent((PlayerEntity) null, 1025, this.getBlockPos(), 0);
 				}
-			} else if (this.healTicks <= 0) {
+			}
+		}
+		if (this.isRoosting() || this.hasNaturalRegeneration) {
+			this.healTicks--;
+			if (this.healTicks <= 0) {
 				this.healTicks = HEAL_TICKS;
 				if (this.isInjured()) {
 					int val = Math.max(1, (int) (this.getMaxHealth() * 10 / 100));
@@ -767,6 +771,9 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 		if (this.abilities.has(CompanionBatAbility.DESTROYER_AURA)) {
 			this.hasDestroyerAura = true;
+		}
+		if (this.abilities.has(CompanionBatAbility.NATURAL_REGENERATION)) {
+			this.hasNaturalRegeneration = true;
 		}
 		if (this.abilities.has(CompanionBatAbility.LOOTING)) {
 			ItemStack stack = new ItemStack(Items.STICK);

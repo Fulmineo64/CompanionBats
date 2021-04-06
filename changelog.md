@@ -1,3 +1,8 @@
+# 1.8.1 - 1.9.1
+- Fixed missing Soul Shard recipe for Mummy Bandages and Destroyer Gear
+- Added new accessory, Plated Boots, that grants the Increased Armor ability
+- Added new accessory, Melon Bandana, that grants a new ability Natural Regeneration. This ability allows the bat to passively heal even when it isn't roosting
+
 # 1.8.0 - 1.9.0
 - Updated to Minecraft snapshot 21w13a
 - Added new class: Destroyer

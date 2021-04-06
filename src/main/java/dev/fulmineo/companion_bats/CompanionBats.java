@@ -73,6 +73,8 @@ public class CompanionBats implements ModInitializer {
 	public static final Item WITHER_MASK = new CompanionBatAccessoryItem("wither_mask", CompanionBatAbility.ATTACK_EVERYONE, 1, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item DECORATIVE_FLOWER = new CompanionBatAccessoryItem("decorative_flower", CompanionBatAbility.ATTACK_HOSTILES, 1, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item WOLF_PELT = new CompanionBatAccessoryItem("wolf_pelt", CompanionBatAbility.ATTACK_PASSIVE, 1, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item PLATED_BOOTS = new CompanionBatAccessoryItem("plated_boots", CompanionBatAbility.INCREASED_ARMOR, 1, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item MELON_BANDANA = new CompanionBatAccessoryItem("melon_bandana", CompanionBatAbility.NATURAL_REGENERATION, 1, new FabricItemSettings().group(GROUP).maxCount(1));
 
 	// Armors
 
@@ -104,6 +106,8 @@ public class CompanionBats implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wither_mask"), 	  	WITHER_MASK);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "decorative_flower"), 	DECORATIVE_FLOWER);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wolf_pelt"), 		  	WOLF_PELT);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "plated_boots"), 		PLATED_BOOTS);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "melon_bandana"), 		MELON_BANDANA);
 
 		// Armors
 

@@ -1,0 +1,21 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"gGg",
+		" r "
+	],
+	"key": {
+		"g": {
+			"item": "minecraft:green_wool"
+		},
+		"G": {
+			"item": "minecraft:gold_ingot"
+		},
+		"r": {
+			"item": "minecraft:red_wool"
+		}
+	},
+	"result": {
+		"item": "companion_bats:melon_bandana"
+	}
+}

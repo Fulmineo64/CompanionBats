@@ -10,6 +10,8 @@
 	"item.companion_bats.wither_mask": "Wither Mask",
 	"item.companion_bats.wolf_pelt": "Wolf Pelt",
 	"item.companion_bats.decorative_flower": "Decorative Flower",
+	"item.companion_bats.plated_boots": "Plated Boots",
+	"item.companion_bats.melon_bandana": "Melon Bandana",
 	"item.companion_bats.armor": "Companion Bat Armor",
 	"item.companion_bats.armor.abilities": "Class levels grant the following abilities",
 	"item.companion_bats.armor.permanent_ability": "Obtainable permanent ability",
@@ -78,5 +80,6 @@
 	"ability.companion_bats.SLOWNESS": "Slowness",
 	"ability.companion_bats.WEAKNESS": "Weakness",
 	"ability.companion_bats.WITHER": "Wither",
-	"ability.companion_bats.DYNAMITE": "Dynamite"
+	"ability.companion_bats.DYNAMITE": "Dynamite",
+	"ability.companion_bats.NATURAL_REGENERATION": "Natural Regeneration"
 }

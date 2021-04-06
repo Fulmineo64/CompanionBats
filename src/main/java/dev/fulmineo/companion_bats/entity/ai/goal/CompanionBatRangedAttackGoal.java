@@ -1,6 +1,5 @@
 package dev.fulmineo.companion_bats.entity.ai.goal;
 
-import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;

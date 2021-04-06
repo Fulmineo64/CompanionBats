@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		" i ",
+		"ini"
+	],
+	"key": {
+		"i": {
+			"item": "minecraft:iron_ingot"
+		},
+		"n": {
+			"item": "minecraft:iron_nugget"
+		}
+	},
+	"result": {
+		"item": "companion_bats:plated_boots"
+	}
+}

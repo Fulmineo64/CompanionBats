@@ -18,7 +18,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
-import net.minecraft.client.gui.screen.ingame.HorseScreen;
 import net.minecraft.client.render.GameRenderer;
 
 public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler> {

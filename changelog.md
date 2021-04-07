@@ -1,3 +1,7 @@
+# 1.8.2 - 1.9.2
+- Replaced the Melon Bandana with the new Pumpkin Bandana
+- Fixed the re-taming of the bat not working correctly
+
 # 1.8.1 - 1.9.1
 - Fixed missing Soul Shard recipe for Mummy Bandages and Destroyer Gear
 - Added new accessory, Plated Boots, that grants the Increased Armor ability

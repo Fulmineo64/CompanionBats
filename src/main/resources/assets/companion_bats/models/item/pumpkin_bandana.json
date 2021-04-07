@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "companion_bats:item/melon_bandana"
+    "layer0": "companion_bats:item/pumpkin_bandana"
   }
 }

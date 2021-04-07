@@ -1,0 +1,22 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		" g ",
+		"opo",
+		" o "
+	],
+	"key": {
+		"g": {
+			"item": "minecraft:gold_ingot"
+		},
+		"o": {
+			"item": "minecraft:orange_wool"
+		},
+		"p": {
+			"item": "minecraft:pumpkin"
+		}
+	},
+	"result": {
+		"item": "companion_bats:pumpkin_bandana"
+	}
+}

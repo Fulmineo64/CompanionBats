@@ -519,8 +519,8 @@ public class CompanionBatEntity extends TameableEntity {
 			} else if (IS_FOOD_ITEM.test(itemStack) && player == this.getOwner()){
 				ItemStack fluteStack = this.getFluteItemStack();
 				if (fluteStack == null){
-					this.remove();
 					player.giveItemStack(this.toItemStack());
+					this.remove();
 					return ActionResult.SUCCESS;
 				}
 			}

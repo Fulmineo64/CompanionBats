@@ -1,3 +1,6 @@
+# 1.8.3 - 1.9.3
+- Fixed bug that allowed to heal the bat each time it was summoned
+
 # 1.8.2 - 1.9.2
 - Replaced the Melon Bandana with the new Pumpkin Bandana
 - Fixed the re-taming of the bat not working correctly

@@ -89,7 +89,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private static final TrackedData<Byte> BAT_FLAGS;
 	public CompanionBatAbilities abilities = new CompanionBatAbilities();
 	private Map<CompanionBatClass, Integer> classesExp = new HashMap<>();
-	private int healTicks;
+	private int healTicks = HEAL_TICKS;
 
 	// Constants
 
@@ -245,7 +245,6 @@ public class CompanionBatEntity extends TameableEntity {
 		byte b = (Byte) this.dataTracker.get(BAT_FLAGS);
 		if (roosting) {
 			this.dataTracker.set(BAT_FLAGS, (byte) (b | 1));
-			this.healTicks = HEAL_TICKS;
 		} else {
 			this.dataTracker.set(BAT_FLAGS, (byte) (b & -2));
 			this.hangingPosition = null;

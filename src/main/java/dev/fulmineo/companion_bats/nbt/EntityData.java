@@ -139,6 +139,8 @@ public class EntityData {
 
 	public void clearAttributes(){
 		this.tag.remove("Pos");
+		this.tag.remove("Motion");
+		this.tag.remove("Rotation");
 		this.tag.remove("Attributes");
 		this.tag.remove("Fire");
 	}
@@ -176,9 +178,9 @@ public class EntityData {
 		NbtCompound tag = batItemStack.getOrCreateTag();
 		if (!tag.contains("EntityTag")) {
 			EntityData entityData = new EntityData(batItemStack);
+			entityData.init();
 			if (tag.contains("entityData")){
 				NbtCompound oldEntityData = tag.getCompound("entityData");
-				entityData.init();
 				entityData.putHealth(oldEntityData.getFloat("health"));
 				entityData.putAccessory(oldEntityData.getCompound("accessory"));
 				entityData.putArmor(oldEntityData.getCompound("armor"));

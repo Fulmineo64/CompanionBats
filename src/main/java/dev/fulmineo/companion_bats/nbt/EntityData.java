@@ -138,11 +138,16 @@ public class EntityData {
 	}
 
 	public void clearAttributes(){
+		// Vanilla Position attributes
 		this.tag.remove("Pos");
 		this.tag.remove("Motion");
 		this.tag.remove("Rotation");
+		// Vanilla Stat attibrutes
 		this.tag.remove("Attributes");
+		// Vanilla Negative effects
 		this.tag.remove("Fire");
+		// Probably from some mod
+		this.tag.remove("BoundingBox");
 	}
 
 	public boolean hasPotionTicks(){

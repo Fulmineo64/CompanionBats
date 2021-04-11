@@ -1,3 +1,7 @@
+# 1.8.5 - 1.9.5
+- Fixed minor bug with bats obtained by the creative menu
+- Removed the "BoundingBox" property that should fix the bat displacement in modpacks 
+
 # 1.8.4 - 1.9.4
 - Reflavoured and retextured the Destroyed Gear
 - Changed the Destoryer Gear crafting recipe

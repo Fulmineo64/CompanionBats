@@ -1,3 +1,7 @@
+# 1.8.4 - 1.9.4
+- Reflavoured and retextured the Destroyed Gear
+- Changed the Destoryer Gear crafting recipe
+
 # 1.8.3 - 1.9.3
 - Fixed bug that allowed to heal the bat each time it was summoned
 

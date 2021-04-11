@@ -1,25 +1,25 @@
 {
 	"type": "minecraft:crafting_shaped",
 	"pattern": [
-		"ini",
-		"ICI",
-		"isi"
+		"tct",
+		"oCo",
+		"tBt"
 	],
 	"key": {
-		"i": {
-			"item": "minecraft:iron_ingot"
+		"t": {
+			"item": "minecraft:tnt"
 		},
-		"n": {
-			"item": "minecraft:nether_star"
+		"c": {
+			"item": "minecraft:carved_pumpkin"
 		},
-		"I": {
-			"item": "minecraft:iron_block"
+		"o": {
+			"item": "minecraft:orange_wool"
 		},
 		"C": {
 			"item": "companion_bats:spirit_crystal"
 		},
-		"s": {
-			"item": "minecraft:soul_lantern"
+		"B": {
+			"item": "minecraft:blue_wool"
 		}
 	},
 	"result": {

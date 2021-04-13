@@ -1,3 +1,6 @@
+# 1.10.5 - 1.11.5
+- Reduced class exp to reach max level by 30%
+
 # 1.8.5 - 1.9.5
 - Fixed minor bug with bats obtained by the creative menu
 - Removed the "BoundingBox" property that should fix the bat displacement in modpacks 

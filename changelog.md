@@ -1,5 +1,6 @@
-# 1.10.5 - 1.11.5
-- Reduced class exp to reach max level by 30%
+# 1.10.0 - 1.11.0
+- Reduced max class level exp requirement by 30% (2250 -> 1600)
+- Adjusted intermediate class levels exp requirements
 
 # 1.8.5 - 1.9.5
 - Fixed minor bug with bats obtained by the creative menu

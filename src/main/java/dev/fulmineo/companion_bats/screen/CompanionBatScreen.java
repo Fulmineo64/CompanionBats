@@ -60,7 +60,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		} else {
 			this.currentLevelExp = entityData.getExp();
 			this.nextLevelExp = CompanionBatLevels.LEVELS[this.level].totalExpNeeded;
-			this.maxExpReached = this.currentLevelExp == this.nextLevelExp;
+			this.maxExpReached = this.currentLevelExp >= this.nextLevelExp;
 		}
 	}
 
@@ -79,7 +79,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 				} else {
 					this.currentClassLevelExp = classExp;
 					this.nextClassLevelExp = classLevels[this.classLevel].totalExpNeeded;
-					this.maxClassExpReached = this.currentClassLevelExp == this.nextClassLevelExp;
+					this.maxClassExpReached = this.currentClassLevelExp >= this.nextClassLevelExp;
 				}
 			}
 		} else {

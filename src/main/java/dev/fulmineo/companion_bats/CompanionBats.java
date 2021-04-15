@@ -41,7 +41,6 @@ public class CompanionBats implements ModInitializer {
     // Identifiers
 
     public static final String MOD_ID = "companion_bats";
-    public static final String MOD_NAME = "Companion bats";
 
     public static final ScreenHandlerType<CompanionBatScreenHandler> BAT_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(new Identifier(MOD_ID, "bat_item"), CompanionBatScreenHandler::new);
 

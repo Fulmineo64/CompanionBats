@@ -5,7 +5,8 @@
     "compatibilityLevel": "JAVA_8",
     "mixins": [
 		"BatEntityMixin",
-		"LivingEntityMixin"
+		"LivingEntityMixin",
+		"SwampHutGeneratorMixin"
 	],
     "client": [],
     "server": [],

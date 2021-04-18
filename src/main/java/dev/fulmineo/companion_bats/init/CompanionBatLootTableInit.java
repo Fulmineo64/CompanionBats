@@ -13,11 +13,12 @@ public class CompanionBatLootTableInit {
 	private static final Identifier WOODLAND_MANSION_ID = new Identifier("minecraft", "chests/woodland_mansion");
 	private static final Identifier BURIED_TREASURE_ID = new Identifier("minecraft", "chests/buried_treasure");
 	private static final Identifier VILLAGE_WEAPONSMITH_ID = new Identifier("minecraft", "chests/village/village_weaponsmith");
-	private static final Identifier STRONGHOLD_LIBRARY_ID = new Identifier("minecraft", "chests/stronghold_library");
 	private static final Identifier PILLAGER_OUTPOST_ID = new Identifier("minecraft", "chests/pillager_outpost");
 	private static final Identifier END_CITY_TREASURE_ID = new Identifier("minecraft", "chests/end_city_treasure");
 	private static final Identifier DESERT_PYRAMID_ID = new Identifier("minecraft", "chests/desert_pyramid");
 	private static final Identifier JUNGLE_TEMPLE_ID = new Identifier("minecraft", "chests/jungle_temple");
+
+	private static final Identifier SWAMP_HUT_ID = new Identifier("companion_bats", "chests/swamp_hut");
 
 	private static final Identifier SIMPLE_DUNGEON_ID = new Identifier("minecraft", "chests/simple_dungeon");
 	private static final Identifier ABANDONED_MINESHAFT_ID = new Identifier("minecraft", "chests/abandoned_mineshaft");
@@ -39,7 +40,7 @@ public class CompanionBatLootTableInit {
 			} else if (VILLAGE_WEAPONSMITH_ID.equals(id)) {
 				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(CompanionBats.KNIGHT_PLATE));
 				supplier.pool(poolBuilder);
-			} else if (STRONGHOLD_LIBRARY_ID.equals(id)) {
+			} else if (SWAMP_HUT_ID.equals(id)) {
 				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(CompanionBats.ALCHEMIST_ROBE));
 				supplier.pool(poolBuilder);
 			} else if (PILLAGER_OUTPOST_ID.equals(id)) {

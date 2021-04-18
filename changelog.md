@@ -1,3 +1,7 @@
+- Retextured slightly the Alchemist Robe
+- Added new chest to the Swamp Hut
+- The Alchemist Robe will now be found in the Swamp Hut's chest
+
 # 1.10.0 - 1.11.0
 - Reduced max class level exp requirement by 30% (2250 -> 1600)
 - Adjusted intermediate class levels exp requirements

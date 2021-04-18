@@ -10,8 +10,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import org.spongepowered.asm.mixin.injection.At;
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePieceWithDimensions;
 import net.minecraft.structure.SwampHutGenerator;
@@ -28,11 +29,11 @@ public class SwampHutGeneratorMixin extends StructurePieceWithDimensions {
 	private boolean hasMainChest;
 
 	public SwampHutGeneratorMixin(Random random, int i, int j) {
-		super(StructurePieceType.SWAMP_HUT, i, 64, j, 7, 7, 9, method_35457(random));
-	}
+		super(StructurePieceType.SWAMP_HUT, random, i, 64, j, 7, 7, 9);
+	 }
 
-	@Inject(at = @At("RETURN"), method = "<init>(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/nbt/NbtCompound;)V")
-	public void swampHutGeneratorMixin(ServerWorld serverWorld, NbtCompound nbt, CallbackInfo ci) {
+	@Inject(at = @At("RETURN"), method = "<init>(Lnet/minecraft/structure/StructureManager;Lnet/minecraft/nbt/CompoundTag;)V")
+	public void swampHutGeneratorMixin(StructureManager structureManager, CompoundTag nbt, CallbackInfo ci) {
 		this.hasMainChest = nbt.getBoolean("MainChest");
 	}
 
@@ -51,8 +52,8 @@ public class SwampHutGeneratorMixin extends StructurePieceWithDimensions {
 		}
 	}
 
-	@Inject(at = @At("TAIL"), method = "writeNbt(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/nbt/NbtCompound;)V")
-	protected void writeNbtMixin(ServerWorld world, NbtCompound nbt, CallbackInfo info) {
+	@Inject(at = @At("TAIL"), method = "toNbt(Lnet/minecraft/nbt/CompoundTag;)V")
+	protected void toNbtMixin(CompoundTag nbt, CallbackInfo info) {
 		nbt.putBoolean("MainChest", this.hasMainChest);
 	}
 }

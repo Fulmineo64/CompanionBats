@@ -1,6 +1,19 @@
+# 1.12.0 - 1.13.0
+## Potions and Thunderstorms
+
+### Alchemists
 - Retextured slightly the Alchemist Robe
 - Added new chest to the Swamp Hut
 - The Alchemist Robe will now be found in the Swamp Hut's chest
+### Duelists
+- Duelists now show particles represting their current combo level
+- Halfed the available time between each combo hit (30s -> 15s)
+- Halfed the maximum combo hits (100 -> 50)
+- Duelists will now gain persistent buffs whenever their combo is active, these buffs will increase in strenght with the combo level
+- Included 3 new powerful buffs that can be obtained nearing the end of the combo
+- Added new final move for the Duelist when the 50th consecutive hit is reached
+### Misc
+- Lava and poison damage will not be counted anymore as blockable attacks
 
 # 1.10.0 - 1.11.0
 - Reduced max class level exp requirement by 30% (2250 -> 1600)

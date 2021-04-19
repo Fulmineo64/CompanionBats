@@ -38,6 +38,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -87,6 +88,7 @@ import net.minecraft.world.World;
 
 public class CompanionBatEntity extends TameableEntity {
 	private static final TrackedData<Byte> BAT_FLAGS;
+	private static final TrackedData<Byte> COMBO_PARTICLE_LEVEL;
 	public CompanionBatAbilities abilities = new CompanionBatAbilities();
 	private Map<CompanionBatClass, Integer> classesExp = new HashMap<>();
 	private int healTicks = HEAL_TICKS;
@@ -112,13 +114,11 @@ public class CompanionBatEntity extends TameableEntity {
 	private static final int HEAL_TICKS = 600;
 	private static final int EMERGENCY_POTION_TICKS = 5000;
 	private static final int EFFECT_POTION_TICKS = 2000;
-	private static final int COMBO_ATTACK_RESET_TICKS = 600;
+	private static final int COMBO_ATTACK_RESET_TICKS = 300;
 	private static final int TELEPORT_TICKS = 100;
 	private static final int RETRY_TELEPORT_TICKS = 10;
 	private static final int RANGED_ATTACK_TICKS = 100;
-
-	private static int ADVENTURER_AURA_TICKS = 420;
-	private static int DESTROYER_AURA_TICKS = 420;
+	private static int EFFECT_TICKS = 320;
 
 	public static final Predicate<ItemStack> IS_FOOD_ITEM;
 	public static final Predicate<ItemEntity> IS_FOOD_ITEM_ENTITY;
@@ -133,16 +133,16 @@ public class CompanionBatEntity extends TameableEntity {
 	private int classExp = 0;
 	private int level = -1;
 	private int classLevel = -1;
+	private boolean hasFireResistance;
 	private boolean hasTeleport;
 	private boolean hasAdventurerAura;
-	private boolean hasDestroyerAura;
+	private boolean hasMinerAura;
 	private boolean hasPotionGoal;
 	private boolean hasNaturalRegeneration;
 	private int comboAttackResetTicks = COMBO_ATTACK_RESET_TICKS;
 	private int comboLevel = 0;
 	private int teleportTicks = TELEPORT_TICKS;
-	private int adventurerAuraTicks = 1;
-	private int destroyerAuraTicks = 1;
+	private int effectTicks = 1;
 
 	public CompanionBatEntity(EntityType<? extends TameableEntity> entityType, World world) {
 		super(entityType, world);
@@ -156,6 +156,7 @@ public class CompanionBatEntity extends TameableEntity {
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.dataTracker.startTracking(BAT_FLAGS, (byte) 0);
+		this.dataTracker.startTracking(COMBO_PARTICLE_LEVEL, null);
 	}
 
 	public void writeCustomDataToNbt(NbtCompound tag) {
@@ -253,50 +254,81 @@ public class CompanionBatEntity extends TameableEntity {
 
 	public void tick() {
 		super.tick();
-		if (this.isRoosting()) {
-			this.setVelocity(Vec3d.ZERO);
-			this.setPos(this.getX(), (double) MathHelper.floor(this.getY()) + 1.0D - (double) this.getHeight(), this.getZ());
-			this.comboAttackResetTicks = 0;
+		if (this.world.isClient){
+			Byte comboParticleLevel = this.dataTracker.get(COMBO_PARTICLE_LEVEL);
+			if (comboParticleLevel != null) {
+				CompanionBats.info(""+comboParticleLevel);
+				switch (comboParticleLevel){
+					case 0: {
+						if (this.world.getTime() % 50 == 0) {
+							this.world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+						}
+						break;
+					}
+					case 1: {
+						if (this.world.getTime() % 25 == 0) {
+							this.world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+						}
+						break;
+					}
+					case 2: {
+						if (this.world.getTime() % 10 == 0) {
+							this.world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+						}
+						break;
+					}
+					case 3: {
+						if (this.world.getTime() % 10 == 0) {
+							this.world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+							this.world.addParticle(ParticleTypes.ELECTRIC_SPARK, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+						}
+						break;
+					}
+					case 4: {
+						this.world.addParticle(ParticleTypes.ELECTRIC_SPARK, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+					}
+				}
+			}
 		} else {
-			this.setVelocity(this.getVelocity().multiply(1.0D, 0.6D, 1.0D));
+			if (this.isRoosting()) {
+				this.setVelocity(Vec3d.ZERO);
+				this.setPos(this.getX(), (double) MathHelper.floor(this.getY()) + 1.0D - (double) this.getHeight(), this.getZ());
+				this.comboAttackResetTicks = 0;
+			} else {
+				this.setVelocity(this.getVelocity().multiply(1.0D, 0.6D, 1.0D));
 
-			if (this.comboAttackResetTicks > 0) {
-				this.comboAttackResetTicks--;
-				if (this.comboAttackResetTicks == 0) {
-					this.comboLevel = 0;
-				}
-			}
-
-			if (this.hasTeleport) {
-				this.teleportTicks--;
-				if (this.teleportTicks == 0) {
-					LivingEntity target = this.getTarget();
-					if (target != null && this.squaredDistanceTo(target) <= this.abilities.getValue(CompanionBatAbility.TELEPORT) && this.teleportTo(target)) {
-						this.teleportTicks = TELEPORT_TICKS;
-					} else {
-						this.teleportTicks = RETRY_TELEPORT_TICKS;
+				if (this.comboAttackResetTicks > 0) {
+					this.comboAttackResetTicks--;
+					if (this.comboAttackResetTicks == 0) {
+						this.setComboLevel(0);
 					}
 				}
-			}
 
-			if (this.hasAdventurerAura){
-				this.adventurerAuraTicks--;
-				if (this.adventurerAuraTicks == 0) {
-					this.adventurerAuraTicks = ADVENTURER_AURA_TICKS > 200 ? ADVENTURER_AURA_TICKS - 200 : ADVENTURER_AURA_TICKS;
-					LivingEntity owner = this.getOwner();
-					if (owner != null){
-						owner.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, ADVENTURER_AURA_TICKS, 0, false, false));
+				if (this.hasTeleport) {
+					this.teleportTicks--;
+					if (this.teleportTicks == 0) {
+						LivingEntity target = this.getTarget();
+						if (target != null && this.squaredDistanceTo(target) <= this.abilities.getValue(CompanionBatAbility.TELEPORT) && this.teleportTo(target)) {
+							this.teleportTicks = TELEPORT_TICKS;
+						} else {
+							this.teleportTicks = RETRY_TELEPORT_TICKS;
+						}
 					}
 				}
-			}
 
-			if (this.hasDestroyerAura){
-				this.destroyerAuraTicks--;
-				if (this.destroyerAuraTicks == 0) {
-					this.destroyerAuraTicks = DESTROYER_AURA_TICKS > 200 ? DESTROYER_AURA_TICKS - 200 : DESTROYER_AURA_TICKS;
-					LivingEntity owner = this.getOwner();
-					if (owner != null){
-						owner.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, DESTROYER_AURA_TICKS, 0, false, false));
+				this.effectTicks--;
+				if (this.effectTicks == 0){
+					this.effectTicks = EFFECT_TICKS > 200 ? EFFECT_TICKS - 200 : EFFECT_TICKS;
+					if (this.hasFireResistance) {
+						this.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, this.effectTicks + 20, 0, false, false));
+					}
+
+					if (this.hasAdventurerAura || this.hasMinerAura){
+						LivingEntity owner = this.getOwner();
+						if (owner != null){
+							if (this.hasAdventurerAura) owner.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, EFFECT_TICKS, 0, false, false));
+							if (this.hasMinerAura) owner.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, EFFECT_TICKS, 0, false, false));
+						}
 					}
 				}
 			}
@@ -332,9 +364,7 @@ public class CompanionBatEntity extends TameableEntity {
 				}
 			}
 
-			// CompanionBats.info("health before damage "+this.getHealth());
-
-			if (!source.isUnblockable() && this.abilities.has(CompanionBatAbility.BLOCK_ATTACK)) {
+			if (!source.bypassesArmor() && source != DamageSource.LAVA && this.abilities.has(CompanionBatAbility.BLOCK_ATTACK)) {
 				int roll = this.world.random.nextInt(100);
 				if (roll < this.abilities.getValue(CompanionBatAbility.BLOCK_ATTACK)) {
 					if (this.abilities.has(CompanionBatAbility.COUNTER_ATTACK) && source.getAttacker() instanceof LivingEntity) {
@@ -379,24 +409,26 @@ public class CompanionBatEntity extends TameableEntity {
 
 	@Override
 	protected void mobTick() {
-		if (this.isRoosting()) {
-			if (this.getTarget() != null) {
-				this.setRoosting(false);
-			}
-			if (this.hangingPosition == null || !this.world.getBlockState(this.hangingPosition).isSolidBlock(this.world, this.hangingPosition)) {
-				this.setRoosting(false);
-				if (!this.isSilent()) {
-					this.world.syncWorldEvent((PlayerEntity) null, 1025, this.getBlockPos(), 0);
+		if (!this.world.isClient){
+			if (this.isRoosting()) {
+				if (this.getTarget() != null) {
+					this.setRoosting(false);
+				}
+				if (this.hangingPosition == null || !this.world.getBlockState(this.hangingPosition).isSolidBlock(this.world, this.hangingPosition)) {
+					this.setRoosting(false);
+					if (!this.isSilent()) {
+						this.world.syncWorldEvent((PlayerEntity) null, 1025, this.getBlockPos(), 0);
+					}
 				}
 			}
-		}
-		if (this.isRoosting() || this.hasNaturalRegeneration) {
-			this.healTicks--;
-			if (this.healTicks <= 0) {
-				this.healTicks = HEAL_TICKS;
-				if (this.isInjured()) {
-					int val = Math.max(1, (int) (this.getMaxHealth() * 10 / 100));
-					this.heal(val);
+			if (this.isRoosting() || this.hasNaturalRegeneration) {
+				this.healTicks--;
+				if (this.healTicks <= 0) {
+					this.healTicks = HEAL_TICKS;
+					if (this.isInjured()) {
+						int val = Math.max(1, (int) (this.getMaxHealth() * 10 / 100));
+						this.heal(val);
+					}
 				}
 			}
 		}
@@ -487,18 +519,32 @@ public class CompanionBatEntity extends TameableEntity {
 		this.comboAttackResetTicks = COMBO_ATTACK_RESET_TICKS;
 
 		int comboAttackLevel = this.abilities.getValue(CompanionBatAbility.COMBO_ATTACK);
-		this.comboLevel++;
+		this.setComboLevel(this.comboLevel+1);
 
-		if (comboAttackLevel >= 3 && this.comboLevel % 15 == 0) {
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, (int)(this.comboLevel / 33) + 2));
-		} else if (comboAttackLevel >= 2 && this.comboLevel % 10 == 0) {
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 100, (int)(this.comboLevel / 33)));
-		} else if (this.comboLevel % 5 == 0) {
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 100, (int)(this.comboLevel / 33)));
+		if (this.comboLevel > 5) {
+			this.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 50, (int)(this.comboLevel / 25), false, false));
 		}
-
-		if (this.comboLevel == 100){
-			this.comboLevel = 0;
+		if (comboAttackLevel >= 2 && this.comboLevel > 10) {
+			this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 50, (int)(this.comboLevel / 25), false, false));
+		}
+		if (comboAttackLevel >= 3 && this.comboLevel > 15) {
+			this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 50, 0, false, false));
+		}
+		if (this.comboLevel > 45) {
+			this.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 300, 0, false, false));
+			this.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 300, 0, false, false));
+			if (this.comboLevel == 49) {
+				this.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 300, 2, false, false));
+			} else if (this.comboLevel == 50){
+				this.heal(this.getMaxHealth());
+				BlockPos blockPos = this.getTarget().getBlockPos();
+				for (int i = 0; i < 3; i++){
+					LightningEntity lightningEntity = (LightningEntity)EntityType.LIGHTNING_BOLT.create(this.world);
+					lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
+					this.world.spawnEntity(lightningEntity);
+				}
+				this.setComboLevel(0);
+			}
 		}
 	}
 
@@ -525,6 +571,11 @@ public class CompanionBatEntity extends TameableEntity {
 			}
 		}
 		return ActionResult.PASS;
+	}
+
+	private void setComboLevel(int level){
+		this.comboLevel = level;
+		this.dataTracker.set(COMBO_PARTICLE_LEVEL, level == 0 ? null : (byte)(this.comboLevel / 10));
 	}
 
 	public boolean healWithItem(ItemStack stack) {
@@ -760,7 +811,7 @@ public class CompanionBatEntity extends TameableEntity {
 			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_SPEED_BONUS_ID, "Ability speed bonus", (double) (attr.getBaseValue() * this.abilities.getValue(CompanionBatAbility.INCREASED_SPEED) / 100), EntityAttributeModifier.Operation.ADDITION));
 		}
 		if (this.abilities.has(CompanionBatAbility.FIRE_RESISTANCE)) {
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 1000000000, 1, false, false));
+			this.hasFireResistance = true;
 		}
 		if (this.abilities.has(CompanionBatAbility.TELEPORT)) {
 			this.hasTeleport = true;
@@ -769,7 +820,7 @@ public class CompanionBatEntity extends TameableEntity {
 			this.hasAdventurerAura = true;
 		}
 		if (this.abilities.has(CompanionBatAbility.DESTROYER_AURA)) {
-			this.hasDestroyerAura = true;
+			this.hasMinerAura = true;
 		}
 		if (this.abilities.has(CompanionBatAbility.NATURAL_REGENERATION)) {
 			this.hasNaturalRegeneration = true;
@@ -952,6 +1003,7 @@ public class CompanionBatEntity extends TameableEntity {
 
 	static {
 		BAT_FLAGS = DataTracker.registerData(CompanionBatEntity.class, TrackedDataHandlerRegistry.BYTE);
+		COMBO_PARTICLE_LEVEL = DataTracker.registerData(CompanionBatEntity.class, TrackedDataHandlerRegistry.BYTE);
 		IS_FOOD_ITEM = (itemStack) -> itemStack.isOf(Items.PUMPKIN_PIE) || itemStack.isOf(CompanionBats.EXPERIENCE_PIE);
 		IS_FOOD_ITEM_ENTITY = (itemEntity) -> IS_FOOD_ITEM.test(itemEntity.getStack());
 	}

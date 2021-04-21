@@ -112,9 +112,9 @@ public class CompanionBatEntity extends TameableEntity {
 
 	private static final int ROOST_START_TICKS = 200;
 	private static final int HEAL_TICKS = 600;
-	private static final int EMERGENCY_POTION_TICKS = 5000;
-	private static final int EFFECT_POTION_TICKS = 2000;
-	private static final int COMBO_ATTACK_RESET_TICKS = 300;
+	private static final int EMERGENCY_POTION_TICKS = 4800;
+	private static final int EFFECT_POTION_TICKS = 1800;
+	private static final int COMBO_ATTACK_RESET_TICKS = 200;
 	private static final int TELEPORT_TICKS = 100;
 	private static final int RETRY_TELEPORT_TICKS = 10;
 	private static final int RANGED_ATTACK_TICKS = 100;
@@ -538,7 +538,7 @@ public class CompanionBatEntity extends TameableEntity {
 			} else if (this.comboLevel == 50){
 				this.heal(this.getMaxHealth());
 				BlockPos blockPos = this.getTarget().getBlockPos();
-				for (int i = 0; i < 3; i++){
+				for (int i = 0; i < this.abilities.get(CompanionBatAbility.COMBO_ATTACK); i++){
 					LightningEntity lightningEntity = (LightningEntity)EntityType.LIGHTNING_BOLT.create(this.world);
 					lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
 					this.world.spawnEntity(lightningEntity);

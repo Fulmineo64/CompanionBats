@@ -1,3 +1,6 @@
+# 1.12.1 - 1.13.1
+- Fixed bug that caused disconnections from servers
+
 # 1.12.0 - 1.13.0
 ## Potions and Thunderstorms
 

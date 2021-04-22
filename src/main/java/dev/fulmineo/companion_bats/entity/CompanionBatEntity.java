@@ -156,7 +156,7 @@ public class CompanionBatEntity extends TameableEntity {
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.dataTracker.startTracking(BAT_FLAGS, (byte) 0);
-		this.dataTracker.startTracking(COMBO_PARTICLE_LEVEL, null);
+		this.dataTracker.startTracking(COMBO_PARTICLE_LEVEL, (byte) 0);
 	}
 
 	public void writeCustomDataToTag(CompoundTag tag) {
@@ -256,23 +256,16 @@ public class CompanionBatEntity extends TameableEntity {
 		super.tick();
 		if (this.world.isClient){
 			Byte comboParticleLevel = this.dataTracker.get(COMBO_PARTICLE_LEVEL);
-			if (comboParticleLevel != null) {
-				CompanionBats.info(""+comboParticleLevel);
+			if (comboParticleLevel > 0) {
 				switch (comboParticleLevel){
-					case 0: {
+					case 1: {
 						if (this.world.getTime() % 50 == 0) {
 							this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
 						}
 						break;
 					}
-					case 1: {
-						if (this.world.getTime() % 25 == 0) {
-							this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
-						}
-						break;
-					}
 					case 2: {
-						if (this.world.getTime() % 10 == 0) {
+						if (this.world.getTime() % 25 == 0) {
 							this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
 						}
 						break;
@@ -280,11 +273,17 @@ public class CompanionBatEntity extends TameableEntity {
 					case 3: {
 						if (this.world.getTime() % 10 == 0) {
 							this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
-							this.world.addParticle(ParticleTypes.FIREWORK, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
 						}
 						break;
 					}
 					case 4: {
+						if (this.world.getTime() % 10 == 0) {
+							this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+							this.world.addParticle(ParticleTypes.FIREWORK, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+						}
+						break;
+					}
+					case 5: {
 						if (this.world.getTime() % 2 == 0) {
 							this.world.addParticle(ParticleTypes.FIREWORK, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
 						}
@@ -490,7 +489,6 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void onAttack(Entity target, float damageDealt) {
-		// CompanionBats.info("damage dealt " + damageDealt);
 		if (damageDealt > 0) {
 			this.gainExp(EXP_GAIN);
 			if (this.abilities.has(CompanionBatAbility.LIFESTEAL)) {
@@ -577,7 +575,7 @@ public class CompanionBatEntity extends TameableEntity {
 
 	private void setComboLevel(int level){
 		this.comboLevel = level;
-		this.dataTracker.set(COMBO_PARTICLE_LEVEL, level == 0 ? null : (byte)(this.comboLevel / 10));
+		this.dataTracker.set(COMBO_PARTICLE_LEVEL, level == 0 ? 0 : (byte)((this.comboLevel / 10) + 1));
 	}
 
 	public boolean healWithItem(ItemStack stack) {

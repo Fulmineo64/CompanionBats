@@ -1,3 +1,8 @@
+# 1.12.2 - 1.13.2
+- Duelists' lightning bolts no longer set the terrain on fire and no longer harm the bat itself or its owner
+- Removed Absorption and Fire resistance buffs from the Duelists' combo buffs 
+- Refined the damage scaling of Duelists' lighting bolts
+
 # 1.12.1 - 1.13.1
 - Fixed bug that caused disconnections from servers
 

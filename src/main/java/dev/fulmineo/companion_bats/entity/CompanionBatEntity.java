@@ -2,6 +2,7 @@ package dev.fulmineo.companion_bats.entity;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -81,6 +82,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -530,16 +532,26 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 		if (this.comboLevel > 45) {
 			this.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 300, 0, false, false));
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 300, 0, false, false));
-			if (this.comboLevel == 49) {
-				this.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 300, 2, false, false));
-			} else if (this.comboLevel == 50){
+			if (this.comboLevel == 50){
 				this.heal(this.getMaxHealth());
 				BlockPos blockPos = this.getTarget().getBlockPos();
-				for (int i = 0; i < this.abilities.get(CompanionBatAbility.COMBO_ATTACK); i++){
+				int abilityLevel = this.abilities.get(CompanionBatAbility.COMBO_ATTACK);
+				for (int i = 0; i < abilityLevel; i++){
 					LightningEntity lightningEntity = (LightningEntity)EntityType.LIGHTNING_BOLT.create(this.world);
 					lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
+					lightningEntity.setCosmetic(true);
 					this.world.spawnEntity(lightningEntity);
+
+					if (i == 0){
+						List<Entity> list = this.world.getOtherEntities(this, new Box(blockPos.getX() - 3.0D, blockPos.getY() - 3.0D, blockPos.getZ() - 3.0D, blockPos.getX() + 3.0D, blockPos.getY() + 6.0D + 3.0D, blockPos.getZ() + 3.0D), entity -> entity.isAlive() && !(entity instanceof LightningEntity) && entity != this && entity != this.getOwner());
+						Iterator<Entity> var4 = list.iterator();
+
+						while(var4.hasNext()) {
+							Entity entity = (Entity)var4.next();
+							entity.onStruckByLightning((ServerWorld)this.world, lightningEntity);
+							entity.damage(DamageSource.LIGHTNING_BOLT, (6.0F + (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)) * abilityLevel);
+						}
+					}
 				}
 				this.setComboLevel(0);
 			}

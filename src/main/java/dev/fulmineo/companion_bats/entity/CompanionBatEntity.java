@@ -389,6 +389,10 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
+		return canAttackWithOwnerStatic(target, owner);
+	}
+
+	public static boolean canAttackWithOwnerStatic(LivingEntity target, LivingEntity owner) {
 		if (!(target instanceof CreeperEntity)) {
 			if (target instanceof WolfEntity) {
 				WolfEntity wolfEntity = (WolfEntity) target;
@@ -525,13 +529,13 @@ public class CompanionBatEntity extends TameableEntity {
 			this.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 50, (int)(this.comboLevel / 25), false, false));
 		}
 		if (comboAttackLevel >= 2 && this.comboLevel > 10) {
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 50, (int)(this.comboLevel / 25), false, false));
+			this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 50, (int)(this.comboLevel / 30), false, false));
 		}
 		if (comboAttackLevel >= 3 && this.comboLevel > 15) {
 			this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 50, 0, false, false));
 		}
 		if (this.comboLevel > 45) {
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 300, 0, false, false));
+			this.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 100, 0, false, false));
 			if (this.comboLevel == 50){
 				this.heal(this.getMaxHealth());
 				BlockPos blockPos = this.getTarget().getBlockPos();

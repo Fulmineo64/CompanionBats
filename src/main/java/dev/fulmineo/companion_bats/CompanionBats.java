@@ -31,7 +31,7 @@ import dev.fulmineo.companion_bats.item.CompanionBatExperiencePieItem;
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatFluteItem;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
-import dev.fulmineo.companion_bats.item.CompanionBatWhistleItem;
+import dev.fulmineo.companion_bats.item.CompanionBatStaffItem;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
 
 public class CompanionBats implements ModInitializer {
@@ -63,7 +63,7 @@ public class CompanionBats implements ModInitializer {
 
     public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage((int)CompanionBatEntity.getMaxLevelHealth()).group(GROUP));
 	public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
-	public static final Item BAT_WHISTLE = new CompanionBatWhistleItem(new FabricItemSettings().maxCount(1).group(GROUP));
+	public static final Item BAT_STAFF = new CompanionBatStaffItem(new FabricItemSettings().maxCount(1).group(GROUP));
     public static final Item SPIRIT_SHARD = new Item(new FabricItemSettings().group(GROUP));
     public static final Item SPIRIT_CRYSTAL = new Item(new FabricItemSettings().group(GROUP));
     public static final Item EXPERIENCE_PIE = new CompanionBatExperiencePieItem(new FabricItemSettings().food((new FoodComponent.Builder()).hunger(10).saturationModifier(0.5F).build()).rarity(Rarity.UNCOMMON).group(GROUP));
@@ -97,7 +97,7 @@ public class CompanionBats implements ModInitializer {
 
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_item"), 		  	BAT_ITEM);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_flute"), 	 	  	BAT_FLUTE_ITEM);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_whistle"), 	 	BAT_WHISTLE);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_staff"), 	 	BAT_STAFF);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_shard"), 	  	SPIRIT_SHARD);
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_crystal"),    	SPIRIT_CRYSTAL);
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "experience_pie"),  	EXPERIENCE_PIE);

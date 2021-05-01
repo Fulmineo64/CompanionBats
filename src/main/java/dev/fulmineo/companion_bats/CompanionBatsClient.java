@@ -19,7 +19,7 @@ public class CompanionBatsClient implements ClientModInitializer {
         ScreenRegistry.register(CompanionBats.BAT_SCREEN_HANDLER, CompanionBatScreen::new);
         EntityRendererRegistry.INSTANCE.register(CompanionBats.COMPANION_BAT, CompanionBatEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(CompanionBats.DYNAMITE, FlyingItemEntityRenderer::new);
-		FabricModelPredicateProviderRegistry.register(CompanionBats.COMMAND_FLUTE, new Identifier("mode"), (itemStack, clientWorld, livingEntity, seed) -> {
+		FabricModelPredicateProviderRegistry.register(CompanionBats.COMMAND_FLUTE_ATTACK, new Identifier("mode"), (itemStack, clientWorld, livingEntity, seed) -> {
 			NbtCompound tag = itemStack.getTag();
 			CompanionBats.info(""+ tag.getByte("mode"));
 			return (float)tag.getByte("mode");

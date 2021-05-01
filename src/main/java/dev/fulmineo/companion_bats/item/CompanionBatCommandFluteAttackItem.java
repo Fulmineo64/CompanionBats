@@ -18,9 +18,9 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class CompanionBatCommandFluteItem extends Item {
+public class CompanionBatCommandFluteAttackItem extends Item {
 
-	public CompanionBatCommandFluteItem(Settings settings) {
+	public CompanionBatCommandFluteAttackItem(Settings settings) {
         super(settings);
     }
 
@@ -28,18 +28,8 @@ public class CompanionBatCommandFluteItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
 
-		/*  Modes:
-			Null - attack
-			1 - rest
-			2 - toggle defend method
-		*/
-
 		if (user.isSneaking()){
-			if (itemStack.isOf(CompanionBats.COMMAND_FLUTE_1))  {
-				itemStack = new ItemStack(CompanionBats.COMMAND_FLUTE);
-			} else {
-				itemStack = new ItemStack(CompanionBats.COMMAND_FLUTE_1);
-			}
+			itemStack = new ItemStack(CompanionBats.COMMAND_FLUTE_REST);
 		} else {
 			if (world instanceof ServerWorld) {
 				double distance = 20.0D;
@@ -62,7 +52,7 @@ public class CompanionBatCommandFluteItem extends Item {
 				}
 			}
 
-			user.getItemCooldownManager().set(CompanionBats.COMMAND_FLUTE, 10);
+			user.getItemCooldownManager().set(CompanionBats.COMMAND_FLUTE_ATTACK, 10);
 		}
 
 		return TypedActionResult.success(itemStack);

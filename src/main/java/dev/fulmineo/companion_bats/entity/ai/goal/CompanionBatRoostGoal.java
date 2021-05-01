@@ -20,7 +20,6 @@ public class CompanionBatRoostGoal extends Goal {
     private final EntityNavigation navigation;
     private final float maxDistanceToBegin;
     protected final Random random;
-    private int canStartCountdownTicks;
 	private int timeoutTicks;
 
     public CompanionBatRoostGoal(CompanionBatEntity entity, double speed, float maxDistanceToBegin, int timeoutTicks) {
@@ -39,7 +38,7 @@ public class CompanionBatRoostGoal extends Goal {
 			this.resetTimeoutTicks();
 			return false;
 		}
-		if (--this.canStartCountdownTicks <= 0) {
+		if (--this.entity.roostTicks <= 0) {
             this.resetTimeoutTicks();
 			LivingEntity livingEntity = this.entity.getOwner();
 			if (this.entity.isFleeing() || this.entity.isRoosting() || this.entity.isLeashed() || this.entity.hasVehicle() || this.entity.getTarget() != null){
@@ -56,9 +55,9 @@ public class CompanionBatRoostGoal extends Goal {
 	private void resetTimeoutTicks(){
 		float healthPercentage = this.entity.getHealth() / this.entity.getMaxHealth();
 		if (healthPercentage < 1.0F){
-			this.canStartCountdownTicks = this.timeoutTicks;
+			this.entity.roostTicks = this.timeoutTicks;
 		} else {
-			this.canStartCountdownTicks = this.timeoutTicks * 3;
+			this.entity.roostTicks = this.timeoutTicks * 3;
 		}
 	}
 

@@ -1,18 +1,19 @@
 package dev.fulmineo.companion_bats.entity.ai.goal;
 
 import java.util.EnumSet;
+
+import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
-import net.minecraft.entity.passive.TameableEntity;
 
 public class CompanionBatTrackOwnerAttackerGoal extends TrackTargetGoal {
-	private final TameableEntity entity;
+	private final CompanionBatEntity entity;
 	private LivingEntity attacker;
 	private int lastAttackedTime;
 
-	public CompanionBatTrackOwnerAttackerGoal(TameableEntity entity) {
+	public CompanionBatTrackOwnerAttackerGoal(CompanionBatEntity entity) {
 		super(entity, false);
 		this.entity = entity;
 		this.setControls(EnumSet.of(Goal.Control.TARGET));
@@ -24,9 +25,13 @@ public class CompanionBatTrackOwnerAttackerGoal extends TrackTargetGoal {
 			if (owner == null) {
 				return false;
 			} else {
+				Byte guardMode = this.entity.getGuardMode();
+				if (guardMode == 0 || (guardMode == 1 && owner.getHealth() > (owner.getMaxHealth() / 2))){
+					return false;
+				}
 				this.attacker = owner.getAttacker();
 				int i = owner.getLastAttackedTime();
-				return i != this.lastAttackedTime && owner.getHealth() < (owner.getMaxHealth() / 2) && this.canTrack(this.attacker, new TargetPredicate().includeHidden()) && this.entity.canAttackWithOwner(this.attacker, owner);
+				return i != this.lastAttackedTime && this.canTrack(this.attacker, new TargetPredicate().includeHidden()) && this.entity.canAttackWithOwner(this.attacker, owner);
 			}
 		} else {
 			return false;

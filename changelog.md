@@ -1,5 +1,12 @@
-- Minor tweaks on the Duelist's buffs
-- Fixed mummy texture
+# 1.12.3 - 1.13.3
+- Added a new item, the Command Flute
+- Through this flute you can now issue direct commands to your bats
+- The available commands are: Attack enemies, Rest / Stop attacking, Toggle Guard mode 
+- The commands can be changed by Shift-Right clicking the Command Flute
+- The guarding behaviour of the Companion Bat has changed, by default it will NOT help you in battle if you don't attack
+- This behaviour can be changed with the Toggle Guard feature of the Command Flute
+- Tweaked slightly the Duelist's buffs
+- Fixed the Mummy's texture
 
 # 1.12.2 - 1.13.2
 - Duelists' lightning bolts no longer set the terrain on fire and no longer harm the bat itself or its owner

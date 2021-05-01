@@ -121,6 +121,10 @@ public class EntityData {
 		return this.getArmorItems().getCompound(EquipmentSlot.FEET.getEntitySlotId());
 	}
 
+	public Byte getGuardMode(){
+		return this.tag.getByte("GuardMode");
+	}
+
 	public void putAccessory(CompoundTag accessoryTag){
 		this.putArmorItem(EquipmentSlot.HEAD.getEntitySlotId(), accessoryTag);
 	}
@@ -131,6 +135,10 @@ public class EntityData {
 
 	public void putBundle(CompoundTag bundleTag){
 		this.putArmorItem(EquipmentSlot.FEET.getEntitySlotId(), bundleTag);
+	}
+
+	public void putGuardMode(Byte mode){
+		this.tag.putByte("GuardMode", mode);
 	}
 
 	public void putOwner(PlayerEntity player){

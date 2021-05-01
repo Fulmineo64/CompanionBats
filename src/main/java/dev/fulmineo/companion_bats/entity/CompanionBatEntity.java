@@ -1,5 +1,6 @@
 package dev.fulmineo.companion_bats.entity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -129,6 +130,7 @@ public class CompanionBatEntity extends TameableEntity {
 	public BlockPos diggingPosition;
 	public int emergencyPotionTicks;
 	public int effectPotionTicks;
+	public int roostTicks;
 
 	private CompanionBatClass currentClass;
 	private int exp = 0;
@@ -145,6 +147,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private int comboLevel = 0;
 	private int teleportTicks = TELEPORT_TICKS;
 	private int effectTicks = 1;
+	private Byte guardMode = 0;
 
 	public CompanionBatEntity(EntityType<? extends TameableEntity> entityType, World world) {
 		super(entityType, world);
@@ -165,6 +168,7 @@ public class CompanionBatEntity extends TameableEntity {
 		super.writeCustomDataToTag(tag);
 		EntityData entityData = new EntityData(tag);
 		entityData.putExp(this.getExp());
+		entityData.putGuardMode(this.getGuardMode());
 		this.writeExpToTag(entityData);
 		this.writePotionTicks(entityData);
 	}
@@ -180,6 +184,7 @@ public class CompanionBatEntity extends TameableEntity {
 		this.abilities.setFromNbt(entityData);
 		this.setAbilitiesEffects(true);
 		this.setPotionTicks(entityData);
+		this.setGuardMode(entityData.getGuardMode());
 	}
 
 	protected float getSoundVolume() {
@@ -252,6 +257,10 @@ public class CompanionBatEntity extends TameableEntity {
 			this.dataTracker.set(BAT_FLAGS, (byte) (b & -2));
 			this.hangingPosition = null;
 		}
+	}
+
+	public void startRoosting(){
+		this.roostTicks = 1;
 	}
 
 	public void tick() {
@@ -550,10 +559,10 @@ public class CompanionBatEntity extends TameableEntity {
 
 					if (i == 0){
 						List<Entity> list = this.world.getOtherEntities(this, new Box(blockPos.getX() - 3.0D, blockPos.getY() - 3.0D, blockPos.getZ() - 3.0D, blockPos.getX() + 3.0D, blockPos.getY() + 6.0D + 3.0D, blockPos.getZ() + 3.0D), entity -> entity.isAlive() && !(entity instanceof LightningEntity) && entity != this && entity != this.getOwner());
-						Iterator<Entity> var4 = list.iterator();
+						Iterator<Entity> iterator = list.iterator();
 
-						while(var4.hasNext()) {
-							Entity entity = (Entity)var4.next();
+						while(iterator.hasNext()) {
+							Entity entity = (Entity)iterator.next();
 							entity.onStruckByLightning((ServerWorld)this.world, lightningEntity);
 							entity.damage(DamageSource.LIGHTNING_BOLT, (6.0F + (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)) * abilityLevel);
 						}
@@ -1012,9 +1021,39 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 	}
 
+	public Byte getGuardMode(){
+		return this.guardMode;
+	}
+
+	public void setGuardMode(Byte mode){
+		this.guardMode = mode;
+	}
+
 	public static void setDefaultEntityData(CompoundTag tag) {
 		tag.putFloat("health", BASE_HEALTH);
 		tag.putInt("exp", 0);
+	}
+
+	public static List<CompanionBatEntity> getPlayerBats(ServerPlayerEntity player) {
+		List<CompanionBatEntity> entities = new ArrayList<CompanionBatEntity>();
+		if (player != null) {
+			PlayerInventory inventory = player.inventory;
+			ImmutableList<DefaultedList<ItemStack>> mainAndOffhand = ImmutableList.of(inventory.main, inventory.offHand);
+			Iterator<DefaultedList<ItemStack>> iterator = mainAndOffhand.iterator();
+			while (iterator.hasNext()) {
+				DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
+				for (int i = 0; i < defaultedList.size(); ++i) {
+					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM) {
+						ServerWorld serverWorld = (ServerWorld)player.world;
+						Entity entity = serverWorld.getEntity(defaultedList.get(i).getTag().getUuid("EntityUUID"));
+						if (entity != null){
+							entities.add((CompanionBatEntity)entity);
+						}
+					}
+				}
+			}
+		}
+		return entities;
 	}
 
 	static {

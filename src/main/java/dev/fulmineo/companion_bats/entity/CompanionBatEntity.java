@@ -464,7 +464,7 @@ public class CompanionBatEntity extends TameableEntity {
 			float g = MathHelper.sqrt(d * d + f * f);
 
 			DynamiteEntity dynamite = new DynamiteEntity(this.world, this);
-			dynamite.pitch -= -20.0F;
+			dynamite.setPitch(dynamite.getPitch() + 20.0F);
 			dynamite.setPower(this.abilities.getValue(CompanionBatAbility.DYNAMITE));
 			dynamite.setVelocity(d, e + (double)(g * 0.2F), f, 0.75F, 8.0F);
 

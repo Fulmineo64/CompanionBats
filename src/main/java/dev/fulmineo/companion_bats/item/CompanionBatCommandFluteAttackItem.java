@@ -41,14 +41,7 @@ public class CompanionBatCommandFluteAttackItem extends Item {
 				if (entityHitResult != null) {
 					LivingEntity entity = (LivingEntity)entityHitResult.getEntity();
 					entity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 10, 0, false, false));
-					user.setAttacker(entity);
-				} else {
-					TargetPredicate predicate = new TargetPredicate().setPredicate((livingEntity) -> !livingEntity.isSpectator() && livingEntity != user && CompanionBatEntity.canAttackWithOwnerStatic(livingEntity, user));
-					LivingEntity entity = world.getClosestEntity(LivingEntity.class, predicate, user, user.getX(), user.getY(), user.getZ(), box);
-					if (entity != null) {
-						entity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 10, 0, false, false));
-						user.setAttacker(entity);
-					}
+					user.onAttacking(entity);
 				}
 			}
 

@@ -1023,6 +1023,9 @@ public class CompanionBatEntity extends TameableEntity {
 		return 1;
 	}
 
+	public void setGuardMode(Byte mode){
+	}
+
 	public static void setDefaultEntityData(CompoundTag tag) {
 		tag.putFloat("health", BASE_HEALTH);
 		tag.putInt("exp", 0);

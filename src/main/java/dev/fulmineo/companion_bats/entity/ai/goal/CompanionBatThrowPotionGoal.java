@@ -108,7 +108,7 @@ public class CompanionBatThrowPotionGoal extends Goal {
 
 						PotionEntity potionEntity = new PotionEntity(this.entity.world, this.entity);
 						potionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
-						potionEntity.pitch -= -20.0F;
+						potionEntity.setPitch(potionEntity.getPitch() + 20.0F);
 						potionEntity.setVelocity(d, e + (double)(g * 0.2F), f, 0.75F, 8.0F);
 						if (!this.entity.isSilent()) {
 							this.entity.world.playSound(null, this.entity.getX(), this.entity.getY(), this.entity.getZ(), SoundEvents.ENTITY_WITCH_THROW, SoundCategory.PLAYERS, 1.0F, 0.8F + this.entity.world.random.nextFloat() * 0.4F);

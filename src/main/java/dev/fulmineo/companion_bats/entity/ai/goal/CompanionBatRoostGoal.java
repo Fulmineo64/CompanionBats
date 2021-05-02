@@ -97,8 +97,8 @@ public class CompanionBatRoostGoal extends Goal {
                 }
                 if (this.entity.world.getBlockState(blockPos2).isSolidBlock(this.entity.world, blockPos2)) {
                     this.entity.setRoosting(true);
-                    this.entity.yaw = (float)this.random.nextInt(360);
-                    this.entity.headYaw = this.entity.yaw;
+                    this.entity.setYaw((float)this.random.nextInt(360));
+                    this.entity.headYaw = this.entity.getYaw();
                 }
             }
         } else {

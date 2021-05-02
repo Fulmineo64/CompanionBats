@@ -147,7 +147,6 @@ public class CompanionBatEntity extends TameableEntity {
 	private int comboLevel = 0;
 	private int teleportTicks = TELEPORT_TICKS;
 	private int effectTicks = 1;
-	private Byte guardMode = 0;
 
 	public CompanionBatEntity(EntityType<? extends TameableEntity> entityType, World world) {
 		super(entityType, world);
@@ -184,7 +183,6 @@ public class CompanionBatEntity extends TameableEntity {
 		this.abilities.setFromNbt(entityData);
 		this.setAbilitiesEffects(true);
 		this.setPotionTicks(entityData);
-		this.setGuardMode(entityData.getGuardMode());
 	}
 
 	protected float getSoundVolume() {
@@ -1022,11 +1020,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public Byte getGuardMode(){
-		return this.guardMode;
-	}
-
-	public void setGuardMode(Byte mode){
-		this.guardMode = mode;
+		return 1;
 	}
 
 	public static void setDefaultEntityData(CompoundTag tag) {

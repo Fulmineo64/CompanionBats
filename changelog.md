@@ -1,3 +1,6 @@
+# 1.13.4
+- Removed unused command_flute recipe
+
 # 1.12.3 - 1.13.3
 - Tweaked slightly the Duelist's buffs
 - Fixed the Mummy's texture

@@ -980,7 +980,7 @@ public class CompanionBatEntity extends TameableEntity {
 		if (this.hasCustomName()) {
 			batItemStack.setCustomName(this.getCustomName());
 		}
-		// Set companion bat item durability realtive to the bat health
+		// Set companion bat item durability relative to the bat health
 		float percentage = 1 - (this.getHealth() / this.getMaxHealth());
 		batItemStack.setDamage(Math.round(percentage * batItemStack.getMaxDamage()));
 
@@ -1025,11 +1025,6 @@ public class CompanionBatEntity extends TameableEntity {
 
 	public void setGuardMode(Byte mode){
 		this.guardMode = mode;
-	}
-
-	public static void setDefaultEntityData(NbtCompound tag) {
-		tag.putFloat("health", BASE_HEALTH);
-		tag.putInt("exp", 0);
 	}
 
 	public static List<CompanionBatEntity> getPlayerBats(ServerPlayerEntity player) {

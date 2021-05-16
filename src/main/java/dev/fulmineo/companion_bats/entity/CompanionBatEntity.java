@@ -148,6 +148,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private int teleportTicks = TELEPORT_TICKS;
 	private int effectTicks = 1;
 	private Byte guardMode = 0;
+	private boolean guaranteedSneakAttack;
 
 	public CompanionBatEntity(EntityType<? extends TameableEntity> entityType, World world) {
 		super(entityType, world);
@@ -318,7 +319,7 @@ public class CompanionBatEntity extends TameableEntity {
 					this.teleportTicks--;
 					if (this.teleportTicks == 0) {
 						LivingEntity target = this.getTarget();
-						if (target != null && this.squaredDistanceTo(target) <= this.abilities.getValue(CompanionBatAbility.TELEPORT) && this.teleportTo(target)) {
+						if (target != null && target.isAlive() && this.squaredDistanceTo(target) <= this.abilities.getValue(CompanionBatAbility.TELEPORT) && this.teleportTo(target)) {
 							this.teleportTicks = TELEPORT_TICKS;
 						} else {
 							this.teleportTicks = RETRY_TELEPORT_TICKS;
@@ -384,7 +385,7 @@ public class CompanionBatEntity extends TameableEntity {
 							this.world.playSound(null, this.getBlockPos(), SoundEvents.BLOCK_ANVIL_LAND , SoundCategory.PLAYERS, 0.15F, this.getSoundPitch() + 2F);
 							float targetHealth = target.getHealth();
 							target.damage(source, ((float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) + amount) * this.abilities.getValue(CompanionBatAbility.COUNTER_ATTACK) / 4);
-							this.onAttack(target, targetHealth - target.getHealth());
+							this.onAttack(target, targetHealth, target.getHealth());
 							return false;
 						}
 					}
@@ -482,8 +483,7 @@ public class CompanionBatEntity extends TameableEntity {
 		boolean bl = target.damage(DamageSource.mob(this), this.getAttackDamage(target));
 		if (bl) {
 			this.dealDamage(this, target);
-			float damageDealt = targetHealth - (target instanceof LivingEntity ? ((LivingEntity) target).getHealth() : 0);
-			this.onAttack(target, damageDealt);
+			this.onAttack(target, targetHealth, (target instanceof LivingEntity ? ((LivingEntity) target).getHealth() : 0));
 		}
 		return bl;
 	}
@@ -498,10 +498,15 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private boolean isBehind(LivingEntity target) {
+		if (this.guaranteedSneakAttack){
+			this.guaranteedSneakAttack = false;
+			return true;
+		}
 		return target.getHorizontalFacing().equals(this.getHorizontalFacing());
 	}
 
-	private void onAttack(Entity target, float damageDealt) {
+	private void onAttack(Entity target, float healthBefore, float healthAfter) {
+		float damageDealt = healthBefore - healthAfter;
 		if (damageDealt > 0) {
 			this.gainExp(EXP_GAIN);
 			if (this.abilities.has(CompanionBatAbility.LIFESTEAL)) {
@@ -524,6 +529,9 @@ public class CompanionBatEntity extends TameableEntity {
 			}
 			if (this.abilities.has(CompanionBatAbility.COMBO_ATTACK)) {
 				this.increaseComboLevel();
+			}
+			if (healthAfter <= 0 && this.hasTeleport){
+				this.teleportTicks = 1;
 			}
 		}
 	}
@@ -858,27 +866,13 @@ public class CompanionBatEntity extends TameableEntity {
 
 	private boolean teleportTo(Entity entity) {
 		Direction looking = entity.getHorizontalFacing().getOpposite();
-		return this.teleportTo(entity.getX() + looking.getOffsetX() * 0.5, entity.getEyeY(), entity.getZ() + looking.getOffsetZ() * 0.5);
-	}
-
-	private boolean teleportTo(double x, double y, double z) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
-
-		while (mutable.getY() > this.world.getHeight() && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
-			mutable.move(Direction.DOWN);
+		boolean success = this.teleport(entity.getX() + looking.getOffsetX(), entity.getEyeY(), entity.getZ() + looking.getOffsetZ(), true);
+		if (success) {
+			if (!this.isSilent()) this.world.playSound((PlayerEntity) null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 0.3F, this.getSoundPitch() + 1.0F);
+			this.guaranteedSneakAttack = true;
+			this.tryAttack(entity);
 		}
-
-		BlockState blockState = this.world.getBlockState(mutable);
-		boolean bl = blockState.getMaterial().blocksMovement();
-		if (bl) {
-			boolean bl3 = this.teleport(x, y, z, true);
-			if (bl3 && !this.isSilent()) {
-				this.world.playSound((PlayerEntity) null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 0.3F, this.getSoundPitch() + 1.0F);
-			}
-			return bl3;
-		} else {
-			return false;
-		}
+		return success;
 	}
 
 	private void tryLevelUp() {
@@ -975,7 +969,7 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 	}
 
-	protected ItemStack toItemStack() {
+	public ItemStack toItemStack() {
 		ItemStack batItemStack = new ItemStack(CompanionBats.BAT_ITEM);
 		if (this.hasCustomName()) {
 			batItemStack.setCustomName(this.getCustomName());

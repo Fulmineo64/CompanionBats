@@ -1,3 +1,8 @@
+- Improved Ninja's teleport logic
+- The teleport's cooldown now resets on mob kill
+- When the bat telports it will now automatically attack the target entity
+- Summoned bats will now be automatically recalled when changing dimension
+
 # 1.12.3 - 1.13.3
 - Tweaked slightly the Duelist's buffs
 - Fixed the Mummy's texture

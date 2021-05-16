@@ -44,7 +44,7 @@ public class CompanionBatAbilities {
 
 	public void setFromNbt(EntityData entityData) {
 		CompanionBatClass currentClass = null;
-		ItemStack armorStack = ItemStack.fromNbt(entityData.getArmor());
+		ItemStack armorStack = ItemStack.of(entityData.getArmor());
 		if (armorStack.getItem() instanceof CompanionBatArmorItem) {
 			CompanionBatArmorItem armor = (CompanionBatArmorItem) armorStack.getItem();
 			currentClass = armor.getBatClass();
@@ -60,7 +60,7 @@ public class CompanionBatAbilities {
 				}
 			}
 		}
-		ItemStack accessoryStack = ItemStack.fromNbt(entityData.getAccessory());
+		ItemStack accessoryStack = ItemStack.of(entityData.getAccessory());
 		if (accessoryStack.getItem() instanceof CompanionBatAccessoryItem) {
 			this.addFromAccessory((CompanionBatAccessoryItem) accessoryStack.getItem());
 		}

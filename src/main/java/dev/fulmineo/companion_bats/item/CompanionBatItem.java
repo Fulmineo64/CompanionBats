@@ -5,7 +5,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.jetbrains.annotations.Nullable;
+import dev.fulmineo.companion_bats.screen.CompanionBatContainerProvider;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.item.Rarity;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import dev.fulmineo.companion_bats.CompanionBatAbilities;
 import dev.fulmineo.companion_bats.CompanionBatAbility;
@@ -13,101 +24,76 @@ import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
 import dev.fulmineo.companion_bats.nbt.EntityData;
-import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Rarity;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
+
+import javax.annotation.Nullable;
 
 public class CompanionBatItem extends Item {
-    public CompanionBatItem(Settings settings) {
+    public CompanionBatItem(Properties settings) {
         super(settings);
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStack = user.getStackInHand(hand);
+    public ActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack itemStack = user.getItemInHand(hand);
         if (world instanceof ServerWorld) {
 			EntityData.createIfMissing(itemStack);
 			EntityData entityData = new EntityData(itemStack);
-            if (user.isSneaking()){
-                SimpleInventory inventory = new SimpleInventory(3);
-                inventory.setStack(0, ItemStack.fromNbt(entityData.getAccessory()));
-                inventory.setStack(1, ItemStack.fromNbt(entityData.getArmor()));
-				inventory.setStack(2, ItemStack.fromNbt(entityData.getBundle()));
-                user.openHandledScreen(new ExtendedScreenHandlerFactory() {
-                    @Override
-                    public void writeScreenOpeningData(ServerPlayerEntity serverPlayerEntity, PacketByteBuf packetByteBuf) {
-                        packetByteBuf.writeEnumConstant(hand);
-                    }
+            if (user.isCrouching()){
+                Inventory inventory = new Inventory(3);
+                inventory.setItem(0, ItemStack.of(entityData.getAccessory()));
+                inventory.setItem(1, ItemStack.of(entityData.getArmor()));
+				inventory.setItem(2, ItemStack.of(entityData.getBundle()));
 
-                    @Override
-                    public Text getDisplayName() {
-                        return new TranslatableText(CompanionBatItem.this.getTranslationKey());
-                    }
-
-                    @Override
-                    public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                        return new CompanionBatScreenHandler(syncId, inv, inventory, hand);
-                    }
+                NetworkHooks.openGui((ServerPlayerEntity) user, new CompanionBatContainerProvider(this, inventory, hand), buffer -> {
+                    buffer.writeEnum(hand);
                 });
             } else {
                 float entityHealth = entityData.getHealth();
                 if (entityHealth == 0){
-                    List<ItemEntity> list = world.getEntitiesByClass(ItemEntity.class, user.getBoundingBox().expand(8.0D, 8.0D, 8.0D), CompanionBatEntity.IS_FOOD_ITEM_ENTITY);
+                    List<ItemEntity> list = world.getEntitiesOfClass(ItemEntity.class, user.getBoundingBox().inflate(8.0D, 8.0D, 8.0D), (itemEntity) -> true);
                     if (list.size() > 0){
                         ItemEntity foodItemEntity = list.get(0);
-                        ItemStack stack = foodItemEntity.getStack();
+                        ItemStack stack = foodItemEntity.getItem();
                         entityHealth += CompanionBatEntity.getItemHealAmount(stack);
                         entityData.putHealth(entityHealth);
-                        stack.decrement(1);
+                        stack.shrink(1);
                     }
                 }
                 if (entityHealth > 0){
 					CompanionBatEntity batEntity = CompanionBatEntity.spawnFromItemStack((ServerWorld)world, itemStack, user);
-                    ItemStack fluteItemStack = new ItemStack(CompanionBats.BAT_FLUTE_ITEM);
-					fluteItemStack.getOrCreateTag().putUuid("EntityUUID", batEntity.getUuid());
-                    return TypedActionResult.success(fluteItemStack, world.isClient());
+                    ItemStack fluteItemStack = new ItemStack(CompanionBats.BAT_FLUTE_ITEM.get());
+					fluteItemStack.getOrCreateTag().putUUID("EntityUUID", batEntity.getUUID());
+                    return ActionResult.sidedSuccess(fluteItemStack, world.isClientSide());
                 } else {
-                    user.sendMessage(new TranslatableText("item.companion_bats.bat_item.exausted", itemStack.hasCustomName() ? itemStack.getName() : new TranslatableText("entity.companion_bats.bat.your_bat")), false);
-                    return TypedActionResult.fail(itemStack);
+                    user.displayClientMessage(new TranslationTextComponent("item.companion_bats.bat_item.exausted", itemStack.hasCustomHoverName() ? itemStack.getHoverName() : new TranslationTextComponent("entity.companion_bats.bat.your_bat")), false);
+                    return ActionResult.fail(itemStack);
                 }
             }
         }
-        return TypedActionResult.success(itemStack);
+        return ActionResult.success(itemStack);
     }
 
-	@Environment(EnvType.CLIENT)
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+	@OnlyIn(Dist.CLIENT)
+	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag context) {
 		CompanionBatAbilities abilities = new CompanionBatAbilities();
 		abilities.setFromNbt(new EntityData(stack));
 		Set<Entry<CompanionBatAbility, Integer>> entrySet = abilities.entrySet();
 		if (entrySet.size() > 0){
-			tooltip.add(new TranslatableText("item.companion_bats.bat_item.abilities").formatted(Formatting.AQUA));
+			tooltip.add(new TranslationTextComponent("item.companion_bats.bat_item.abilities").withStyle(TextFormatting.AQUA));
 			for (Map.Entry<CompanionBatAbility, Integer> entry : entrySet) {
-				tooltip.add(entry.getKey().toTranslatedText().append(" " + entry.getValue()).formatted(Formatting.GRAY));
+				tooltip.add(entry.getKey().toTranslatedText().append(" " + entry.getValue()).withStyle(TextFormatting.GRAY));
 			}
 		}
 	}
 
-    public boolean isUsedOnRelease(ItemStack stack) {
+    public boolean useOnRelease(ItemStack stack) {
         return true;
     }
 

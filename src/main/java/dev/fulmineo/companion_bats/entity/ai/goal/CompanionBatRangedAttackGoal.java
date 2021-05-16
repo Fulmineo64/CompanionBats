@@ -3,11 +3,11 @@ package dev.fulmineo.companion_bats.entity.ai.goal;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.pathfinding.PathNavigator;
 
 public class CompanionBatRangedAttackGoal extends Goal {
 	private CompanionBatEntity entity;
-	private EntityNavigation navigation;
+	private PathNavigator navigation;
 	private int canStartCountdownTicks;
 	private int updateCountdownTicks;
 	private double minDistanceSquared;
@@ -23,7 +23,7 @@ public class CompanionBatRangedAttackGoal extends Goal {
         this.navigation = entity.getNavigation();
 	}
 
-	public boolean canStart() {
+	public boolean canUse() {
         if (--this.canStartCountdownTicks <= 0) {
 			this.canStartCountdownTicks = 10;
 			LivingEntity livingEntity = this.entity.getOwner();
@@ -36,8 +36,8 @@ public class CompanionBatRangedAttackGoal extends Goal {
 		return false;
     }
 
-    public boolean shouldContinue() {
-		return this.canStartCountdownTicks <= 0 && !this.navigation.isIdle() && this.entity.getTarget() != null && this.entity.getTarget().isAlive() && this.isWithinDistanceToAttack(this.entity.getTarget());
+    public boolean canContinueToUse() {
+		return this.canStartCountdownTicks <= 0 && !this.navigation.isDone() && this.entity.getTarget() != null && this.entity.getTarget().isAlive() && this.isWithinDistanceToAttack(this.entity.getTarget());
     }
 
     public void start() {
@@ -50,9 +50,9 @@ public class CompanionBatRangedAttackGoal extends Goal {
     public void tick() {
         if (--this.updateCountdownTicks <= 0) {
 			this.updateCountdownTicks = 10;
-            if (!this.entity.isLeashed() && !this.entity.hasVehicle()) {
+            if (!this.entity.isLeashed() && !this.entity.isPassenger()) {
 				LivingEntity target = this.entity.getTarget();
-				if (target != null && target.isAlive() && this.entity.getVisibilityCache().canSee(target) && this.entity.tryRangedAttack(target)){
+				if (target != null && target.isAlive() && this.entity.getSensing().canSee(target) && this.entity.tryRangedAttack(target)){
 					this.canStartCountdownTicks = this.rangedAttackCooldown;
 				}
             }
@@ -60,7 +60,7 @@ public class CompanionBatRangedAttackGoal extends Goal {
 	}
 
 	private boolean isWithinDistanceToAttack(LivingEntity target){
-		double distance = this.entity.squaredDistanceTo(target);
+		double distance = this.entity.distanceToSqr(target);
 		return distance > this.minDistanceSquared && distance < this.maxDistanceSquared;
 	}
 }

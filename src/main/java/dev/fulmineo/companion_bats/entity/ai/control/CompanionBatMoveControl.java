@@ -1,41 +1,44 @@
 package dev.fulmineo.companion_bats.entity.ai.control;
 
-import net.minecraft.entity.ai.control.MoveControl;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.mob.MobEntity;
+import dev.fulmineo.companion_bats.CompanionBats;
+import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.controller.MovementController;
+import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.util.math.MathHelper;
 
-public class CompanionBatMoveControl extends MoveControl {
+public class CompanionBatMoveControl extends MovementController {
     private final int maxPitchChange;
 
-    public CompanionBatMoveControl(MobEntity entity, int maxPitchChange) {
+    public CompanionBatMoveControl(CompanionBatEntity entity, int maxPitchChange) {
         super(entity);
         this.maxPitchChange = maxPitchChange;
     }
 
     public void tick() {
-        if (this.state == MoveControl.State.MOVE_TO) {
-            this.state = MoveControl.State.WAIT;
+        if (this.operation == MovementController.Action.MOVE_TO) {
+            this.operation = MovementController.Action.WAIT;
             // Entity is set on ground movement because otherwise its flying speed would be capped.
-            this.entity.setOnGround(true);
-            this.entity.setNoGravity(true);
-            double d = this.targetX - this.entity.getX();
-            double e = this.targetY - this.entity.getY();
-            double f = this.targetZ - this.entity.getZ();
+            this.mob.setOnGround(true);
+            this.mob.setNoGravity(true);
+            double d = this.wantedX - this.mob.getX();
+            double e = this.wantedY - this.mob.getY();
+            double f = this.wantedZ - this.mob.getZ();
+            // CompanionBats.info("d = " + d + " e = " + e + " f = " + f);
             double g = d * d + e * e + f * f;
             if (g < 2.500000277905201E-7D) {
-                // this.entity.setUpwardSpeed(0.0F);
-                this.entity.setForwardSpeed(0.0F);
+                // this.mob.setYya(0.0F);
+                this.mob.setZza(0.0F);
                 return;
             }
 
             float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875D) - 90.0F;
-            this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), h, 90.0F));
-            float j = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
-            this.entity.setMovementSpeed(j);
+			this.mob.yRot = this.rotlerp(this.mob.yRot, h, 90.0F);
+            float j = (float)(this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED));
+            this.mob.setSpeed(j);
             double k = (double)MathHelper.sqrt(d * d + f * f);
             float l = (float)(-(MathHelper.atan2(e, k) * 57.2957763671875D));
-            this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), l, (float)this.maxPitchChange));
+            this.mob.xRot = this.rotlerp(this.mob.xRot, l, (float)this.maxPitchChange);
             if (Math.abs(e) < 0.25) {
                 j = j / 4;
             } else if (Math.abs(e) < 0.5) {
@@ -43,14 +46,24 @@ public class CompanionBatMoveControl extends MoveControl {
             } else {
                 j = j / 2;
             }
-            this.entity.setUpwardSpeed(e > 0.0D ? j : -j);
+            this.mob.setYya(e > 0.0D ? j : -j);
         } else {
             /*if (!this.noGravity) {
                 this.entity.setNoGravity(false);
             }*/
 
-            this.entity.setUpwardSpeed(0.0F);
-            this.entity.setForwardSpeed(0.0F);
+            this.mob.setYya(0.0F);
+            this.mob.setZza(0.0F);
+        }
+    }
+
+    public void setWantedPosition(double p_75642_1_, double p_75642_3_, double p_75642_5_, double p_75642_7_) {
+        this.wantedX = p_75642_1_;
+        this.wantedY = p_75642_3_;
+        this.wantedZ = p_75642_5_;
+        this.speedModifier = p_75642_7_;
+        if (this.operation != MovementController.Action.JUMPING) {
+            this.operation = MovementController.Action.MOVE_TO;
         }
 
     }

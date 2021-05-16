@@ -5,35 +5,35 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 public class CompanionBatFluteItem extends Item {
 
-    public CompanionBatFluteItem(Settings settings) {
+    public CompanionBatFluteItem(Properties settings) {
         super(settings);
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack fluteItemStack = user.getStackInHand(hand);
+    public ActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack fluteItemStack = user.getItemInHand(hand);
         if (world instanceof ServerWorld) {
-            NbtCompound tag = fluteItemStack.getTag();
+            CompoundNBT tag = fluteItemStack.getTag();
             if (tag != null) {
-                CompanionBatEntity entity = (CompanionBatEntity) ((ServerWorld) world).getEntity(tag.getUuid("EntityUUID"));
+                CompanionBatEntity entity = (CompanionBatEntity) ((ServerWorld) world).getEntity(tag.getUUID("EntityUUID"));
                 if (entity != null) {
                     entity.returnToPlayerInventory();
-                    return TypedActionResult.success(fluteItemStack);
+                    return ActionResult.success(fluteItemStack);
                 } else {
-                    return TypedActionResult.fail(new ItemStack(Items.AIR));
+                    return ActionResult.fail(new ItemStack(Items.AIR));
                 }
             }
-            return TypedActionResult.fail(new ItemStack(Items.AIR));
+            return ActionResult.fail(new ItemStack(Items.AIR));
         } else {
-            return TypedActionResult.success(fluteItemStack);
+            return ActionResult.success(fluteItemStack);
         }
     }
 

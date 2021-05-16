@@ -1,20 +1,16 @@
 package dev.fulmineo.companion_bats.entity.ai.goal;
 
-import java.util.Optional;
-
+import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
-import dev.fulmineo.companion_bats.item.CompanionBatBundleItem;
+import dev.fulmineo.companion_bats.item.CompanionBatPouchItem;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BundleItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 
 public class CompanionBatTransferItemsToOwnerGoal extends Goal {
     private final CompanionBatEntity entity;
@@ -30,33 +26,32 @@ public class CompanionBatTransferItemsToOwnerGoal extends Goal {
         this.maxDistance = maxDistance;
     }
 
-    public boolean canStart() {
+    public boolean canUse() {
         if (--this.canStartCountdownTicks <= 0) {
             // Makes sure this check isn't spammed
             this.canStartCountdownTicks = 10;
             if (this.entity.isRoosting() || this.entity.isAboutToRoost()) return false;
             this.bundleStack = this.entity.getBundle();
-            if (!this.bundleStack.isOf(Items.BUNDLE)) return false;
+            if (this.bundleStack.getItem() != CompanionBats.BAT_POUCH_ITEM.get()) return false;
             LivingEntity livingEntity = this.entity.getOwner();
             if (livingEntity == null) {
                 return false;
             } else if (livingEntity.isSpectator()) {
                 return false;
-            } else if (this.entity.squaredDistanceTo(livingEntity) > (double)(this.maxDistance * this.maxDistance)) {
+            } else if (this.entity.distanceToSqr(livingEntity) > (double)(this.maxDistance * this.maxDistance)) {
                 return false;
             } else if (livingEntity instanceof PlayerEntity) {
                 this.owner = (PlayerEntity)livingEntity;
-                NbtCompound tag = this.bundleStack.getTag();
+                CompoundNBT tag = this.bundleStack.getTag();
                 if (tag == null) return false;
-				NbtList listTag = tag.getList("Items", 10);
-				this.canContinue = listTag.size() > 0;
+				this.canContinue = tag.contains("item");
                 return this.canContinue;
             }
         }
         return false;
     }
 
-    public boolean shouldContinue() {
+    public boolean canContinueToUse() {
         return this.canContinue;
     }
 
@@ -64,13 +59,10 @@ public class CompanionBatTransferItemsToOwnerGoal extends Goal {
         if (--this.updateCountdownTicks <= 0) {
             this.updateCountdownTicks = 5;
 			this.canContinue = false;
-            Optional<ItemStack> firstStack = ((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsRemoveFirstStack(this.bundleStack);
-			if (firstStack.isPresent()){
-                if (owner.getInventory().insertStack(firstStack.get())){
-					this.entity.world.playSound(null, this.entity.getBlockPos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.AMBIENT, 0.3F, 2F);
-					this.canContinue = true;
-                } else {
-					((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsAddToBundle(this.bundleStack, firstStack.get());
+            ItemStack firstStack = CompanionBatPouchItem.getItem(this.bundleStack);
+			if (firstStack != null && firstStack.getItem() != Items.AIR){
+				if (owner.inventory.add(firstStack)){
+                    this.entity.level.playSound(null, this.entity.blockPosition(), SoundEvents.ITEM_PICKUP, SoundCategory.AMBIENT, 0.3F, 2F);
                 }
             }
         }

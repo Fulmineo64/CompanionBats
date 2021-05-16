@@ -5,14 +5,13 @@ import java.util.EnumSet;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.pathing.EntityNavigation;
-// import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.pathfinding.PathNavigator;
 
 public class CompanionBatFollowOwnerGoal extends Goal {
     private final CompanionBatEntity entity;
     private LivingEntity owner;
     private final double speed;
-    private final EntityNavigation navigation;
+    private final PathNavigator navigation;
     private int updateCountdownTicks;
     private final double maxDistanceSquared;
     private final double minDistanceSquared;
@@ -23,10 +22,10 @@ public class CompanionBatFollowOwnerGoal extends Goal {
         this.navigation = entity.getNavigation();
         this.minDistanceSquared = (double)(minDistance * minDistance);
         this.maxDistanceSquared = (double)(maxDistance * maxDistance);
-        this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
      }
 
-    public boolean canStart() {
+    public boolean canUse() {
         LivingEntity livingEntity = this.entity.getOwner();
         if (livingEntity == null || livingEntity.isSpectator() || this.entity.isDigging() || !this.isWithinDistanceToStart(livingEntity)) {
             return false;
@@ -36,11 +35,11 @@ public class CompanionBatFollowOwnerGoal extends Goal {
         }
     }
 
-    public boolean shouldContinue() {
-        if (this.navigation.isIdle()) {
+    public boolean canContinueToUse() {
+        if (this.navigation.isDone()) {
            	return false;
         } else {
-			double distance = this.entity.squaredDistanceTo(this.owner);
+			double distance = this.entity.distanceToSqr(this.owner);
            	return distance > 7 && distance < (double)(this.maxDistanceSquared);
         }
     }
@@ -58,15 +57,16 @@ public class CompanionBatFollowOwnerGoal extends Goal {
     }
 
     public void tick() {
-        this.entity.getLookControl().lookAt(this.owner, 10.0F, (float)this.entity.getLookPitchSpeed());
+        this.entity.getLookControl().setLookAt(this.owner, 10.0F, (float)this.entity.getMaxHeadXRot());
         if (--this.updateCountdownTicks <= 0) {
             this.updateCountdownTicks = 10;
-            if (!this.entity.isLeashed() && !this.entity.hasVehicle()) {
-                double distance = this.entity.squaredDistanceTo(this.owner);
+            if (!this.entity.isLeashed() && !this.entity.isPassenger()) {
+                double distance = this.entity.distanceToSqr(this.owner);
                 if (distance >= this.maxDistanceSquared * 1.15){
                     this.tryTeleport();
                 } else {
-                    this.navigation.startMovingTo(this.owner, distance > (this.maxDistanceSquared * 10 / 100) ? this.speed : this.speed * 0.75);
+                    this.navigation.moveTo(this.owner, distance > (this.maxDistanceSquared * 10 / 100) ? this.speed : this.speed * 0.75);
+                    this.navigation.getPath().setNextNodeIndex(1);
                 }
             }
         }
@@ -78,9 +78,9 @@ public class CompanionBatFollowOwnerGoal extends Goal {
 
     private boolean isWithinDistanceToStart(LivingEntity owner){
         if (this.entity.isRoosting() || this.entity.isAboutToRoost() || this.entity.isFleeing()){
-            return this.entity.squaredDistanceTo(owner) > this.maxDistanceSquared * 0.7D;
+            return this.entity.distanceToSqr(owner) > this.maxDistanceSquared * 0.7D;
         } else {
-            return this.entity.squaredDistanceTo(owner) > this.minDistanceSquared;
+            return this.entity.distanceToSqr(owner) > this.minDistanceSquared;
         }
     }
 }

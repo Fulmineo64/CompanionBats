@@ -1,6 +1,5 @@
 package dev.fulmineo.companion_bats.entity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,88 +9,66 @@ import java.util.UUID;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 
-import org.jetbrains.annotations.Nullable;
+import dev.fulmineo.companion_bats.entity.ai.goal.*;
+import net.minecraft.entity.*;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
+import net.minecraft.entity.ai.goal.HurtByTargetGoal;
+import net.minecraft.entity.effect.LightningBoltEntity;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.monster.CreeperEntity;
+import net.minecraft.entity.passive.horse.AbstractHorseEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.pathfinding.FlyingPathNavigator;
+import net.minecraft.pathfinding.PathNavigator;
+import net.minecraft.pathfinding.PathNodeType;
 
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.entity.ai.control.CompanionBatMoveControl;
-import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatAttackWithOwnerGoal;
-import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatFollowOwnerGoal;
-import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatPickUpItemGoal;
-import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatRangedAttackGoal;
-import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatRoostGoal;
-import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatTargetSelectorGoal;
-import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatThrowPotionGoal;
-import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatTrackOwnerAttackerGoal;
-import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatTransferItemsToOwnerGoal;
 import dev.fulmineo.companion_bats.CompanionBatAbilities;
 import dev.fulmineo.companion_bats.CompanionBatAbility;
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.CompanionBatClass;
 import dev.fulmineo.companion_bats.nbt.EntityData;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.entity.ai.goal.RevengeGoal;
-import net.minecraft.entity.ai.pathing.BirdNavigation;
-import net.minecraft.entity.ai.pathing.EntityNavigation;
-import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.CreeperEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
-import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
+import net.minecraft.util.*;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+import javax.annotation.Nullable;
 
 public class CompanionBatEntity extends TameableEntity {
-	private static final TrackedData<Byte> BAT_FLAGS;
-	private static final TrackedData<Byte> COMBO_PARTICLE_LEVEL;
+	private static final DataParameter<Byte> BAT_FLAGS;
+	private static final DataParameter<Byte> COMBO_PARTICLE_LEVEL;
 	public CompanionBatAbilities abilities = new CompanionBatAbilities();
 	private Map<CompanionBatClass, Integer> classesExp = new HashMap<>();
 	private int healTicks = HEAL_TICKS;
@@ -135,7 +112,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private CompanionBatClass currentClass;
 	private int exp = 0;
 	private int classExp = 0;
-	private int level = -1;
+	private int currentLevel = -1;
 	private int classLevel = -1;
 	private boolean hasFireResistance;
 	private boolean hasTeleport;
@@ -147,26 +124,24 @@ public class CompanionBatEntity extends TameableEntity {
 	private int comboLevel = 0;
 	private int teleportTicks = TELEPORT_TICKS;
 	private int effectTicks = 1;
-	private Byte guardMode = 0;
-	private boolean guaranteedSneakAttack;
 
 	public CompanionBatEntity(EntityType<? extends TameableEntity> entityType, World world) {
 		super(entityType, world);
 		this.moveControl = new CompanionBatMoveControl(this, 10);
-		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, -1.0F);
-		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
+		this.setPathfindingMalus(PathNodeType.DANGER_FIRE, -1.0F);
+		this.setPathfindingMalus(PathNodeType.DAMAGE_FIRE, -1.0F);
 		this.setRoosting(false);
-		this.setSitting(false);
+		this.setInSittingPose(false);
 	}
 
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(BAT_FLAGS, (byte) 0);
-		this.dataTracker.startTracking(COMBO_PARTICLE_LEVEL, (byte) 0);
+	protected void defineSynchedData() {
+		super.defineSynchedData();
+		this.entityData.define(BAT_FLAGS, (byte) 0);
+		this.entityData.define(COMBO_PARTICLE_LEVEL, (byte) 0);
 	}
 
-	public void writeCustomDataToNbt(NbtCompound tag) {
-		super.writeCustomDataToNbt(tag);
+	public void addAdditionalSaveData(CompoundNBT tag) {
+		super.addAdditionalSaveData(tag);
 		EntityData entityData = new EntityData(tag);
 		entityData.putExp(this.getExp());
 		entityData.putGuardMode(this.getGuardMode());
@@ -174,64 +149,63 @@ public class CompanionBatEntity extends TameableEntity {
 		this.writePotionTicks(entityData);
 	}
 
-	public void readCustomDataFromNbt(NbtCompound tag) {
+	public void readAdditionalSaveData(CompoundNBT tag) {
 		EntityData entityData = new EntityData(tag);
-		this.setLevel(entityData.getExp());
-		this.setLevelAttributes(this.level);
-		super.readCustomDataFromNbt(tag);
+		this.setCurrentLevel(entityData.getExp());
+		this.setLevelAttributes(this.currentLevel);
+		super.readAdditionalSaveData(tag);
 		this.setAccessoryAbility();
 		this.setArmorAndClass();
 		this.setClassesExp(entityData);
 		this.abilities.setFromNbt(entityData);
 		this.setAbilitiesEffects(true);
 		this.setPotionTicks(entityData);
-		this.setGuardMode(entityData.getGuardMode());
 	}
 
 	protected float getSoundVolume() {
 		return 0.1F;
 	}
 
-	protected float getSoundPitch() {
-		return super.getSoundPitch() * 0.95F;
+	protected float getVoicePitch() {
+		return super.getVoicePitch() * 0.95F;
 	}
 
 	@Nullable
 	public SoundEvent getAmbientSound() {
-		return this.isRoosting() && this.random.nextInt(4) != 0 ? null : SoundEvents.ENTITY_BAT_AMBIENT;
+		return this.isRoosting() && this.random.nextInt(4) != 0 ? null : SoundEvents.BAT_AMBIENT;
 	}
 
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_BAT_HURT;
+		return SoundEvents.BAT_HURT;
 	}
 
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_BAT_DEATH;
+		return SoundEvents.BAT_DEATH;
 	}
 
 	public boolean isPushable() {
 		return false;
 	}
 
-	protected void pushAway(Entity entity) {
+	protected void doPush(Entity entity) {
 	}
 
-	protected void tickCramming() {
+	protected void pushEntities() {
 	}
 
-	public static DefaultAttributeContainer.Builder createMobAttributes() {
+	public static AttributeModifierMap.MutableAttribute createMobAttributes() {
 		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, BASE_HEALTH)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, BASE_ATTACK)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, BASE_SPEED)
-			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 24.0D);
+			.add(Attributes.MAX_HEALTH, BASE_HEALTH)
+			.add(Attributes.ATTACK_DAMAGE, BASE_ATTACK)
+			.add(Attributes.MOVEMENT_SPEED, BASE_SPEED)
+			.add(Attributes.FOLLOW_RANGE, 24.0D);
 	}
 
 	/**
 	 * Returns whether this bat is hanging upside-down under a block.
 	 */
 	public boolean isRoosting() {
-		return ((Byte) this.dataTracker.get(BAT_FLAGS) & 1) != 0;
+		return (this.entityData.get(BAT_FLAGS) & 1) != 0;
 	}
 
 	public boolean isInjured() {
@@ -251,62 +225,64 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public void setRoosting(boolean roosting) {
-		byte b = (Byte) this.dataTracker.get(BAT_FLAGS);
+		byte b = this.entityData.get(BAT_FLAGS);
 		if (roosting) {
-			this.dataTracker.set(BAT_FLAGS, (byte) (b | 1));
+			this.entityData.set(BAT_FLAGS, (byte) (b | 1));
 		} else {
-			this.dataTracker.set(BAT_FLAGS, (byte) (b & -2));
+			this.entityData.set(BAT_FLAGS, (byte) (b & -2));
 			this.hangingPosition = null;
 		}
 	}
 
-	public void startRoosting(){
+	/*public void startRoosting(){
 		this.roostTicks = 1;
-	}
+	}*/
 
 	public void tick() {
 		super.tick();
-		if (this.world.isClient){
-			Byte comboParticleLevel = this.dataTracker.get(COMBO_PARTICLE_LEVEL);
+		if (this.level.isClientSide){
+			Byte comboParticleLevel = this.entityData.get(COMBO_PARTICLE_LEVEL);
 			if (comboParticleLevel > 0) {
 				switch (comboParticleLevel){
 					case 1: {
-						if (this.world.getTime() % 50 == 0) {
-							this.world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+						if (this.level.getGameTime() % 50 == 0) {
+							this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(0.6D), this.getRandomY(), this.getRandomZ(0.6D), 0.0D, 0.0D, 0.0D);
 						}
 						break;
 					}
 					case 2: {
-						if (this.world.getTime() % 25 == 0) {
-							this.world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+						if (this.level.getGameTime() % 25 == 0) {
+							this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(0.6D), this.getRandomY(), this.getRandomZ(0.6D), 0.0D, 0.0D, 0.0D);
 						}
 						break;
 					}
 					case 3: {
-						if (this.world.getTime() % 10 == 0) {
-							this.world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+						if (this.level.getGameTime() % 10 == 0) {
+							this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(0.6D), this.getRandomY(), this.getRandomZ(0.6D), 0.0D, 0.0D, 0.0D);
 						}
 						break;
 					}
 					case 4: {
-						if (this.world.getTime() % 10 == 0) {
-							this.world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
-							this.world.addParticle(ParticleTypes.ELECTRIC_SPARK, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+						if (this.level.getGameTime() % 10 == 0) {
+							this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(0.6D), this.getRandomY(), this.getRandomZ(0.6D), 0.0D, 0.0D, 0.0D);
+							this.level.addParticle(ParticleTypes.FIREWORK, this.getRandomX(0.6D), this.getRandomY(), this.getRandomZ(0.6D), 0.0D, 0.0D, 0.0D);
 						}
 						break;
 					}
 					case 5: {
-						this.world.addParticle(ParticleTypes.ELECTRIC_SPARK, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+						if (this.level.getGameTime() % 2 == 0) {
+							this.level.addParticle(ParticleTypes.FIREWORK, this.getRandomX(0.6D), this.getRandomY(), this.getRandomZ(0.6D), 0.0D, 0.0D, 0.0D);
+						}
 					}
 				}
 			}
 		} else {
 			if (this.isRoosting()) {
-				this.setVelocity(Vec3d.ZERO);
-				this.setPos(this.getX(), (double) MathHelper.floor(this.getY()) + 1.0D - (double) this.getHeight(), this.getZ());
+				this.setDeltaMovement(Vector3d.ZERO);
+				this.setPos(this.getX(), (double) MathHelper.floor(this.getY()) + 1.0D - (double) this.getBbHeight(), this.getZ());
 				this.comboAttackResetTicks = 0;
 			} else {
-				this.setVelocity(this.getVelocity().multiply(1.0D, 0.6D, 1.0D));
+				this.setDeltaMovement(this.getDeltaMovement().multiply(1.0D, 0.6D, 1.0D));
 
 				if (this.comboAttackResetTicks > 0) {
 					this.comboAttackResetTicks--;
@@ -319,7 +295,7 @@ public class CompanionBatEntity extends TameableEntity {
 					this.teleportTicks--;
 					if (this.teleportTicks == 0) {
 						LivingEntity target = this.getTarget();
-						if (target != null && target.isAlive() && this.squaredDistanceTo(target) <= this.abilities.getValue(CompanionBatAbility.TELEPORT) && this.teleportTo(target)) {
+						if (target != null && this.distanceToSqr(target) <= this.abilities.getValue(CompanionBatAbility.TELEPORT) && this.cbTeleportTo(target)) {
 							this.teleportTicks = TELEPORT_TICKS;
 						} else {
 							this.teleportTicks = RETRY_TELEPORT_TICKS;
@@ -331,14 +307,14 @@ public class CompanionBatEntity extends TameableEntity {
 				if (this.effectTicks == 0){
 					this.effectTicks = EFFECT_TICKS > 200 ? EFFECT_TICKS - 200 : EFFECT_TICKS;
 					if (this.hasFireResistance) {
-						this.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, this.effectTicks + 20, 0, false, false));
+						this.addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, this.effectTicks + 20, 0, false, false));
 					}
 
 					if (this.hasAdventurerAura || this.hasMinerAura){
 						LivingEntity owner = this.getOwner();
 						if (owner != null){
-							if (this.hasAdventurerAura) owner.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, EFFECT_TICKS, 0, false, false));
-							if (this.hasMinerAura) owner.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, EFFECT_TICKS, 0, false, false));
+							if (this.hasAdventurerAura) owner.addEffect(new EffectInstance(Effects.LUCK, EFFECT_TICKS, 0, false, false));
+							if (this.hasMinerAura) owner.addEffect(new EffectInstance(Effects.DIG_SPEED, EFFECT_TICKS, 0, false, false));
 						}
 					}
 				}
@@ -346,55 +322,55 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 	}
 
-	public void onDeath(DamageSource source) {
-		if (!this.returnToPlayerInventory()) super.onDeath(source);
+	public void die(DamageSource source) {
+		if (!this.returnToPlayerInventory()) super.die(source);
 	}
 
-	protected boolean canClimb() {
+	protected boolean isMovementNoisy() {
 		return false;
 	}
 
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+	public boolean causeFallDamage(float fallDistance, float damageMultiplier) {
 		return false;
 	}
 
-	protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
+	protected void checkFallDamage(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
 	}
 
-	public boolean canAvoidTraps() {
+	public boolean isIgnoringBlockTriggers() {
 		return true;
 	}
 
-	public boolean damage(DamageSource source, float amount) {
+	public boolean hurt(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
-			if (!this.world.isClient) {
+			if (!this.level.isClientSide) {
 				if (this.isRoosting()) {
 					this.setRoosting(false);
 				}
 			}
 
-			if (!source.bypassesArmor() && source != DamageSource.LAVA && this.abilities.has(CompanionBatAbility.BLOCK_ATTACK)) {
-				int roll = this.world.random.nextInt(100);
+			if (!source.isBypassArmor() && source != DamageSource.LAVA && this.abilities.has(CompanionBatAbility.BLOCK_ATTACK)) {
+				int roll = this.level.random.nextInt(100);
 				if (roll < this.abilities.getValue(CompanionBatAbility.BLOCK_ATTACK)) {
-					if (this.abilities.has(CompanionBatAbility.COUNTER_ATTACK) && source.getAttacker() instanceof LivingEntity) {
-						LivingEntity target = (LivingEntity) source.getAttacker();
+					if (this.abilities.has(CompanionBatAbility.COUNTER_ATTACK) && source.getEntity() instanceof LivingEntity) {
+						LivingEntity target = (LivingEntity) source.getEntity();
 						LivingEntity owner = this.getOwner();
 						if (target != owner && this.canAttackWithOwner(target, this.getOwner()) && this.isWithinDistanceToAttack(target)){
-							this.world.playSound(null, this.getBlockPos(), SoundEvents.BLOCK_ANVIL_LAND , SoundCategory.PLAYERS, 0.15F, this.getSoundPitch() + 2F);
+							this.level.playSound(null, this.blockPosition(), SoundEvents.ANVIL_LAND , SoundCategory.PLAYERS, 0.15F, this.getVoicePitch() + 2F);
 							float targetHealth = target.getHealth();
-							target.damage(source, ((float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) + amount) * this.abilities.getValue(CompanionBatAbility.COUNTER_ATTACK) / 4);
-							this.onAttack(target, targetHealth, target.getHealth());
+							target.hurt(source, ((float)this.getAttributeValue(Attributes.ATTACK_DAMAGE) + amount) * this.abilities.getValue(CompanionBatAbility.COUNTER_ATTACK) / 4);
+							this.onAttack(target, targetHealth - target.getHealth());
 							return false;
 						}
 					}
-					this.world.playSound(null, this.getBlockPos(), SoundEvents.ITEM_SHIELD_BLOCK, SoundCategory.PLAYERS, 0.2F, this.getSoundPitch());
+					this.level.playSound(null, this.blockPosition(), SoundEvents.SHIELD_BLOCK, SoundCategory.PLAYERS, 0.2F, this.getVoicePitch());
 					return false;
 				}
 			}
 
-			return super.damage(source, amount);
+			return super.hurt(source, amount);
 		}
 	}
 
@@ -406,16 +382,16 @@ public class CompanionBatEntity extends TameableEntity {
 		if (!(target instanceof CreeperEntity)) {
 			if (target instanceof WolfEntity) {
 				WolfEntity wolfEntity = (WolfEntity) target;
-				return !wolfEntity.isTamed() || wolfEntity.getOwner() != owner;
+				return !wolfEntity.isTame() || wolfEntity.getOwner() != owner;
 			} else if (target instanceof CompanionBatEntity) {
 				CompanionBatEntity companionBatEntity = (CompanionBatEntity) target;
 				return companionBatEntity.getOwner() != owner;
-			} else if (target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity) owner).shouldDamagePlayer((PlayerEntity) target)) {
+			} else if (target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity) owner).canHarmPlayer((PlayerEntity) target)) {
 				return false;
-			} else if (target instanceof HorseBaseEntity && ((HorseBaseEntity) target).isTame()) {
+			} else if (target instanceof AbstractHorseEntity && ((AbstractHorseEntity) target).isTamed()) {
 				return false;
 			} else {
-				return !(target instanceof TameableEntity) || !((TameableEntity) target).isTamed();
+				return !(target instanceof TameableEntity) || !((TameableEntity) target).isTame();
 			}
 		} else {
 			return false;
@@ -423,16 +399,16 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	@Override
-	protected void mobTick() {
-		if (!this.world.isClient){
+	protected void customServerAiStep() {
+		if (!this.level.isClientSide){
 			if (this.isRoosting()) {
 				if (this.getTarget() != null) {
 					this.setRoosting(false);
 				}
-				if (this.hangingPosition == null || !this.world.getBlockState(this.hangingPosition).isSolidBlock(this.world, this.hangingPosition)) {
+				if (this.hangingPosition == null || !this.level.getBlockState(this.hangingPosition).isRedstoneConductor(this.level, this.hangingPosition)) {
 					this.setRoosting(false);
 					if (!this.isSilent()) {
-						this.world.syncWorldEvent((PlayerEntity) null, 1025, this.getBlockPos(), 0);
+						this.level.levelEvent((PlayerEntity) null, 1025, this.blockPosition(), 0);
 					}
 				}
 			}
@@ -449,89 +425,82 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 	}
 
-	public CompanionBatEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+	public CompanionBatEntity getBreedOffspring(ServerWorld serverWorld, AgeableEntity passiveEntity) {
 		return null;
 	}
 
 	public boolean tryRangedAttack(Entity target) {
-		double ownerDistance = target.squaredDistanceTo(this.getOwner());
+		double ownerDistance = target.distanceToSqr(this.getOwner());
 		if (ownerDistance > 25.0D) {
-			Vec3d vec3d = target.getVelocity();
-			double d = target.getX() + vec3d.x - this.getX();
+			Vector3d Vector3d = target.getDeltaMovement();
+			double d = target.getX() + Vector3d.x - this.getX();
 			double e = target.getEyeY() - 1.100000023841858D - this.getY();
-			double f = target.getZ() + vec3d.z - this.getZ();
+			double f = target.getZ() + Vector3d.z - this.getZ();
 			float g = MathHelper.sqrt(d * d + f * f);
 
-			DynamiteEntity dynamite = new DynamiteEntity(this.world, this);
-			dynamite.setPitch(dynamite.getPitch() + 20.0F);
+			DynamiteEntity dynamite = new DynamiteEntity(this.level, this);
+			dynamite.xRot += 20.0F;
 			dynamite.setPower(this.abilities.getValue(CompanionBatAbility.DYNAMITE));
-			dynamite.setVelocity(d, e + (double)(g * 0.2F), f, 0.75F, 8.0F);
+			dynamite.shoot(d, e + (double)(g * 0.2F), f, 0.75F, 8.0F);
 
 			if (!this.isSilent()) {
-				this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.PLAYERS, 1.0F, 1F + this.world.random.nextFloat() * 0.4F);
+				this.level.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.TNT_PRIMED, SoundCategory.PLAYERS, 1.0F, 1F + this.level.random.nextFloat() * 0.4F);
 			}
 
-			this.world.spawnEntity(dynamite);
-			this.setVelocity(d * -0.4, 0, f * -0.4);
+			this.level.addFreshEntity(dynamite);
+			this.setDeltaMovement(d * -0.4, 0, f * -0.4);
 			return true;
 		}
 		return false;
 	}
 
-	public boolean tryAttack(Entity target) {
+	public boolean doHurtTarget(Entity target) {
 		float targetHealth = target instanceof LivingEntity ? ((LivingEntity) target).getHealth() : 0;
-		boolean bl = target.damage(DamageSource.mob(this), this.getAttackDamage(target));
+		boolean bl = target.hurt(DamageSource.mobAttack(this), this.getAttackDamage(target));
 		if (bl) {
-			this.dealDamage(this, target);
-			this.onAttack(target, targetHealth, (target instanceof LivingEntity ? ((LivingEntity) target).getHealth() : 0));
+			this.doEnchantDamageEffects(this, target);
+			float damageDealt = targetHealth - (target instanceof LivingEntity ? ((LivingEntity) target).getHealth() : 0);
+			this.onAttack(target, damageDealt);
 		}
 		return bl;
 	}
 
 	private float getAttackDamage(Entity target) {
-		float attackDamage = (float) ((int) this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+		float attackDamage = (float) ((int) this.getAttributeValue(Attributes.ATTACK_DAMAGE));
 		if (this.abilities.has(CompanionBatAbility.SNEAK_ATTACK) && target instanceof LivingEntity && this.isBehind((LivingEntity) target)) {
-			this.world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT , SoundCategory.PLAYERS, 1F, 1.5F);
+			this.level.playSound(null, this.blockPosition(), SoundEvents.PLAYER_ATTACK_CRIT , SoundCategory.PLAYERS, 1F, 1.5F);
 			attackDamage += attackDamage * this.abilities.getValue(CompanionBatAbility.SNEAK_ATTACK) / 4;
 		}
 		return attackDamage;
 	}
 
 	private boolean isBehind(LivingEntity target) {
-		if (this.guaranteedSneakAttack){
-			this.guaranteedSneakAttack = false;
-			return true;
-		}
-		return target.getHorizontalFacing().equals(this.getHorizontalFacing());
+		return target.getDirection().equals(this.getDirection());
 	}
 
-	private void onAttack(Entity target, float healthBefore, float healthAfter) {
-		float damageDealt = healthBefore - healthAfter;
+	private void onAttack(Entity target, float damageDealt) {
 		if (damageDealt > 0) {
 			this.gainExp(EXP_GAIN);
 			if (this.abilities.has(CompanionBatAbility.LIFESTEAL)) {
 				this.heal(damageDealt * this.abilities.getValue(CompanionBatAbility.LIFESTEAL) / 100);
 			}
 			if (this.abilities.has(CompanionBatAbility.BURN)) {
-				target.setOnFireFor(this.abilities.getValue(CompanionBatAbility.BURN));
+				target.setSecondsOnFire(this.abilities.getValue(CompanionBatAbility.BURN));
 			}
 			if (target instanceof LivingEntity){
 				LivingEntity livingTarget = (LivingEntity)target;
 				if (this.abilities.has(CompanionBatAbility.SLOWNESS)) {
-					livingTarget.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, this.abilities.getValue(CompanionBatAbility.SLOWNESS)));
+					livingTarget.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 60, this.abilities.getValue(CompanionBatAbility.SLOWNESS)));
 				}
 				if (this.abilities.has(CompanionBatAbility.WEAKNESS)) {
-					livingTarget.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 60, this.abilities.getValue(CompanionBatAbility.WEAKNESS)));
+					livingTarget.addEffect(new EffectInstance(Effects.WEAKNESS, 60, this.abilities.getValue(CompanionBatAbility.WEAKNESS)));
 				}
 				if (this.abilities.has(CompanionBatAbility.WITHER)) {
-					livingTarget.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 60, this.abilities.getValue(CompanionBatAbility.WITHER)));
+					livingTarget.addEffect(new EffectInstance(Effects.WITHER, 80, this.abilities.getValue(CompanionBatAbility.WITHER)));
 				}
 			}
 			if (this.abilities.has(CompanionBatAbility.COMBO_ATTACK)) {
 				this.increaseComboLevel();
-			}
-			if (healthAfter <= 0 && this.hasTeleport){
-				this.teleportTicks = 1;
 			}
 		}
 	}
@@ -543,34 +512,35 @@ public class CompanionBatEntity extends TameableEntity {
 		this.setComboLevel(this.comboLevel+1);
 
 		if (this.comboLevel > 5) {
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 50, (int)(this.comboLevel / 25), false, false));
+			this.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 50, (int)(this.comboLevel / 25), false, false));
 		}
 		if (comboAttackLevel >= 2 && this.comboLevel > 10) {
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 50, (int)(this.comboLevel / 30), false, false));
+			this.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 50, (int)(this.comboLevel / 30), false, false));
 		}
 		if (comboAttackLevel >= 3 && this.comboLevel > 15) {
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 50, 0, false, false));
+			this.addEffect(new EffectInstance(Effects.REGENERATION, 50, 0, false, false));
 		}
 		if (this.comboLevel > 45) {
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 100, 0, false, false));
+			this.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 100, 0, false, false));
 			if (this.comboLevel == 50){
 				this.heal(this.getMaxHealth());
-				BlockPos blockPos = this.getTarget().getBlockPos();
+				BlockPos blockPos = this.getTarget().blockPosition();
 				int abilityLevel = this.abilities.get(CompanionBatAbility.COMBO_ATTACK);
 				for (int i = 0; i < abilityLevel; i++){
-					LightningEntity lightningEntity = (LightningEntity)EntityType.LIGHTNING_BOLT.create(this.world);
-					lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
-					lightningEntity.setCosmetic(true);
-					this.world.spawnEntity(lightningEntity);
+					LightningBoltEntity lightningEntity = (LightningBoltEntity)EntityType.LIGHTNING_BOLT.create(this.level);
+					lightningEntity.moveTo(Vector3d.atBottomCenterOf(blockPos));
+					lightningEntity.setVisualOnly(true);
+					this.level.addFreshEntity(lightningEntity);
 
 					if (i == 0){
-						List<Entity> list = this.world.getOtherEntities(this, new Box(blockPos.getX() - 3.0D, blockPos.getY() - 3.0D, blockPos.getZ() - 3.0D, blockPos.getX() + 3.0D, blockPos.getY() + 6.0D + 3.0D, blockPos.getZ() + 3.0D), entity -> entity.isAlive() && !(entity instanceof LightningEntity) && entity != this && entity != this.getOwner());
+						List<Entity> list = this.level.getEntities(this, new AxisAlignedBB(blockPos.getX() - 3.0D, blockPos.getY() - 3.0D, blockPos.getZ() - 3.0D, blockPos.getX() + 3.0D, blockPos.getY() + 6.0D + 3.0D, blockPos.getZ() + 3.0D), entity -> entity.isAlive() && !(entity instanceof LightningBoltEntity) && entity != this && entity != this.getOwner());
 						Iterator<Entity> iterator = list.iterator();
 
 						while(iterator.hasNext()) {
 							Entity entity = (Entity)iterator.next();
-							entity.onStruckByLightning((ServerWorld)this.world, lightningEntity);
-							entity.damage(DamageSource.LIGHTNING_BOLT, (6.0F + (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)) * abilityLevel);
+							if (!net.minecraftforge.event.ForgeEventFactory.onEntityStruckByLightning(entity, lightningEntity))
+							entity.thunderHit((ServerWorld)this.level, lightningEntity);
+							entity.hurt(DamageSource.LIGHTNING_BOLT, (6.0F + (float)this.getAttributeValue(Attributes.ATTACK_DAMAGE)) * abilityLevel);
 						}
 					}
 				}
@@ -580,38 +550,38 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	@Override
-	public ActionResult interactMob(PlayerEntity player, Hand hand) {
-		ItemStack itemStack = player.getStackInHand(hand);
-		if (this.world.isClient) {
-			return this.canEat(itemStack) ? ActionResult.CONSUME : ActionResult.PASS;
+	public ActionResultType mobInteract(PlayerEntity player, Hand hand) {
+		ItemStack itemStack = player.getItemInHand(hand);
+		if (this.level.isClientSide) {
+			return this.canEat(itemStack) ? ActionResultType.CONSUME : ActionResultType.PASS;
 		} else {
 			boolean res = this.healWithItem(itemStack);
 			if (res) {
-				if (!player.getAbilities().creativeMode) {
-					itemStack.decrement(1);
+				if (!player.abilities.instabuild) {
+					itemStack.shrink(1);
 				}
-				this.world.sendEntityStatus(this, (byte)8);
-				return ActionResult.SUCCESS;
+				this.level.broadcastEntityEvent(this, (byte)8);
+				return ActionResultType.SUCCESS;
 			} else if (IS_FOOD_ITEM.test(itemStack) && player == this.getOwner()){
 				ItemStack fluteStack = this.getFluteItemStack();
 				if (fluteStack == null){
-					player.giveItemStack(this.toItemStack());
-					this.discard();
-					return ActionResult.SUCCESS;
+					player.addItem(this.toItemStack());
+					this.remove();
+					return ActionResultType.SUCCESS;
 				}
 			}
 		}
-		return ActionResult.PASS;
+		return ActionResultType.PASS;
 	}
 
 	private void setComboLevel(int level){
 		this.comboLevel = level;
-		this.dataTracker.set(COMBO_PARTICLE_LEVEL, level == 0 ? 0 : (byte)((this.comboLevel / 10) + 1));
+		this.entityData.set(COMBO_PARTICLE_LEVEL, level == 0 ? 0 : (byte)((this.comboLevel / 10) + 1));
 	}
 
 	public boolean healWithItem(ItemStack stack) {
 		if (!this.canEat(stack)) return false;
-		if (stack.isOf(CompanionBats.EXPERIENCE_PIE)){
+		if (stack.getItem() == CompanionBats.EXPERIENCE_PIE.get()){
 			this.gainExp(EXPERIENCE_PIE_GAIN);
 		}
 		float amount = getItemHealAmount(stack);
@@ -623,7 +593,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public static float getItemHealAmount(ItemStack stack) {
-		if (stack.isOf(Items.PUMPKIN_PIE) || stack.isOf(CompanionBats.EXPERIENCE_PIE)) {
+		if (stack.getItem() == Items.PUMPKIN_PIE || stack.getItem() == CompanionBats.EXPERIENCE_PIE.get()) {
 			return 6.0F;
 		}
 		return 0;
@@ -645,45 +615,45 @@ public class CompanionBatEntity extends TameableEntity {
 		return BASE_SPEED + CompanionBatLevels.getLevelSpeed(level);
 	}
 
-	protected EntityNavigation createNavigation(World world) {
-		BirdNavigation birdNavigation = new BirdNavigation(this, world);
-		birdNavigation.setCanPathThroughDoors(false);
-		birdNavigation.setCanSwim(true);
-		birdNavigation.setCanEnterOpenDoors(true);
+	protected PathNavigator createNavigation(World world) {
+		FlyingPathNavigator birdNavigation = new FlyingPathNavigator(this, world);
+		birdNavigation.setCanOpenDoors(false);
+		birdNavigation.setCanFloat(true);
+		birdNavigation.setCanPassDoors(true);
 		return birdNavigation;
 	}
 
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+	protected float getStandingEyeHeight(Pose pose, EntitySize dimensions) {
 		return dimensions.height / 2.0F;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public void handleStatus(byte status) {
+	@OnlyIn(Dist.CLIENT)
+	public void handleEntityEvent(byte status) {
 		if (status == 8) {
 			for (int i = 0; i < 3; i++) {
 				double d = this.random.nextGaussian() * 0.01D;
 				double e = this.random.nextGaussian() * 0.01D;
 				double f = this.random.nextGaussian() * 0.01D;
-				this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(0.5D), this.getRandomBodyY(), this.getParticleZ(1.0D), d, e, f);
+				this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(1.0D), d, e, f);
 			}
 		} else {
-			super.handleStatus(status);
+			super.handleEntityEvent(status);
 		}
 	}
 
 	public boolean returnToPlayerInventory() {
 		ServerPlayerEntity player = (ServerPlayerEntity) this.getOwner();
 		if (player != null) {
-			PlayerInventory inventory = player.getInventory();
-			ImmutableList<DefaultedList<ItemStack>> mainAndOffhand = ImmutableList.of(inventory.main, inventory.offHand);
-			Iterator<DefaultedList<ItemStack>> iterator = mainAndOffhand.iterator();
+			PlayerInventory inventory = player.inventory;
+			ImmutableList<NonNullList<ItemStack>> mainAndOffhand = ImmutableList.of(inventory.items, inventory.offhand);
+			Iterator<NonNullList<ItemStack>> iterator = mainAndOffhand.iterator();
 			while (iterator.hasNext()) {
-				DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
+				NonNullList<ItemStack> defaultedList = (NonNullList<ItemStack>) iterator.next();
 				for (int i = 0; i < defaultedList.size(); ++i) {
-					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getTag().getUuid("EntityUUID").equals(this.getUuid())) {
+					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM.get() && defaultedList.get(i).getTag().getUUID("EntityUUID").equals(this.getUUID())) {
 						defaultedList.set(i, this.toItemStack());
-						this.discard();
-						world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.AMBIENT, 1F, 1F);
+						this.remove();
+						level.playSound(null, player.blockPosition(), SoundEvents.SLIME_ATTACK, SoundCategory.AMBIENT, 1F, 1F);
 						return true;
 					}
 				}
@@ -695,13 +665,13 @@ public class CompanionBatEntity extends TameableEntity {
 	private ItemStack getFluteItemStack(){
 		ServerPlayerEntity player = (ServerPlayerEntity) this.getOwner();
 		if (player != null) {
-			PlayerInventory inventory = player.getInventory();
-			ImmutableList<DefaultedList<ItemStack>> mainAndOffhand = ImmutableList.of(inventory.main, inventory.offHand);
-			Iterator<DefaultedList<ItemStack>> iterator = mainAndOffhand.iterator();
+			PlayerInventory inventory = player.inventory;
+			ImmutableList<NonNullList<ItemStack>> mainAndOffhand = ImmutableList.of(inventory.items, inventory.offhand);
+			Iterator<NonNullList<ItemStack>> iterator = mainAndOffhand.iterator();
 			while (iterator.hasNext()) {
-				DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
+				NonNullList<ItemStack> defaultedList = (NonNullList<ItemStack>) iterator.next();
 				for (int i = 0; i < defaultedList.size(); ++i) {
-					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getTag().getUuid("EntityUUID").equals(this.getUuid())) {
+					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM.get() && defaultedList.get(i).getTag().getUUID("EntityUUID").equals(this.getUUID())) {
 						return defaultedList.get(i);
 					}
 				}
@@ -711,7 +681,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private boolean isWithinDistanceToAttack(LivingEntity entity) {
-		return this.squaredDistanceTo(entity) < (double)(this.getWidth() * 2.0F * this.getWidth() * 2.0F + entity.getWidth());
+		return this.distanceToSqr(entity) < (double)(this.getBbWidth() * 2.0F * this.getBbWidth() * 2.0F + entity.getBbWidth());
 	}
 
 	public int getExp() {
@@ -760,21 +730,21 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void setAccessoryAbility(){
-		ItemStack headStack = this.getEquippedStack(EquipmentSlot.HEAD);
+		ItemStack headStack = this.getItemBySlot(EquipmentSlotType.HEAD);
 		if (headStack.getItem() instanceof CompanionBatAccessoryItem) {
 			this.abilities.addFromAccessory((CompanionBatAccessoryItem) headStack.getItem());
 		}
 	}
 
 	private void setArmorAndClass() {
-		ItemStack chestStack = this.getEquippedStack(EquipmentSlot.CHEST);
+		ItemStack chestStack = this.getItemBySlot(EquipmentSlotType.CHEST);
 		if (chestStack.getItem() instanceof CompanionBatArmorItem) {
 			CompanionBatArmorItem armor = (CompanionBatArmorItem) chestStack.getItem();
 			this.currentClass = armor.getBatClass();
 			this.currentClass = armor.getBatClass();
 			int armorToAdd = armor.getProtectionAmount();
 			if (armorToAdd != 0) {
-				this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addTemporaryModifier(new EntityAttributeModifier(BAT_EQUIPMENT_ARMOR_BONUS_ID, "Equipment armor bonus", (double) armorToAdd, EntityAttributeModifier.Operation.ADDITION));
+				this.getAttribute(Attributes.ARMOR).addTransientModifier(new AttributeModifier(BAT_EQUIPMENT_ARMOR_BONUS_ID, "Equipment armor bonus", (double) armorToAdd, AttributeModifier.Operation.ADDITION));
 			}
 		}
 	}
@@ -799,47 +769,47 @@ public class CompanionBatEntity extends TameableEntity {
 
 	private void setAbilitiesEffects(boolean firstTime) {
 		if (firstTime){
-			this.goalSelector.add(3, new CompanionBatPickUpItemGoal(this, 1.0D, 16.0F));
-			this.goalSelector.add(4, new CompanionBatFollowOwnerGoal(this, 1.0D, 2.5F, 24.0F));
-			this.goalSelector.add(5, new CompanionBatTransferItemsToOwnerGoal(this, 2.5F));
-			this.goalSelector.add(6, new CompanionBatRoostGoal(this, 0.75F, 4.0F, ROOST_START_TICKS));
+			this.goalSelector.addGoal(3, new CompanionBatPickUpItemGoal(this, 1.0D, 16.0F));
+			this.goalSelector.addGoal(4, new CompanionBatFollowOwnerGoal(this, 1.0D, 2.5F, 24.0F));
+			this.goalSelector.addGoal(5, new CompanionBatTransferItemsToOwnerGoal(this, 2.5F));
+			this.goalSelector.addGoal(6, new CompanionBatRoostGoal(this, 0.75F, 4.0F, ROOST_START_TICKS));
 			if (!this.abilities.has(CompanionBatAbility.CANNOT_ATTACK)){
 				if (this.abilities.has(CompanionBatAbility.DYNAMITE)){
-					this.goalSelector.add(1, new CompanionBatRangedAttackGoal(this, 5.0F, 9.0F, RANGED_ATTACK_TICKS));
+					this.goalSelector.addGoal(1, new CompanionBatRangedAttackGoal(this, 5.0F, 9.0F, RANGED_ATTACK_TICKS));
 				}
-				this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0D, true));
-				this.targetSelector.add(1, new CompanionBatTrackOwnerAttackerGoal(this));
-				this.targetSelector.add(2, new CompanionBatAttackWithOwnerGoal(this));
-				this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge());
+				this.goalSelector.addGoal(2, new CompanionBatMeleeAttackGoal(this, 1.0D, true));
+				this.targetSelector.addGoal(1, new CompanionBatTrackOwnerAttackerGoal(this));
+				this.targetSelector.addGoal(2, new CompanionBatAttackWithOwnerGoal(this));
+				this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, new Class[0])).setAlertOthers());
 				if (this.abilities.has(CompanionBatAbility.ATTACK_EVERYONE)){
-					this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_EVERYONE));
+					this.targetSelector.addGoal(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_EVERYONE));
 				} else if (this.abilities.has(CompanionBatAbility.ATTACK_HOSTILES)){
-					this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_HOSTILES));
+					this.targetSelector.addGoal(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_HOSTILES));
 				} else if (this.abilities.has(CompanionBatAbility.ATTACK_PASSIVE)){
-					this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_PASSIVE));
+					this.targetSelector.addGoal(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_PASSIVE));
 				}
 			}
 		}
 		if (this.abilities.has(CompanionBatAbility.EMERGENCY_POTION) || this.abilities.has(CompanionBatAbility.EFFECT_POTION)) {
 			if (!this.hasPotionGoal){
-				this.goalSelector.add(7, new CompanionBatThrowPotionGoal(this, 3.0F, EMERGENCY_POTION_TICKS, EFFECT_POTION_TICKS));
+				this.goalSelector.addGoal(7, new CompanionBatThrowPotionGoal(this, 3.0F, EMERGENCY_POTION_TICKS, EFFECT_POTION_TICKS));
 				this.hasPotionGoal = true;
 			}
 		}
 		if (this.abilities.has(CompanionBatAbility.INCREASED_ARMOR)) {
-			EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR);
+			ModifiableAttributeInstance attr = this.getAttribute(Attributes.ARMOR);
 			if (!firstTime) attr.removeModifier(BAT_ARMOR_BONUS_ID);
-			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_ARMOR_BONUS_ID, "Ability armor bonus", this.abilities.getValue(CompanionBatAbility.INCREASED_ARMOR), EntityAttributeModifier.Operation.ADDITION));
+			attr.addTransientModifier(new AttributeModifier(BAT_ARMOR_BONUS_ID, "Ability armor bonus", this.abilities.getValue(CompanionBatAbility.INCREASED_ARMOR), AttributeModifier.Operation.ADDITION));
 		}
 		if (this.abilities.has(CompanionBatAbility.INCREASED_ATTACK)) {
-			EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+			ModifiableAttributeInstance attr = this.getAttribute(Attributes.ATTACK_DAMAGE);
 			if (!firstTime) attr.removeModifier(BAT_ATTACK_BONUS_ID);
-			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_ATTACK_BONUS_ID, "Ability attack bonus", (double) (attr.getBaseValue() * this.abilities.getValue(CompanionBatAbility.INCREASED_ATTACK) / 100), EntityAttributeModifier.Operation.ADDITION));
+			attr.addTransientModifier(new AttributeModifier(BAT_ATTACK_BONUS_ID, "Ability attack bonus", (double) (attr.getBaseValue() * this.abilities.getValue(CompanionBatAbility.INCREASED_ATTACK) / 100), AttributeModifier.Operation.ADDITION));
 		}
 		if (this.abilities.has(CompanionBatAbility.INCREASED_SPEED)) {
-			EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+			ModifiableAttributeInstance attr = this.getAttribute(Attributes.MOVEMENT_SPEED);
 			if (!firstTime) attr.removeModifier(BAT_SPEED_BONUS_ID);
-			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_SPEED_BONUS_ID, "Ability speed bonus", (double) (attr.getBaseValue() * this.abilities.getValue(CompanionBatAbility.INCREASED_SPEED) / 100), EntityAttributeModifier.Operation.ADDITION));
+			attr.addTransientModifier(new AttributeModifier(BAT_SPEED_BONUS_ID, "Ability speed bonus", (double) (attr.getBaseValue() * this.abilities.getValue(CompanionBatAbility.INCREASED_SPEED) / 100), AttributeModifier.Operation.ADDITION));
 		}
 		if (this.abilities.has(CompanionBatAbility.FIRE_RESISTANCE)) {
 			this.hasFireResistance = true;
@@ -858,28 +828,42 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 		if (this.abilities.has(CompanionBatAbility.LOOTING)) {
 			ItemStack stack = new ItemStack(Items.STICK);
-			stack.addEnchantment(Enchantments.LOOTING, this.abilities.getValue(CompanionBatAbility.LOOTING));
-			this.equipStack(EquipmentSlot.MAINHAND, stack);
-			this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0F);
+			stack.enchant(Enchantments.MOB_LOOTING, this.abilities.getValue(CompanionBatAbility.LOOTING));
+			this.setItemSlot(EquipmentSlotType.MAINHAND, stack);
+			this.setDropChance(EquipmentSlotType.MAINHAND, 0.0F);
 		}
 	}
 
-	private boolean teleportTo(Entity entity) {
-		Direction looking = entity.getHorizontalFacing().getOpposite();
-		boolean success = this.teleport(entity.getX() + looking.getOffsetX(), entity.getEyeY(), entity.getZ() + looking.getOffsetZ(), true);
-		if (success) {
-			if (!this.isSilent()) this.world.playSound((PlayerEntity) null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 0.3F, this.getSoundPitch() + 1.0F);
-			this.guaranteedSneakAttack = true;
-			this.tryAttack(entity);
+	private boolean cbTeleportTo(Entity entity) {
+		Direction looking = entity.getDirection().getOpposite();
+		return this.cbTeleportTo(entity.getX() + looking.getStepX() * 0.5, entity.getEyeY(), entity.getZ() + looking.getStepZ() * 0.5);
+	}
+
+	private boolean cbTeleportTo(double x, double y, double z) {
+		BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
+
+		while (mutable.getY() > 0 && !this.level.getBlockState(mutable).getMaterial().blocksMotion()) {
+			mutable.move(Direction.DOWN);
 		}
-		return success;
+
+		BlockState blockState = this.level.getBlockState(mutable);
+		boolean bl = blockState.getMaterial().blocksMotion();
+		if (bl) {
+			boolean bl3 = this.randomTeleport(x, y, z, true);
+			if (bl3 && !this.isSilent()) {
+				this.level.playSound((PlayerEntity) null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 0.3F, this.getVoicePitch() + 1.0F);
+			}
+			return bl3;
+		} else {
+			return false;
+		}
 	}
 
 	private void tryLevelUp() {
-		if (CompanionBatLevels.LEVELS.length > this.level + 1 && CompanionBatLevels.LEVELS[this.level + 1].totalExpNeeded <= this.exp) {
-			this.level++;
-			this.notifyLevelUp(this.level);
-			this.setLevelAttributes(this.level);
+		if (CompanionBatLevels.LEVELS.length > this.currentLevel + 1 && CompanionBatLevels.LEVELS[this.currentLevel + 1].totalExpNeeded <= this.exp) {
+			this.currentLevel++;
+			this.notifyLevelUp(this.currentLevel);
+			this.setLevelAttributes(this.currentLevel);
 			this.heal(this.getMaxHealth());
 		}
 	}
@@ -894,52 +878,52 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 	}
 
-	private void setLevel(int exp) {
+	private void setCurrentLevel(int exp) {
 		this.exp = exp;
-		this.level = CompanionBatLevels.getLevelByExp((int) this.exp);
+		this.currentLevel = CompanionBatLevels.getLevelByExp((int) this.exp);
 	}
 
 	protected void setLevelAttributes(int level) {
-		this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(getLevelHealth(level));
-		this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(getLevelAttack(level));
-		this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(getLevelSpeed(level));
+		this.getAttributes().getInstance(Attributes.MAX_HEALTH).setBaseValue(getLevelHealth(level));
+		this.getAttributes().getInstance(Attributes.ATTACK_DAMAGE).setBaseValue(getLevelAttack(level));
+		this.getAttributes().getInstance(Attributes.MOVEMENT_SPEED).setBaseValue(getLevelSpeed(level));
 	}
 
 	protected void notifyLevelUp(int level) {
 		if (level > 0) {
-			MutableText message = new TranslatableText("entity.companion_bats.bat.level_up", this.hasCustomName() ? this.getCustomName() : new TranslatableText("entity.companion_bats.bat.your_bat"), level + 1).append("\n");
+			IFormattableTextComponent message = new TranslationTextComponent("entity.companion_bats.bat.level_up", this.hasCustomName() ? this.getCustomName() : new TranslationTextComponent("entity.companion_bats.bat.your_bat"), level + 1).append("\n");
 			if (CompanionBatLevels.LEVELS[level].healthBonus > CompanionBatLevels.LEVELS[level - 1].healthBonus) {
-				message.append(new LiteralText("+").formatted(Formatting.GOLD)).append(" ");
-				message.append(new TranslatableText("entity.companion_bats.bat.level_up_health", (int) (CompanionBatLevels.LEVELS[level].healthBonus - CompanionBatLevels.LEVELS[level - 1].healthBonus))).append(" ");
+				message.append(new StringTextComponent("+").withStyle(TextFormatting.GOLD)).append(" ");
+				message.append(new TranslationTextComponent("entity.companion_bats.bat.level_up_health", (int) (CompanionBatLevels.LEVELS[level].healthBonus - CompanionBatLevels.LEVELS[level - 1].healthBonus))).append(" ");
 			}
 			if (CompanionBatLevels.LEVELS[level].attackBonus > CompanionBatLevels.LEVELS[level - 1].attackBonus) {
-				message.append(new LiteralText("+").formatted(Formatting.GOLD)).append(" ");
-				message.append(new TranslatableText("entity.companion_bats.bat.level_up_attack", (int) (CompanionBatLevels.LEVELS[level].attackBonus - CompanionBatLevels.LEVELS[level - 1].attackBonus))).append(" ");
+				message.append(new StringTextComponent("+").withStyle(TextFormatting.GOLD)).append(" ");
+				message.append(new TranslationTextComponent("entity.companion_bats.bat.level_up_attack", (int) (CompanionBatLevels.LEVELS[level].attackBonus - CompanionBatLevels.LEVELS[level - 1].attackBonus))).append(" ");
 			}
 			if (CompanionBatLevels.LEVELS[level].speedBonus > CompanionBatLevels.LEVELS[level - 1].speedBonus) {
-				message.append(new LiteralText("+").formatted(Formatting.GOLD)).append(" ");
-				message.append(new TranslatableText("entity.companion_bats.bat.level_up_speed", Math.round(100 - ((BASE_SPEED + CompanionBatLevels.LEVELS[level - 1].speedBonus) / (BASE_SPEED + CompanionBatLevels.LEVELS[level].speedBonus) * 100)))).append(" ");
+				message.append(new StringTextComponent("+").withStyle(TextFormatting.GOLD)).append(" ");
+				message.append(new TranslationTextComponent("entity.companion_bats.bat.level_up_speed", Math.round(100 - ((BASE_SPEED + CompanionBatLevels.LEVELS[level - 1].speedBonus) / (BASE_SPEED + CompanionBatLevels.LEVELS[level].speedBonus) * 100)))).append(" ");
 			}
-			((PlayerEntity) this.getOwner()).sendMessage(message, false);
+			((PlayerEntity) this.getOwner()).displayClientMessage(message, false);
 		}
 	}
 
 	protected void notifyClassLevelUp(int classLevel, CompanionBatClassLevel[] classLevels) {
-		MutableText message = new TranslatableText("entity.companion_bats.bat.class_level_up", this.hasCustomName() ? this.getCustomName() : new TranslatableText("entity.companion_bats.bat.your_bat"), this.currentClass.toString(), classLevel + 1);
+		IFormattableTextComponent message = new TranslationTextComponent("entity.companion_bats.bat.class_level_up", this.hasCustomName() ? this.getCustomName() : new TranslationTextComponent("entity.companion_bats.bat.your_bat"), this.currentClass.toString(), classLevel + 1);
 		if (classLevels[classLevel].ability != null){
 			message.append("\n");
 			String obtainedOrLevelUp = "ability_obtained";
 			if (classLevels[classLevel].permanent){
-				message.append(new TranslatableText("entity.companion_bats.bat.permanent_ability").formatted(Formatting.LIGHT_PURPLE)).append(" ");
+				message.append(new TranslationTextComponent("entity.companion_bats.bat.permanent_ability").withStyle(TextFormatting.LIGHT_PURPLE)).append(" ");
 			} else {
-				message.append(new TranslatableText("entity.companion_bats.bat.ability").formatted(Formatting.GREEN)).append(" ");
+				message.append(new TranslationTextComponent("entity.companion_bats.bat.ability").withStyle(TextFormatting.GREEN)).append(" ");
 				if (this.abilities.has(classLevels[classLevel].ability)){
 					obtainedOrLevelUp = "ability_level_up";
 				}
 			}
-			message.append(new TranslatableText("entity.companion_bats.bat."+obtainedOrLevelUp, classLevels[classLevel].ability.toTranslatedText()));
+			message.append(new TranslationTextComponent("entity.companion_bats.bat."+obtainedOrLevelUp, classLevels[classLevel].ability.toTranslatedText()));
 		}
-		((PlayerEntity) this.getOwner()).sendMessage(message, false);
+		((PlayerEntity) this.getOwner()).displayClientMessage(message, false);
 	}
 
 	private void writeExpToTag(EntityData entityData) {
@@ -969,40 +953,40 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 	}
 
-	public ItemStack toItemStack() {
-		ItemStack batItemStack = new ItemStack(CompanionBats.BAT_ITEM);
+	protected ItemStack toItemStack() {
+		ItemStack batItemStack = new ItemStack(CompanionBats.BAT_ITEM.get());
 		if (this.hasCustomName()) {
-			batItemStack.setCustomName(this.getCustomName());
+			batItemStack.setHoverName(this.getCustomName());
 		}
 		// Set companion bat item durability relative to the bat health
 		float percentage = 1 - (this.getHealth() / this.getMaxHealth());
-		batItemStack.setDamage(Math.round(percentage * batItemStack.getMaxDamage()));
+		batItemStack.setDamageValue(Math.round(percentage * batItemStack.getMaxDamage()));
 
 		EntityData.fromCompanionBatEntity(this).toStack(batItemStack);
 		return batItemStack;
 	}
 
 	public static CompanionBatEntity spawnFromItemStack(ServerWorld world, ItemStack itemStack, PlayerEntity player){
-		Vec3d pos = player.getPos();
+		Vector3d pos = player.position();
 		EntityData entityData = new EntityData(itemStack);
 		entityData.putOwner(player);
-		return (CompanionBatEntity)CompanionBats.COMPANION_BAT.spawnFromItemStack(world, itemStack, player, new BlockPos(pos.x, Math.ceil(pos.y), pos.z), SpawnReason.SPAWN_EGG, false, false);
+		return (CompanionBatEntity)CompanionBats.COMPANION_BAT.get().spawn(world, itemStack, player, new BlockPos(pos.x, Math.ceil(pos.y), pos.z), SpawnReason.SPAWN_EGG, false, false);
 	}
 
 	public ItemStack getAccessory() {
-		return this.getEquippedStack(EquipmentSlot.HEAD);
+		return this.getItemBySlot(EquipmentSlotType.HEAD);
 	}
 
 	public ItemStack getArmorType() {
-		return this.getEquippedStack(EquipmentSlot.CHEST);
+		return this.getItemBySlot(EquipmentSlotType.CHEST);
 	}
 
 	public ItemStack getBundle() {
-		return this.getEquippedStack(EquipmentSlot.FEET);
+		return this.getItemBySlot(EquipmentSlotType.FEET);
 	}
 
 	public boolean canEat(ItemStack stack){
-		if (stack.isOf(CompanionBats.EXPERIENCE_PIE)){
+		if (stack.getItem() == CompanionBats.EXPERIENCE_PIE.get()){
 			if (this.currentClass != null) {
 				CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
 				if (this.classExp < classLevels[classLevels.length - 1].totalExpNeeded) return true;
@@ -1014,25 +998,29 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public Byte getGuardMode(){
-		return this.guardMode;
+		return 1;
 	}
 
-	public void setGuardMode(Byte mode){
-		this.guardMode = mode;
+	/*public void setGuardMode(Byte mode){
+	}
+
+	public static void setDefaultEntityData(CompoundNBT tag) {
+		tag.putFloat("health", BASE_HEALTH);
+		tag.putInt("exp", 0);
 	}
 
 	public static List<CompanionBatEntity> getPlayerBats(ServerPlayerEntity player) {
 		List<CompanionBatEntity> entities = new ArrayList<CompanionBatEntity>();
 		if (player != null) {
-			PlayerInventory inventory = player.getInventory();
-			ImmutableList<DefaultedList<ItemStack>> mainAndOffhand = ImmutableList.of(inventory.main, inventory.offHand);
-			Iterator<DefaultedList<ItemStack>> iterator = mainAndOffhand.iterator();
+			PlayerInventory inventory = player.inventory;
+			ImmutableList<NonNullList<ItemStack>> mainAndOffhand = ImmutableList.of(inventory.items, inventory.offhand);
+			Iterator<NonNullList<ItemStack>> iterator = mainAndOffhand.iterator();
 			while (iterator.hasNext()) {
-				DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
+				NonNullList<ItemStack> defaultedList = (NonNullList<ItemStack>) iterator.next();
 				for (int i = 0; i < defaultedList.size(); ++i) {
-					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM) {
-						ServerWorld serverWorld = (ServerWorld)player.world;
-						Entity entity = serverWorld.getEntity(defaultedList.get(i).getTag().getUuid("EntityUUID"));
+					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM.get()) {
+						ServerWorld serverWorld = (ServerWorld)player.level;
+						Entity entity = serverWorld.getEntity(defaultedList.get(i).getTag().getUUID("EntityUUID"));
 						if (entity != null){
 							entities.add((CompanionBatEntity)entity);
 						}
@@ -1041,12 +1029,12 @@ public class CompanionBatEntity extends TameableEntity {
 			}
 		}
 		return entities;
-	}
+	}*/
 
 	static {
-		BAT_FLAGS = DataTracker.registerData(CompanionBatEntity.class, TrackedDataHandlerRegistry.BYTE);
-		COMBO_PARTICLE_LEVEL = DataTracker.registerData(CompanionBatEntity.class, TrackedDataHandlerRegistry.BYTE);
-		IS_FOOD_ITEM = (itemStack) -> itemStack.isOf(Items.PUMPKIN_PIE) || itemStack.isOf(CompanionBats.EXPERIENCE_PIE);
-		IS_FOOD_ITEM_ENTITY = (itemEntity) -> IS_FOOD_ITEM.test(itemEntity.getStack());
+		BAT_FLAGS = EntityDataManager.defineId(CompanionBatEntity.class, DataSerializers.BYTE);
+		COMBO_PARTICLE_LEVEL = EntityDataManager.defineId(CompanionBatEntity.class, DataSerializers.BYTE);
+		IS_FOOD_ITEM = (itemStack) -> itemStack.getItem() == Items.PUMPKIN_PIE || itemStack.getItem() == CompanionBats.EXPERIENCE_PIE.get();
+		IS_FOOD_ITEM_ENTITY = (itemEntity) -> IS_FOOD_ITEM.test(itemEntity.getItem());
 	}
 }

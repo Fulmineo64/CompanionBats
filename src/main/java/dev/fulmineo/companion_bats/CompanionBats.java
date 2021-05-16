@@ -1,139 +1,216 @@
 package dev.fulmineo.companion_bats;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
-import net.minecraft.entity.EntityDimensions;
+import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
+import dev.fulmineo.companion_bats.entity.CompanionBatEntityRenderer;
+import dev.fulmineo.companion_bats.entity.DynamiteEntity;
+import dev.fulmineo.companion_bats.init.CompanionBatCommandInit;
+import dev.fulmineo.companion_bats.item.*;
+import dev.fulmineo.companion_bats.nbt.EntityData;
+import dev.fulmineo.companion_bats.screen.CompanionBatScreen;
+import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.item.FoodComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Rarity;
-import net.minecraft.util.registry.Registry;
-
-import org.apache.logging.log4j.Level;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.attributes.Attribute;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.passive.BatEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.item.*;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.gen.feature.structure.IStructurePieceType;
+import net.minecraft.world.gen.feature.structure.StructurePiece;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.StructureSpawnListGatherEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.*;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
-import dev.fulmineo.companion_bats.entity.DynamiteEntity;
-import dev.fulmineo.companion_bats.init.CompanionBatCommandInit;
-import dev.fulmineo.companion_bats.init.CompanionBatLootTableInit;
-import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
-import dev.fulmineo.companion_bats.item.CompanionBatCommandFluteAttackItem;
-import dev.fulmineo.companion_bats.item.CompanionBatCommandFluteGuardItem;
-import dev.fulmineo.companion_bats.item.CompanionBatCommandFluteRestItem;
-import dev.fulmineo.companion_bats.item.CompanionBatExperiencePieItem;
-import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
-import dev.fulmineo.companion_bats.item.CompanionBatFluteItem;
-import dev.fulmineo.companion_bats.item.CompanionBatItem;
-import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
-
-public class CompanionBats implements ModInitializer {
-
-	public static Logger LOGGER = LogManager.getLogger();
-
-    // Identifiers
-
+// The value here should match an entry in the META-INF/mods.toml file
+@Mod("companion_bats")
+public class CompanionBats
+{
+    // Directly reference a log4j logger.
+    private static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "companion_bats";
+    public static final ItemGroup GROUP = new ItemGroup(MOD_ID) {
+        @OnlyIn(Dist.CLIENT)
+        public ItemStack makeIcon() {
+            return new ItemStack(CompanionBats.BAT_ITEM.get());
+        }
+    };
 
-    public static final ScreenHandlerType<CompanionBatScreenHandler> BAT_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(new Identifier(MOD_ID, "bat_item"), CompanionBatScreenHandler::new);
+    // Containers (ScreenHandlers)
+
+    private static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MOD_ID);
+    public static final RegistryObject<ContainerType<CompanionBatScreenHandler>> BAT_SCREEN_HANDLER = CONTAINERS.register("bat", () -> new ContainerType<>(CompanionBatScreenHandler::new));
 
     // Entities
 
-    public static final EntityType<CompanionBatEntity> COMPANION_BAT = Registry.register(
-        Registry.ENTITY_TYPE,
-        new Identifier(MOD_ID, "bat"),
-        FabricEntityTypeBuilder.<CompanionBatEntity>create(SpawnGroup.CREATURE, CompanionBatEntity::new).dimensions(EntityDimensions.fixed(0.75f, 0.75f)).build()
-    );
-    public static final EntityType<DynamiteEntity> DYNAMITE = Registry.register(
-        Registry.ENTITY_TYPE,
-        new Identifier(MOD_ID, "dynamite"),
-		FabricEntityTypeBuilder.<DynamiteEntity>create(SpawnGroup.MISC, DynamiteEntity::new).dimensions(EntityDimensions.fixed(0.25F, 0.25F)).trackRangeChunks(4).trackedUpdateRate(10).build()
-	);
+    private static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, MOD_ID);
+
+    public static final RegistryObject<EntityType<CompanionBatEntity>> COMPANION_BAT = ENTITIES.register("bat", () -> EntityType.Builder.of(CompanionBatEntity::new, EntityClassification.CREATURE).sized(0.75F, 0.75F).build(new ResourceLocation(MOD_ID, "bat").toString()));
+    public static final RegistryObject<EntityType<DynamiteEntity>> DYNAMITE = ENTITIES.register("dynamite", () -> EntityType.Builder.<DynamiteEntity>of(DynamiteEntity::new, EntityClassification.MISC).sized(0.25F, 0.25F).clientTrackingRange(4).updateInterval(10).build(new ResourceLocation(MOD_ID, "dynamite").toString()));
 
     // Items
 
-	public static final ItemGroup GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID,"group"), () -> new ItemStack(Registry.ITEM.get(new Identifier(MOD_ID,"bat_item"))));
+    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
 
-    public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage((int)CompanionBatEntity.getMaxLevelHealth()).group(GROUP));
-	public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
-	public static final Item COMMAND_FLUTE_ATTACK = new CompanionBatCommandFluteAttackItem(new FabricItemSettings().maxCount(1).group(GROUP));
-	public static final Item COMMAND_FLUTE_REST = new CompanionBatCommandFluteRestItem(new FabricItemSettings().maxCount(1));
-	public static final Item COMMAND_FLUTE_GUARD = new CompanionBatCommandFluteGuardItem(new FabricItemSettings().maxCount(1));
-    public static final Item SPIRIT_SHARD = new Item(new FabricItemSettings().group(GROUP));
-    public static final Item SPIRIT_CRYSTAL = new Item(new FabricItemSettings().group(GROUP));
-    public static final Item EXPERIENCE_PIE = new CompanionBatExperiencePieItem(new FabricItemSettings().food((new FoodComponent.Builder()).hunger(10).saturationModifier(0.5F).build()).rarity(Rarity.UNCOMMON).group(GROUP));
+    public static final RegistryObject<Item> BAT_ITEM = ITEMS.register("bat_item", () -> new CompanionBatItem(new Item.Properties().durability((int) CompanionBatEntity.getMaxLevelHealth()).tab(GROUP)));
+    public static final RegistryObject<Item> BAT_FLUTE_ITEM = ITEMS.register("bat_flute", () -> new CompanionBatFluteItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> BAT_POUCH_ITEM = ITEMS.register("bat_pouch", () -> new CompanionBatPouchItem(new Item.Properties().stacksTo(1).tab(GROUP)));
 
-	// Accessories
+    /*public static final Item COMMAND_FLUTE_ATTACK = new CompanionBatCommandFluteAttackItem(new Item.Properties().stacksTo(1).tab(GROUP));
+    public static final Item COMMAND_FLUTE_REST = new CompanionBatCommandFluteRestItem(new Item.Properties().stacksTo(1));
+    public static final Item COMMAND_FLUTE_GUARD = new CompanionBatCommandFluteGuardItem(new Item.Properties().stacksTo(1));*/
+    public static final RegistryObject<Item> SPIRIT_SHARD =  ITEMS.register("spirit_shard", () -> new Item(new Item.Properties().tab(GROUP)));
+    public static final RegistryObject<Item> SPIRIT_CRYSTAL =  ITEMS.register("spirit_crystal", () -> new Item(new Item.Properties().tab(GROUP)));
+    public static final RegistryObject<Item> EXPERIENCE_PIE = ITEMS.register("experience_pie", () -> new CompanionBatExperiencePieItem(new Item.Properties().food((new Food.Builder()).nutrition(10).saturationMod(0.5F).build()).rarity(Rarity.UNCOMMON).tab(GROUP)));
 
-	public static final Item BUNNY_EARS = new CompanionBatAccessoryItem("bunny_ears", CompanionBatAbility.CANNOT_ATTACK, 1, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item WITHER_MASK = new CompanionBatAccessoryItem("wither_mask", CompanionBatAbility.ATTACK_EVERYONE, 1, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item DECORATIVE_FLOWER = new CompanionBatAccessoryItem("decorative_flower", CompanionBatAbility.ATTACK_HOSTILES, 1, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item WOLF_PELT = new CompanionBatAccessoryItem("wolf_pelt", CompanionBatAbility.ATTACK_PASSIVE, 1, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item PLATED_BOOTS = new CompanionBatAccessoryItem("plated_boots", CompanionBatAbility.INCREASED_ARMOR, 1, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item PUMPKIN_BANDANA = new CompanionBatAccessoryItem("pumpkin_bandana", CompanionBatAbility.NATURAL_REGENERATION, 1, new FabricItemSettings().group(GROUP).maxCount(1));
+    // Accessories
 
-	// Armors
+    public static final RegistryObject<Item> BUNNY_EARS = ITEMS.register("bunny_ears", () -> new CompanionBatAccessoryItem("bunny_ears", CompanionBatAbility.CANNOT_ATTACK, 1, new Item.Properties().tab(GROUP).stacksTo(1)));
+    public static final RegistryObject<Item> WITHER_MASK = ITEMS.register("wither_mask", () -> new CompanionBatAccessoryItem("wither_mask", CompanionBatAbility.ATTACK_EVERYONE, 1, new Item.Properties().tab(GROUP).stacksTo(1)));
+    public static final RegistryObject<Item> DECORATIVE_FLOWER = ITEMS.register("decorative_flower", () -> new CompanionBatAccessoryItem("decorative_flower", CompanionBatAbility.ATTACK_HOSTILES, 1, new Item.Properties().tab(GROUP).stacksTo(1)));
+    public static final RegistryObject<Item> WOLF_PELT = ITEMS.register("wolf_pelt", () -> new CompanionBatAccessoryItem("wolf_pelt", CompanionBatAbility.ATTACK_PASSIVE, 1, new Item.Properties().tab(GROUP).stacksTo(1)));
+    public static final RegistryObject<Item> PLATED_BOOTS = ITEMS.register("plated_boots", () -> new CompanionBatAccessoryItem("plated_boots", CompanionBatAbility.INCREASED_ARMOR, 1, new Item.Properties().tab(GROUP).stacksTo(1)));
+    public static final RegistryObject<Item> PUMPKIN_BANDANA = ITEMS.register("pumpkin_bandana", () -> new CompanionBatAccessoryItem("pumpkin_bandana", CompanionBatAbility.NATURAL_REGENERATION, 1, new Item.Properties().tab(GROUP).stacksTo(1)));
 
-	public static final Item INFERNO_SUIT = new CompanionBatArmorItem("inferno_suit", CompanionBatClass.INFERNO, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item VAMPIRIC_ATTIRE = new CompanionBatArmorItem("vampiric_attire", CompanionBatClass.VAMPIRE, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item LOOTER_JACKET = new CompanionBatArmorItem("looter_jacket", CompanionBatClass.LOOTER, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item KNIGHT_PLATE = new CompanionBatArmorItem("knight_plate", CompanionBatClass.KNIGHT, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item ALCHEMIST_ROBE = new CompanionBatArmorItem("alchemist_robe", CompanionBatClass.ALCHEMIST, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item DUELIST_COSTUME = new CompanionBatArmorItem("duelist_costume", CompanionBatClass.DUELIST, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item NINJA_GARB = new CompanionBatArmorItem("ninja_garb", CompanionBatClass.NINJA, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item MUMMY_BANDAGES = new CompanionBatArmorItem("mummy_bandages", CompanionBatClass.MUMMY, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item DESTROYER_GEAR = new CompanionBatArmorItem("destroyer_gear", CompanionBatClass.DESTROYER, new FabricItemSettings().group(GROUP).maxCount(1));
+    // Armors
 
-    @Override
-    public void onInitialize() {
-        FabricDefaultAttributeRegistry.register(COMPANION_BAT, CompanionBatEntity.createMobAttributes());
+    public static final RegistryObject<Item> INFERNO_SUIT = ITEMS.register("inferno_suit", () -> new CompanionBatArmorItem("inferno_suit", CompanionBatClass.INFERNO, new Item.Properties().tab(GROUP).stacksTo(1)));
+    public static final RegistryObject<Item> VAMPIRIC_ATTIRE = ITEMS.register("vampiric_attire", () -> new CompanionBatArmorItem("vampiric_attire", CompanionBatClass.VAMPIRE, new Item.Properties().tab(GROUP).stacksTo(1)));
+    public static final RegistryObject<Item> LOOTER_JACKET = ITEMS.register("looter_jacket", () -> new CompanionBatArmorItem("looter_jacket", CompanionBatClass.LOOTER, new Item.Properties().tab(GROUP).stacksTo(1)));
+    public static final RegistryObject<Item> KNIGHT_PLATE = ITEMS.register("knight_plate", () -> new CompanionBatArmorItem("knight_plate", CompanionBatClass.KNIGHT, new Item.Properties().tab(GROUP).stacksTo(1)));
+    public static final RegistryObject<Item> ALCHEMIST_ROBE = ITEMS.register("alchemist_robe", () -> new CompanionBatArmorItem("alchemist_robe", CompanionBatClass.ALCHEMIST, new Item.Properties().tab(GROUP).stacksTo(1)));
+    public static final RegistryObject<Item> DUELIST_COSTUME = ITEMS.register("duelist_costume", () -> new CompanionBatArmorItem("duelist_costume", CompanionBatClass.DUELIST, new Item.Properties().tab(GROUP).stacksTo(1)));
+    public static final RegistryObject<Item> NINJA_GARB = ITEMS.register("ninja_garb", () -> new CompanionBatArmorItem("ninja_garb", CompanionBatClass.NINJA, new Item.Properties().tab(GROUP).stacksTo(1)));
+    public static final RegistryObject<Item> MUMMY_BANDAGES = ITEMS.register("mummy_bandages", () -> new CompanionBatArmorItem("mummy_bandages", CompanionBatClass.MUMMY, new Item.Properties().tab(GROUP).stacksTo(1)));
+    public static final RegistryObject<Item> DESTROYER_GEAR = ITEMS.register("destroyer_gear", () -> new CompanionBatArmorItem("destroyer_gear", CompanionBatClass.DESTROYER, new Item.Properties().tab(GROUP).stacksTo(1)));
 
-		// Items
+    public CompanionBats() {
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        /*FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);*/
+        /*FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);*/
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_item"), 		  	BAT_ITEM);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_flute"), 	 	  	BAT_FLUTE_ITEM);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "command_flute"), 		COMMAND_FLUTE_ATTACK);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "command_flute_rest"), 	COMMAND_FLUTE_REST);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "command_flute_guard"), COMMAND_FLUTE_GUARD);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_shard"), 	  	SPIRIT_SHARD);
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_crystal"),    	SPIRIT_CRYSTAL);
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "experience_pie"),  	EXPERIENCE_PIE);
+        MinecraftForge.EVENT_BUS.register(this);
 
-		// Accessories
-
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bunny_ears"), 		  	BUNNY_EARS);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wither_mask"), 	  	WITHER_MASK);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "decorative_flower"), 	DECORATIVE_FLOWER);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wolf_pelt"), 		  	WOLF_PELT);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "plated_boots"), 		PLATED_BOOTS);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "pumpkin_bandana"), 	PUMPKIN_BANDANA);
-
-		// Armors
-
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "inferno_suit"), 	  	INFERNO_SUIT);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "vampiric_attire"),   	VAMPIRIC_ATTIRE);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "looter_jacket"), 	  	LOOTER_JACKET);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "knight_plate"), 	  	KNIGHT_PLATE);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "alchemist_robe"), 	  	ALCHEMIST_ROBE);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "duelist_costume"),	  	DUELIST_COSTUME);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "ninja_garb"),		  	NINJA_GARB);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "mummy_bandages"),		MUMMY_BANDAGES);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "destroyer_gear"),		DESTROYER_GEAR);
-
-		CompanionBatLootTableInit.init();
-		CompanionBatCommandInit.init();
+        CONTAINERS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
+        ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
-	public static void info(String message){
-        LOGGER.log(Level.INFO, message);
+    private void setup(final FMLCommonSetupEvent event) {
+        GlobalEntityTypeAttributes.put(COMPANION_BAT.get(),CompanionBatEntity.createMobAttributes().build());
+    }
+
+    private void doClientStuff(final FMLClientSetupEvent event) {
+        RenderingRegistry.registerEntityRenderingHandler(COMPANION_BAT.get(), CompanionBatEntityRenderer::new);
+        ScreenManager.register(BAT_SCREEN_HANDLER.get(), CompanionBatScreen::new);
+    }
+
+    /*private void enqueueIMC(final InterModEnqueueEvent event)
+    {
+        // some example code to dispatch IMC to another mod
+        InterModComms.sendTo("examplemod", "helloworld", () -> { LOGGER.info("Hello world from the MDK"); return "Hello world";});
+    }
+
+    private void processIMC(final InterModProcessEvent event)
+    {
+        // some example code to receive and process InterModComms from other mods
+         LOGGER.info("Got IMC {}", event.getIMCStream().
+                map(m->m.getMessageSupplier().get()).
+                collect(Collectors.toList()));
+    }*/
+
+    @SubscribeEvent
+    public void registerCommands(final RegisterCommandsEvent event) {
+        CompanionBatCommandInit.init(event.getDispatcher());
+    }
+
+    /*@SubscribeEvent
+    public void entityHurt(final LivingHurtEvent event) {
+        LivingEntity entity = event.getEntityLiving();
+        Entity attacker = event.getSource().getEntity();
+        if (attacker != null && attacker instanceof CompanionBatEntity){
+            CompanionBatEntity batEntity = (CompanionBatEntity)attacker;
+            LivingEntity player = batEntity.getOwner();
+            entity.setLastHurtByPlayer((PlayerEntity) player);
+        }
+    }*/
+
+    // You can use SubscribeEvent and let the Event Bus discover methods to call
+    @SubscribeEvent
+    public void onServerStarting(FMLServerStartingEvent event) {
+        // do something when the server starts
+        LOGGER.info("HELLO from server starting");
+    }
+
+    // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
+    // Event bus for receiving Registry Events)
+    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
+    public static class RegistryEvents {
+        @SubscribeEvent
+        public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
+            // register a new block here
+            LOGGER.info("HELLO from Register Block");
+        }
+    }
+
+    /*@SubscribeEvent
+    public void onEntityInteract(PlayerInteractEvent.EntityInteractSpecific event) {
+        if (!(event.getEntity() instanceof PlayerEntity)) return;
+        if (event.getTarget() instanceof BatEntity) {
+            BatEntity bat = (BatEntity)event.getTarget();
+            PlayerEntity player = ((PlayerEntity)event.getEntity());
+            ItemStack itemStack = player.getItemInHand(event.getHand());
+            if (!event.getTarget().level.isClientSide){
+                if (CompanionBatEntity.IS_FOOD_ITEM.test(itemStack)) {
+                    if (!player.abilities.invulnerable) {
+                        itemStack.shrink(1);
+                    }
+
+                    ItemStack batItemStack = new ItemStack(CompanionBats.BAT_ITEM.get());
+                    EntityData.fromRegularBatEntity(bat).toStack(batItemStack);
+
+                    bat.remove();
+                    if (!player.addItem(batItemStack)){
+                        ItemEntity itemEntity = player.drop(batItemStack, false);
+                        if (itemEntity != null) {
+                            itemEntity.setDefaultPickUpDelay();
+                            itemEntity.setOwner(player.getUUID());
+                        }
+                    }
+                }
+            }
+        }
+    }*/
+
+    public static void info(String message){
+        LOGGER.info(message);
     }
 }

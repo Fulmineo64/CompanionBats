@@ -10,7 +10,7 @@
 			"item": "minecraft:lead"
 		},
 		"b": {
-			"item": "minecraft:bundle"
+			"item": "companion_bats:bat_pouch"
 		},
 		"L": {
 			"item": "minecraft:leather"

@@ -4,102 +4,100 @@ import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.nbt.EntityData;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Hand;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class CompanionBatScreenHandler extends ScreenHandler {
+public class CompanionBatScreenHandler extends Container {
     private final Inventory inventory;
     public Hand hand;
 
-    public CompanionBatScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf){
-        this(syncId, playerInventory, new SimpleInventory(3), buf.readEnumConstant(Hand.class));
+    public CompanionBatScreenHandler(int syncId, PlayerInventory playerInventory/*, PacketBuffer buf*/){
+    	// TODO: prendere hand da PacketBuffer
+        this(syncId, playerInventory, new Inventory(3), Hand.MAIN_HAND/*, buf.readEnum(Hand.class)*/);
     }
 
     public CompanionBatScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, Hand hand) {
-        super(CompanionBats.BAT_SCREEN_HANDLER, syncId);
+        super(CompanionBats.BAT_SCREEN_HANDLER.get(), syncId);
         this.inventory = inventory;
         this.hand = hand;
-		inventory.onOpen(playerInventory.player);
+		inventory.startOpen(playerInventory.player);
 
 		this.addSlot(new Slot(inventory, 0, 8, 18) {
-            public boolean canInsert(ItemStack stack) {
+            public boolean mayPlace(ItemStack stack) {
 				return stack.getItem() instanceof CompanionBatAccessoryItem;
             }
 
 			@Override
-            public void setStack(ItemStack stack) {
-                super.setStack(stack);
+            public void set(ItemStack stack) {
+                super.set(stack);
                 PlayerEntity player = playerInventory.player;
-				ItemStack batItemStack = player.getStackInHand(hand);
-				if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
+				ItemStack batItemStack = player.getItemInHand(hand);
+				if (batItemStack.getItem() == CompanionBats.BAT_ITEM.get()){
 					EntityData entityData = new EntityData(batItemStack);
-					entityData.putAccessory(stack.writeNbt(new NbtCompound()));
+					entityData.putAccessory(stack.save(new CompoundNBT()));
 					entityData.toStack(batItemStack);
 				}
             }
 
-            @Environment(EnvType.CLIENT)
-            public boolean doDrawHoveringEffect() {
+            @OnlyIn(Dist.CLIENT)
+            public boolean isActive() {
                 return true;
             }
 		});
 
 		this.addSlot(new Slot(inventory, 1, 8, 36) {
-            public boolean canInsert(ItemStack stack) {
+            public boolean mayPlace(ItemStack stack) {
 				return stack.getItem() instanceof CompanionBatArmorItem;
             }
 
 			@Override
-            public void setStack(ItemStack stack) {
-                super.setStack(stack);
+            public void set(ItemStack stack) {
+                super.set(stack);
                 PlayerEntity player = playerInventory.player;
-				ItemStack batItemStack = player.getStackInHand(hand);
-				if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
+				ItemStack batItemStack = player.getItemInHand(hand);
+				if (batItemStack.getItem() == CompanionBats.BAT_ITEM.get()){
 					EntityData entityData = new EntityData(batItemStack);
-					entityData.putArmor(stack.writeNbt(new NbtCompound()));
+					entityData.putArmor(stack.save(new CompoundNBT()));
 					entityData.toStack(batItemStack);
 				}
             }
 
-            @Environment(EnvType.CLIENT)
-            public boolean doDrawHoveringEffect() {
+            @OnlyIn(Dist.CLIENT)
+            public boolean isActive() {
                 return true;
             }
 		});
 
         this.addSlot(new Slot(inventory, 2, 8, 54) {
-            public boolean canInsert(ItemStack stack) {
-                return stack.isOf(Items.BUNDLE);
+            public boolean mayPlace(ItemStack stack) {
+                return stack.getItem() == CompanionBats.BAT_POUCH_ITEM.get();
             }
 
             @Override
-            public void setStack(ItemStack stack) {
-                super.setStack(stack);
+            public void set(ItemStack stack) {
+                super.set(stack);
                 PlayerEntity player = playerInventory.player;
-                if (player.world instanceof ServerWorld){
-                    ItemStack batItemStack = player.getStackInHand(hand);
-                    if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
+                if (player.level instanceof ServerWorld){
+                    ItemStack batItemStack = player.getItemInHand(hand);
+                    if (batItemStack.getItem() == CompanionBats.BAT_ITEM.get()){
 						EntityData entityData = new EntityData(batItemStack);
-						entityData.putBundle(stack.writeNbt(new NbtCompound()));
+						entityData.putBundle(stack.save(new CompoundNBT()));
 						entityData.toStack(batItemStack);
                     }
                 }
 			}
 
-            @Environment(EnvType.CLIENT)
-            public boolean doDrawHoveringEffect() {
+            @OnlyIn(Dist.CLIENT)
+            public boolean isActive() {
                 return true;
             }
 		});
@@ -114,7 +112,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
         }
 
         for(o = 0; o < 9; ++o) {
-			if (playerInventory.getStack(o).isOf(CompanionBats.BAT_ITEM)){
+			if (playerInventory.getItem(o).getItem() == CompanionBats.BAT_ITEM.get()){
 				this.addSlot(new DisabledSlot(playerInventory, o, 8 + o * 18, 142));
 			} else {
 				this.addSlot(new Slot(playerInventory, o, 8 + o * 18, 142));
@@ -122,64 +120,64 @@ public class CompanionBatScreenHandler extends ScreenHandler {
         }
     }
 
-    public boolean canUse(PlayerEntity player) {
+    public boolean stillValid(PlayerEntity player) {
         return true;
     }
 
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMoveStack(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(index);
-		if (slot != null && slot.hasStack()) {
-		   	ItemStack itemStack2 = slot.getStack();
+		Slot slot = this.slots.get(index);
+		if (slot != null && slot.hasItem()) {
+		   	ItemStack itemStack2 = slot.getItem();
 		   	itemStack = itemStack2.copy();
-		   	int invSize = this.inventory.size();
+		   	int invSize = this.inventory.getContainerSize();
 			if (index < invSize) {
-				if (!this.insertItem(itemStack2, invSize, this.slots.size(), true)) {
+				if (!this.moveItemStackTo(itemStack2, invSize, this.slots.size(), true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (this.getSlot(0).canInsert(itemStack2) && !this.getSlot(0).hasStack()) {
-				if (!this.insertItem(itemStack2, 0, 1, false)) {
+			} else if (this.getSlot(0).mayPlace(itemStack2) && !this.getSlot(0).hasItem()) {
+				if (!this.moveItemStackTo(itemStack2, 0, 1, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (this.getSlot(1).canInsert(itemStack2) && !this.getSlot(1).hasStack()) {
-				if (!this.insertItem(itemStack2, 1, 2, false)) {
+			} else if (this.getSlot(1).mayPlace(itemStack2) && !this.getSlot(1).hasItem()) {
+				if (!this.moveItemStackTo(itemStack2, 1, 2, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (this.getSlot(2).canInsert(itemStack2) && !this.getSlot(2).hasStack()) {
-				if (!this.insertItem(itemStack2, 2, 3, false)) {
+			} else if (this.getSlot(2).mayPlace(itemStack2) && !this.getSlot(2).hasItem()) {
+				if (!this.moveItemStackTo(itemStack2, 2, 3, false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (index >= invSize && index < 27 + invSize) {
-				if (!this.insertItem(itemStack2, 27 + invSize, 36 + invSize, false)) {
+				if (!this.moveItemStackTo(itemStack2, 27 + invSize, 36 + invSize, false)) {
 				   return ItemStack.EMPTY;
 				}
-			} else if (index >= (27 + invSize) && index < (36 + invSize) && !this.insertItem(itemStack2, invSize, 27 + invSize, false)) {
+			} else if (index >= (27 + invSize) && index < (36 + invSize) && !this.moveItemStackTo(itemStack2, invSize, 27 + invSize, false)) {
 				return ItemStack.EMPTY;
 			}
 			if (itemStack2.isEmpty()) {
-				slot.setStack(ItemStack.EMPTY);
+				slot.set(ItemStack.EMPTY);
 			} else {
-				slot.markDirty();
+				slot.setChanged();
 			}
 		}
 		return itemStack;
 	}
 
-    public void close(PlayerEntity player) {
-        super.close(player);
-        this.inventory.onClose(player);
+    public void removed(PlayerEntity player) {
+        super.removed(player);
+        this.inventory.stopOpen(player);
     }
 
 	public class DisabledSlot extends Slot {
-		public DisabledSlot(Inventory inventory, int index, int x, int y) {
+		public DisabledSlot(PlayerInventory inventory, int index, int x, int y) {
 			super(inventory, index, x, y);
 		}
 
-		public boolean canTakeItems(PlayerEntity playerEntity) {
+		public boolean mayPickup(PlayerEntity playerEntity) {
 			return false;
 		}
 
-		public boolean canInsert(ItemStack stack) {
+		public boolean mayPlace(ItemStack stack) {
 			return false;
 		}
 	}

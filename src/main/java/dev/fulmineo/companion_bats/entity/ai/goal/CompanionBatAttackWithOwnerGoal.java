@@ -2,12 +2,15 @@ package dev.fulmineo.companion_bats.entity.ai.goal;
 
 import java.util.EnumSet;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
+import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.TrackTargetGoal;
+import net.minecraft.entity.ai.goal.TargetGoal;
 
-public class CompanionBatAttackWithOwnerGoal extends TrackTargetGoal {
+import net.minecraft.entity.passive.ParrotEntity;
+
+
+public class CompanionBatAttackWithOwnerGoal extends TargetGoal {
 	private final CompanionBatEntity entity;
 	private LivingEntity attacking;
 	private int lastAttackTime;
@@ -15,18 +18,18 @@ public class CompanionBatAttackWithOwnerGoal extends TrackTargetGoal {
 	public CompanionBatAttackWithOwnerGoal(CompanionBatEntity entity) {
 	   super(entity, false);
 	   this.entity = entity;
-	   this.setControls(EnumSet.of(Goal.Control.TARGET));
+	   this.setFlags(EnumSet.of(Goal.Flag.TARGET));
 	}
 
-	public boolean canStart() {
-		if (this.entity.isTamed() && !this.entity.isSitting()) {
+	public boolean canUse() {
+		if (this.entity.isTame() && !this.entity.isInSittingPose()) {
 			LivingEntity livingEntity = this.entity.getOwner();
 			if (livingEntity == null) {
 				return false;
 			} else {
-				this.attacking = livingEntity.getAttacking();
-				int i = livingEntity.getLastAttackTime();
-				return i != this.lastAttackTime && this.canTrack(this.attacking, new TargetPredicate().includeHidden()) && this.entity.canAttackWithOwner(this.attacking, livingEntity);
+				this.attacking = livingEntity.getLastHurtMob();
+				int i = livingEntity.getLastHurtMobTimestamp();
+				return i != this.lastAttackTime && this.canAttack(this.attacking, new EntityPredicate().allowUnseeable()) && this.entity.canAttackWithOwner(this.attacking, livingEntity);
 			}
 		} else {
 			return false;
@@ -37,7 +40,7 @@ public class CompanionBatAttackWithOwnerGoal extends TrackTargetGoal {
 		this.entity.setTarget(this.attacking);
 		LivingEntity livingEntity = this.entity.getOwner();
 		if (livingEntity != null) {
-			this.lastAttackTime = livingEntity.getLastAttackTime();
+			this.lastAttackTime = livingEntity.getLastHurtByMobTimestamp();
 		}
 		super.start();
 	}

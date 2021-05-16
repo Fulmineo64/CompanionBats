@@ -1,6 +1,5 @@
 package dev.fulmineo.companion_bats.mixin;
 
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,28 +15,30 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
 
 	@Shadow
-	protected PlayerEntity attackingPlayer;
+	protected PlayerEntity lastHurtByPlayer;
 	@Shadow
-	protected int playerHitTimer;
+	protected int lastHurtByPlayerTime;
 
 	protected LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
-	@Inject(at = @At("TAIL"), method = "setAttacker(Lnet/minecraft/entity/LivingEntity;)V")
-	public void setAttackerMixin(@Nullable LivingEntity attacker, CallbackInfo info) {
+	@Inject(at = @At("TAIL"), method = "setLastHurtByMob(Lnet/minecraft/entity/LivingEntity;)V")
+	public void setLastHurtByMob(@Nullable LivingEntity attacker, CallbackInfo info) {
 		if (attacker != null && attacker instanceof CompanionBatEntity){
 			CompanionBatEntity batEntity = (CompanionBatEntity)attacker;
-			this.playerHitTimer = 100;
+			this.lastHurtByPlayerTime = 100;
 			LivingEntity livingEntity = batEntity.getOwner();
 			if (livingEntity != null && livingEntity.getType() == EntityType.PLAYER) {
-			   this.attackingPlayer = (PlayerEntity)livingEntity;
+			   this.lastHurtByPlayer = (PlayerEntity)livingEntity;
 			} else {
-			   this.attackingPlayer = null;
+			   this.lastHurtByPlayer = null;
 			}
 		}
 	}

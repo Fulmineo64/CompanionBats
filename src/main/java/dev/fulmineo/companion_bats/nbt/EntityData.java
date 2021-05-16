@@ -3,31 +3,31 @@ package dev.fulmineo.companion_bats.nbt;
 import dev.fulmineo.companion_bats.CompanionBatClass;
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtFloat;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.FloatNBT;
+import net.minecraft.nbt.ListNBT;
 
 public class EntityData {
-	private NbtCompound tag;
+	private CompoundNBT tag;
 
 	public EntityData(ItemStack itemStack){
-		this.tag = itemStack.getSubTag("EntityTag");
+		this.tag = itemStack.getTagElement("EntityTag");
 		if (this.tag == null){
-			this.tag = new NbtCompound();
+			this.tag = new CompoundNBT();
 		}
 	}
 
-	public EntityData(NbtCompound tag){
+	public EntityData(CompoundNBT tag){
 		this.tag = tag;
 	}
 
 	public static EntityData fromRegularBatEntity(LivingEntity entity){
-		NbtCompound entityTag = new NbtCompound();
-		entity.saveSelfNbt(entityTag);
+		CompoundNBT entityTag = new CompoundNBT();
+		entity.save(entityTag);
 		entityTag.putString("id", CompanionBats.MOD_ID+":bat");
 		EntityData entityData = new EntityData(entityTag);
 		entityData.init();
@@ -36,31 +36,32 @@ public class EntityData {
 	}
 
 	public static EntityData fromCompanionBatEntity(CompanionBatEntity entity){
-		NbtCompound entityTag = new NbtCompound();
-		entity.saveSelfNbt(entityTag);
+		CompoundNBT entityTag = new CompoundNBT();
+		entity.save(entityTag);
 		EntityData entityData = new EntityData(entityTag);
 		entityData.clearAttributes();
 		return entityData;
 	}
 
-	public static NbtCompound getFromStack(ItemStack itemStack){
-		return itemStack.getSubTag("EntityTag");
+	public static CompoundNBT getFromStack(ItemStack itemStack){
+		return itemStack.getTagElement("EntityTag");
 	}
 
-	public static void toStack(ItemStack itemStack, NbtCompound entityTag){
-		itemStack.putSubTag("EntityTag", entityTag);
+	public static void toStack(ItemStack itemStack, CompoundNBT entityTag){
+		CompoundNBT tag = itemStack.getTag();
+		tag.put("EntityTag", entityTag);
 	}
 
 	public void init(){
-		NbtList armorDropChances = new NbtList();
+		ListNBT armorDropChances = new ListNBT();
 		for(int i = 0; i < 4; ++i) {
-		   armorDropChances.add(NbtFloat.of(0.0F));
+		   armorDropChances.add(FloatNBT.valueOf(0.0F));
 		}
 		tag.put("ArmorDropChances", armorDropChances);
 
-		NbtList handDropChances = new NbtList();
-		handDropChances.add(NbtFloat.of(0.0F));
-		handDropChances.add(NbtFloat.of(0.0F));
+		ListNBT handDropChances = new ListNBT();
+		handDropChances.add(FloatNBT.valueOf(0.0F));
+		handDropChances.add(FloatNBT.valueOf(0.0F));
 		tag.put("HandDropChances", handDropChances);
 	}
 
@@ -92,49 +93,49 @@ public class EntityData {
 		this.tag.putInt(getClassExpName(batClass), classExp);
 	}
 
-	public NbtList getArmorItems(){
+	public ListNBT getArmorItems(){
 		if (!this.tag.contains("ArmorItems")) {
-			NbtList armorItems = new NbtList();
-			armorItems.add(new NbtCompound());
-			armorItems.add(new NbtCompound());
-			armorItems.add(new NbtCompound());
-			armorItems.add(new NbtCompound());
+			ListNBT armorItems = new ListNBT();
+			armorItems.add(new CompoundNBT());
+			armorItems.add(new CompoundNBT());
+			armorItems.add(new CompoundNBT());
+			armorItems.add(new CompoundNBT());
 			this.tag.put("ArmorItems", armorItems);
 		}
 		return this.tag.getList("ArmorItems", 10);
 	}
 
-	public void putArmorItem(int index, NbtCompound armorItemTag){
-		NbtList armorItems = this.getArmorItems();
+	public void putArmorItem(int index, CompoundNBT armorItemTag){
+		ListNBT armorItems = this.getArmorItems();
 		armorItems.set(index, armorItemTag);
 	}
 
-	public NbtCompound getAccessory(){
-		return this.getArmorItems().getCompound(EquipmentSlot.HEAD.getEntitySlotId());
+	public CompoundNBT getAccessory(){
+		return this.getArmorItems().getCompound(EquipmentSlotType.HEAD.getIndex());
 	}
 
-	public NbtCompound getArmor(){
-		return this.getArmorItems().getCompound(EquipmentSlot.CHEST.getEntitySlotId());
+	public CompoundNBT getArmor(){
+		return this.getArmorItems().getCompound(EquipmentSlotType.CHEST.getIndex());
 	}
 
-	public NbtCompound getBundle(){
-		return this.getArmorItems().getCompound(EquipmentSlot.FEET.getEntitySlotId());
+	public CompoundNBT getBundle(){
+		return this.getArmorItems().getCompound(EquipmentSlotType.FEET.getIndex());
 	}
 
 	public Byte getGuardMode(){
 		return this.tag.getByte("GuardMode");
 	}
 
-	public void putAccessory(NbtCompound accessoryTag){
-		this.putArmorItem(EquipmentSlot.HEAD.getEntitySlotId(), accessoryTag);
+	public void putAccessory(CompoundNBT accessoryTag){
+		this.putArmorItem(EquipmentSlotType.HEAD.getIndex(), accessoryTag);
 	}
 
-	public void putArmor(NbtCompound armorTag){
-		this.putArmorItem(EquipmentSlot.CHEST.getEntitySlotId(), armorTag);
+	public void putArmor(CompoundNBT armorTag){
+		this.putArmorItem(EquipmentSlotType.CHEST.getIndex(), armorTag);
 	}
 
-	public void putBundle(NbtCompound bundleTag){
-		this.putArmorItem(EquipmentSlot.FEET.getEntitySlotId(), bundleTag);
+	public void putBundle(CompoundNBT bundleTag){
+		this.putArmorItem(EquipmentSlotType.FEET.getIndex(), bundleTag);
 	}
 
 	public void putGuardMode(Byte mode){
@@ -142,7 +143,7 @@ public class EntityData {
 	}
 
 	public void putOwner(PlayerEntity player){
-		this.tag.putUuid("Owner", player.getUuid());
+		this.tag.putUUID("Owner", player.getUUID());
 	}
 
 	public void clearAttributes(){
@@ -188,12 +189,12 @@ public class EntityData {
 	}
 
 	public static void createIfMissing(ItemStack batItemStack){
-		NbtCompound tag = batItemStack.getOrCreateTag();
+		CompoundNBT tag = batItemStack.getOrCreateTag();
 		if (!tag.contains("EntityTag")) {
 			EntityData entityData = new EntityData(batItemStack);
 			entityData.init();
 			if (tag.contains("entityData")){
-				NbtCompound oldEntityData = tag.getCompound("entityData");
+				CompoundNBT oldEntityData = tag.getCompound("entityData");
 				entityData.putHealth(oldEntityData.getFloat("health"));
 				entityData.putAccessory(oldEntityData.getCompound("accessory"));
 				entityData.putArmor(oldEntityData.getCompound("armor"));

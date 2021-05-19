@@ -1,3 +1,14 @@
+# 1.14.0 - 1.15.0
+## Portals and Teleports
+
+### Ninjas
+- Revisited Ninja's teleport logic
+- The Ninja will now try to teleport whenever possible behind its target, with a much lesser cooldown than before
+- Targets can be enemies or items to pick up
+- When the target is an enemy the Ninja will automatically perform a guaranteed sneak attack
+### Misc
+- Summoned bats will now be automatically recalled when changing dimension (eg. by traveling through portals)
+
 # 1.13.4
 - Removed unused command_flute recipe
 

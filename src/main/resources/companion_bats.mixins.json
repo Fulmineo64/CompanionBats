@@ -6,7 +6,8 @@
     "mixins": [
 		"BatEntityMixin",
 		"LivingEntityMixin",
-		"SwampHutGeneratorMixin"
+		"SwampHutGeneratorMixin",
+		"ServerPlayerEntityMixin"
 	],
     "client": [],
     "server": [],

@@ -64,16 +64,12 @@ public class CompanionBatFollowOwnerGoal extends Goal {
             if (!this.entity.isLeashed() && !this.entity.hasVehicle()) {
                 double distance = this.entity.squaredDistanceTo(this.owner);
                 if (distance >= this.maxDistanceSquared * 1.15){
-                    this.tryTeleport();
+                    this.entity.returnToPlayerInventory();
                 } else {
                     this.navigation.startMovingTo(this.owner, distance > (this.maxDistanceSquared * 10 / 100) ? this.speed : this.speed * 0.75);
                 }
             }
         }
-    }
-
-    private void tryTeleport() {
-        this.entity.returnToPlayerInventory();
     }
 
     private boolean isWithinDistanceToStart(LivingEntity owner){

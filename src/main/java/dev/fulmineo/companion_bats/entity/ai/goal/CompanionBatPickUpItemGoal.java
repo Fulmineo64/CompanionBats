@@ -82,6 +82,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
 				this.removeItemFromList(this.targetItem);
                 this.targetNextItem();
             } else {
+				this.entity.scheduleTeleport(this.targetItem);
                 this.navigation.startMovingTo(this.targetItem, this.speed);
             }
         }

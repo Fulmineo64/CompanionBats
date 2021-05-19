@@ -109,6 +109,7 @@ curseforge {
 		changelog = file('changelog.md')
 		releaseType = project.release_type
 		addGameVersion project.curse_minecraft_version
+		addGameVersion "Fabric"
 
 		relations {
 			requiredLibrary 'fabric-api'

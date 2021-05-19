@@ -31,7 +31,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 		super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
 	}
 
-	@Inject(at = @At("HEAD"), method = "moveToWorld(Lnet/minecraft/server/world/ServerWorld;)Lnet/minecraft/entity/Entity")
+	@Inject(at = @At("HEAD"), method = "moveToWorld(Lnet/minecraft/server/world/ServerWorld;)Lnet/minecraft/entity/Entity;")
 	public void moveToWorldMixin(ServerWorld destination, CallbackInfoReturnable<Entity> ci) {
 		this.recallOwnedBats();
 	}

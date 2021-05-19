@@ -3,7 +3,6 @@ package dev.fulmineo.companion_bats.item;
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;

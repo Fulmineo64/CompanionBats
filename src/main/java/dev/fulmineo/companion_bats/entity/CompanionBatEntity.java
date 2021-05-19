@@ -118,8 +118,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private static final int EMERGENCY_POTION_TICKS = 4800;
 	private static final int EFFECT_POTION_TICKS = 1800;
 	private static final int COMBO_ATTACK_RESET_TICKS = 200;
-	private static final int TELEPORT_TICKS = 100;
-	private static final int RETRY_TELEPORT_TICKS = 10;
+	private static final int TELEPORT_TICKS = 7;
 	private static final int RANGED_ATTACK_TICKS = 100;
 	private static int EFFECT_TICKS = 320;
 
@@ -148,7 +147,9 @@ public class CompanionBatEntity extends TameableEntity {
 	private int teleportTicks = TELEPORT_TICKS;
 	private int effectTicks = 1;
 	private Byte guardMode = 0;
+	private boolean isSneakAttacking;
 	private boolean guaranteedSneakAttack;
+	private Entity teleportTarget;
 
 	public CompanionBatEntity(EntityType<? extends TameableEntity> entityType, World world) {
 		super(entityType, world);
@@ -315,16 +316,10 @@ public class CompanionBatEntity extends TameableEntity {
 					}
 				}
 
-				if (this.hasTeleport) {
-					this.teleportTicks--;
-					if (this.teleportTicks == 0) {
-						LivingEntity target = this.getTarget();
-						if (target != null && target.isAlive() && this.squaredDistanceTo(target) <= this.abilities.getValue(CompanionBatAbility.TELEPORT) && this.teleportTo(target)) {
-							this.teleportTicks = TELEPORT_TICKS;
-						} else {
-							this.teleportTicks = RETRY_TELEPORT_TICKS;
-						}
-					}
+				if (this.teleportTicks > 0) this.teleportTicks--;
+				if (this.teleportTicks == 0 && this.teleportTarget != null) {
+					this.tryTeleportTo(this.teleportTarget);
+					this.teleportTarget = null;
 				}
 
 				this.effectTicks--;
@@ -403,7 +398,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public static boolean canAttackWithOwnerStatic(LivingEntity target, LivingEntity owner) {
-		if (!(target instanceof CreeperEntity)) {
+		if (target != owner && !(target instanceof CreeperEntity)) {
 			if (target instanceof WolfEntity) {
 				WolfEntity wolfEntity = (WolfEntity) target;
 				return !wolfEntity.isTamed() || wolfEntity.getOwner() != owner;
@@ -482,27 +477,27 @@ public class CompanionBatEntity extends TameableEntity {
 		float targetHealth = target instanceof LivingEntity ? ((LivingEntity) target).getHealth() : 0;
 		boolean bl = target.damage(DamageSource.mob(this), this.getAttackDamage(target));
 		if (bl) {
+			if (this.isSneakAttacking) {
+				this.world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT , SoundCategory.PLAYERS, 0.5F, this.getSoundPitch() + 2.0F);
+			}
 			this.dealDamage(this, target);
 			this.onAttack(target, targetHealth, (target instanceof LivingEntity ? ((LivingEntity) target).getHealth() : 0));
 		}
+		this.isSneakAttacking = false;
 		return bl;
 	}
 
 	private float getAttackDamage(Entity target) {
 		float attackDamage = (float) ((int) this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
 		if (this.abilities.has(CompanionBatAbility.SNEAK_ATTACK) && target instanceof LivingEntity && this.isBehind((LivingEntity) target)) {
-			this.world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT , SoundCategory.PLAYERS, 1F, 1.5F);
 			attackDamage += attackDamage * this.abilities.getValue(CompanionBatAbility.SNEAK_ATTACK) / 4;
+			this.isSneakAttacking = true;
 		}
 		return attackDamage;
 	}
 
 	private boolean isBehind(LivingEntity target) {
-		if (this.guaranteedSneakAttack){
-			this.guaranteedSneakAttack = false;
-			return true;
-		}
-		return target.getHorizontalFacing().equals(this.getHorizontalFacing());
+		return this.guaranteedSneakAttack || target.getHorizontalFacing().equals(this.getHorizontalFacing());
 	}
 
 	private void onAttack(Entity target, float healthBefore, float healthAfter) {
@@ -864,13 +859,26 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 	}
 
+	public void scheduleTeleport(Entity target){
+		if (!this.hasTeleport) return;
+		this.teleportTarget = target;
+	}
+
+	private boolean tryTeleportTo(Entity target) {
+		return target != null && target.isAlive() && this.squaredDistanceTo(target) <= this.abilities.getValue(CompanionBatAbility.TELEPORT) && this.teleportTo(target);
+	}
+
 	private boolean teleportTo(Entity entity) {
 		Direction looking = entity.getHorizontalFacing().getOpposite();
 		boolean success = this.teleport(entity.getX() + looking.getOffsetX(), entity.getEyeY(), entity.getZ() + looking.getOffsetZ(), true);
 		if (success) {
-			if (!this.isSilent()) this.world.playSound((PlayerEntity) null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 0.3F, this.getSoundPitch() + 1.0F);
-			this.guaranteedSneakAttack = true;
-			this.tryAttack(entity);
+			if (!this.isSilent()) this.world.playSound((PlayerEntity) null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 0.25F, this.getSoundPitch() + 1.0F);
+			if (entity instanceof LivingEntity && this.canAttackWithOwner((LivingEntity) entity, this.getOwner())){
+				this.guaranteedSneakAttack = true;
+				this.tryAttack(entity);
+				this.guaranteedSneakAttack = false;
+			}
+			this.teleportTicks = TELEPORT_TICKS;
 		}
 		return success;
 	}
@@ -1019,6 +1027,11 @@ public class CompanionBatEntity extends TameableEntity {
 
 	public void setGuardMode(Byte mode){
 		this.guardMode = mode;
+	}
+
+	public void setTarget(@Nullable LivingEntity target) {
+		this.scheduleTeleport(target);
+		super.setTarget(target);
 	}
 
 	public static List<CompanionBatEntity> getPlayerBats(ServerPlayerEntity player) {

@@ -24,6 +24,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -83,7 +84,13 @@ public class CompanionBatItem extends Item {
                 if (entityHealth > 0){
 					CompanionBatEntity batEntity = CompanionBatEntity.spawnFromItemStack((ServerWorld)world, itemStack, user);
                     ItemStack fluteItemStack = new ItemStack(CompanionBats.BAT_FLUTE_ITEM);
-					fluteItemStack.getOrCreateTag().putUuid("EntityUUID", batEntity.getUuid());
+					NbtCompound tag = fluteItemStack.getOrCreateTag();
+					tag.putUuid("EntityUUID", batEntity.getUuid());
+					Text customName = batEntity.getCustomName();
+					if (customName != null){
+						tag.putString("EntityName", customName.asString());
+						fluteItemStack.setCustomName(new TranslatableText("item.companion_bats.bat_flute.custom_name", customName.asString()));
+					}
                     return TypedActionResult.success(fluteItemStack, world.isClient());
                 } else {
                     user.sendMessage(new TranslatableText("item.companion_bats.bat_item.exausted", itemStack.hasCustomName() ? itemStack.getName() : new TranslatableText("entity.companion_bats.bat.your_bat")), false);

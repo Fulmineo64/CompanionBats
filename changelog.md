@@ -1,3 +1,7 @@
+# 1.14.1 - 1.15.1
+- Bat flutes now show their bat's custom name
+- Bat flutes now show a message instead of disappearing when their bat isn't around
+
 # 1.14.0 - 1.15.0
 ## Portals and Teleports
 

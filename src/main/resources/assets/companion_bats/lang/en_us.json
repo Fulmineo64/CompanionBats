@@ -4,6 +4,8 @@
     "item.companion_bats.bat_item.abilities": "Abilities",
 	"item.companion_bats.bat_flute": "Bat Flute",
 	"item.companion_bats.bat_pouch": "Bat Pouch",
+	"item.companion_bats.bat_flute.custom_name": "%s's flute",
+	"item.companion_bats.bat_flute.fail": "%s couldn't hear you...",
 	"item.companion_bats.command_flute": "Command flute: Attack",
 	"item.companion_bats.command_flute_rest": "Command flute: Rest",
 	"item.companion_bats.command_flute_guard": "Command flute: Guard mode",

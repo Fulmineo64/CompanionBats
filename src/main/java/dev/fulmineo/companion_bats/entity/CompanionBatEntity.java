@@ -667,6 +667,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public boolean returnToPlayerInventory() {
+		if (this.world.isClient) return false;
 		ServerPlayerEntity player = (ServerPlayerEntity) this.getOwner();
 		if (player != null) {
 			PlayerInventory inventory = player.inventory;

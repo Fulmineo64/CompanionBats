@@ -1,3 +1,8 @@
+# 1.14.2 - 1.15.2
+- Now Companion Bat's Classes can be translated. 
+
+	(Many thanks to codehz for the [pull request](https://github.com/Fulmineo64/CompanionBats/pull/9))
+
 # 1.14.1 - 1.15.1
 - Bat flutes now show their bat's custom name
 - Bat flutes now show a message instead of disappearing when their bat isn't around

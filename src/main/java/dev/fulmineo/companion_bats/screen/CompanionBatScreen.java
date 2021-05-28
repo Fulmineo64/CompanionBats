@@ -121,7 +121,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 
 		if (this.currentClass != null){
 			this.textRenderer.draw(matrices, new TranslatableText("gui.companion_bats.bat.class"), x, y, 0xFFFFFFFF);
-			this.textRenderer.draw(matrices, this.currentClass.toString(), x + strideX, y, 0xFFFFFFFF);
+			this.textRenderer.draw(matrices, new TranslatableText("gui.companion_bats.bat.class." + this.currentClass.toString()), x + strideX, y, 0xFFFFFFFF);
 
 			y += strideY;
 

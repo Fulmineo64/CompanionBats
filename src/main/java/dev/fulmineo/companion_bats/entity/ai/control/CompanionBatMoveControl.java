@@ -33,7 +33,7 @@ public class CompanionBatMoveControl extends MoveControl {
             this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), h, 90.0F));
             float j = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
             this.entity.setMovementSpeed(j);
-            double k = (double)MathHelper.sqrt(d * d + f * f);
+            double k = Math.sqrt(d * d + f * f);
             float l = (float)(-(MathHelper.atan2(e, k) * 57.2957763671875D));
             this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), l, (float)this.maxPitchChange));
             if (Math.abs(e) < 0.25) {

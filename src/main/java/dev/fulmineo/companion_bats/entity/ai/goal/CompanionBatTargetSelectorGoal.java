@@ -27,7 +27,7 @@ public class CompanionBatTargetSelectorGoal extends Goal {
 
 	public void start() {
 		LivingEntity owner = this.entity.getOwner();
-		TargetPredicate predicate = new TargetPredicate().setPredicate((livingEntity) -> !livingEntity.isSpectator() && livingEntity != owner && this.entity.canAttackWithOwner(livingEntity, owner));
+		TargetPredicate predicate = TargetPredicate.createAttackable().setPredicate((livingEntity) -> !livingEntity.isSpectator() && livingEntity != owner && this.entity.canAttackWithOwner(livingEntity, owner));
 		this.entity.setTarget(this.entity.world.getClosestEntity(this.getTargetClass(), predicate, this.entity, this.entity.getX(), this.entity.getY(), this.entity.getZ(), this.entity.getBoundingBox().expand(10.0D, 10.0D, 10.0D)));
 	}
 

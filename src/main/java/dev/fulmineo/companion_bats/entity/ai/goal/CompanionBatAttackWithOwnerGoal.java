@@ -26,7 +26,7 @@ public class CompanionBatAttackWithOwnerGoal extends TrackTargetGoal {
 			} else {
 				this.attacking = livingEntity.getAttacking();
 				int i = livingEntity.getLastAttackTime();
-				return i != this.lastAttackTime && this.canTrack(this.attacking, new TargetPredicate().includeHidden()) && this.entity.canAttackWithOwner(this.attacking, livingEntity);
+				return i != this.lastAttackTime && this.canTrack(this.attacking, TargetPredicate.createAttackable().visibleOnly()) && this.entity.canAttackWithOwner(this.attacking, livingEntity);
 			}
 		} else {
 			return false;

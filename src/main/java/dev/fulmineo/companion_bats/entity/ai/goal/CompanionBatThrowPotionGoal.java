@@ -14,7 +14,6 @@ import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class CompanionBatThrowPotionGoal extends Goal {
@@ -104,12 +103,12 @@ public class CompanionBatThrowPotionGoal extends Goal {
 						double d = this.owner.getX() + vec3d.x - this.entity.getX();
 						double e = this.owner.getEyeY() - 1.100000023841858D - this.entity.getY();
 						double f = this.owner.getZ() + vec3d.z - this.entity.getZ();
-						float g = MathHelper.sqrt(d * d + f * f);
+						double g = Math.sqrt(d * d + f * f);
 
 						PotionEntity potionEntity = new PotionEntity(this.entity.world, this.entity);
 						potionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
 						potionEntity.setPitch(potionEntity.getPitch() + 20.0F);
-						potionEntity.setVelocity(d, e + (double)(g * 0.2F), f, 0.75F, 8.0F);
+						potionEntity.setVelocity(d, e + g * 0.2D, f, 0.75F, 8.0F);
 						if (!this.entity.isSilent()) {
 							this.entity.world.playSound(null, this.entity.getX(), this.entity.getY(), this.entity.getZ(), SoundEvents.ENTITY_WITCH_THROW, SoundCategory.PLAYERS, 1.0F, 0.8F + this.entity.world.random.nextFloat() * 0.4F);
 						}

@@ -193,7 +193,7 @@ public class CompanionBatEntity extends TameableEntity {
 		return 0.1F;
 	}
 
-	protected float getSoundPitch() {
+	public float getSoundPitch() {
 		return super.getSoundPitch() * 0.95F;
 	}
 
@@ -455,12 +455,12 @@ public class CompanionBatEntity extends TameableEntity {
 			double d = target.getX() + vec3d.x - this.getX();
 			double e = target.getEyeY() - 1.100000023841858D - this.getY();
 			double f = target.getZ() + vec3d.z - this.getZ();
-			float g = MathHelper.sqrt(d * d + f * f);
+			double g = Math.sqrt(d * d + f * f);
 
 			DynamiteEntity dynamite = new DynamiteEntity(this.world, this);
 			dynamite.setPitch(dynamite.getPitch() + 20.0F);
 			dynamite.setPower(this.abilities.getValue(CompanionBatAbility.DYNAMITE));
-			dynamite.setVelocity(d, e + (double)(g * 0.2F), f, 0.75F, 8.0F);
+			dynamite.setVelocity(d, e + g * 0.2D, f, 0.75F, 8.0F);
 
 			if (!this.isSilent()) {
 				this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.PLAYERS, 1.0F, 1F + this.world.random.nextFloat() * 0.4F);

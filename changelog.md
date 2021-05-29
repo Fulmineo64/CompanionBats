@@ -1,4 +1,5 @@
 - Updated to Minecraft version 1.17-pre1
+- Added Simplified Chinese Localization (thanks to stan9558 & friends)
 
 # 1.14.2 - 1.15.2
 - Now Companion Bat's Classes can be translated. 

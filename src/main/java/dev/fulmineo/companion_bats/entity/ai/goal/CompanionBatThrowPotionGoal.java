@@ -92,6 +92,8 @@ public class CompanionBatThrowPotionGoal extends Goal {
 							potion = Potions.NIGHT_VISION;
 						} else if (!this.owner.hasStatusEffect(StatusEffects.SPEED) || this.owner.getStatusEffect(StatusEffects.SPEED).getDuration() <= 400) {
 							potion = Potions.SWIFTNESS;
+						} else if (this.effectPotionLevel >= 3 && !this.owner.hasStatusEffect(StatusEffects.STRENGTH)) {
+							potion = Potions.STRENGTH;
 						}
 						if (potion != null) this.entity.effectPotionTicks = this.effectPotionCooldown;
 					}

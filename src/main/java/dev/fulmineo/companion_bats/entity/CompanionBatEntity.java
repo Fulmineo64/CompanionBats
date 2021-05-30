@@ -449,8 +449,8 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public boolean tryRangedAttack(Entity target) {
-		double ownerDistance = target.squaredDistanceTo(this.getOwner());
-		if (ownerDistance > 25.0D) {
+		Box trajectoryBox = new Box(this.getX(), this.getY(), this.getZ(), target.getX(), target.getY(), target.getZ()).expand(2);
+		if (!trajectoryBox.contains(this.getOwner().getPos())) {
 			Vec3d vec3d = target.getVelocity();
 			double d = target.getX() + vec3d.x - this.getX();
 			double e = target.getEyeY() - 1.100000023841858D - this.getY();

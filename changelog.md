@@ -1,3 +1,7 @@
+# 1.16.1
+- Now the Destroyer won't nuke the owner anymore when in its trajectory (probably)
+- Added Strenght potion to the Alchemist's buffs
+
 # 1.16.0
 - Updated to Minecraft version 1.17-pre1
 - Added Simplified Chinese Localization (thanks to stan9558 & friends)

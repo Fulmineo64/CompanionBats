@@ -28,7 +28,7 @@ public class SwampHutGeneratorMixin extends StructurePieceWithDimensions {
 	private boolean hasMainChest;
 
 	public SwampHutGeneratorMixin(Random random, int i, int j) {
-		super(StructurePieceType.SWAMP_HUT, i, 64, j, 7, 7, 9, method_35457(random));
+		super(StructurePieceType.SWAMP_HUT, i, 64, j, 7, 7, 9, getRandomHorizontalDirection(random));
 	}
 
 	@Inject(at = @At("RETURN"), method = "<init>(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/nbt/NbtCompound;)V")

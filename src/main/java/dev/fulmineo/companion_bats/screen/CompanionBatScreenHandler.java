@@ -51,7 +51,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
             }
 
             @Environment(EnvType.CLIENT)
-            public boolean doDrawHoveringEffect() {
+            public boolean isEnabled() {
                 return true;
             }
 		});
@@ -74,7 +74,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
             }
 
             @Environment(EnvType.CLIENT)
-            public boolean doDrawHoveringEffect() {
+            public boolean isEnabled() {
                 return true;
             }
 		});
@@ -99,7 +99,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
 			}
 
             @Environment(EnvType.CLIENT)
-            public boolean doDrawHoveringEffect() {
+            public boolean isEnabled() {
                 return true;
             }
 		});

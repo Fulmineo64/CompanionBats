@@ -1,3 +1,6 @@
+# 1.16.2
+- Updated to Minecraft version 1.17-rc1
+
 # 1.16.1
 - Now the Destroyer won't nuke the owner anymore when in its trajectory (probably)
 - Added Strenght potion to the Alchemist's buffs

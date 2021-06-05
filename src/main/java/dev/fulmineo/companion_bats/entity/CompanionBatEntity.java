@@ -480,7 +480,7 @@ public class CompanionBatEntity extends TameableEntity {
 			if (this.isSneakAttacking) {
 				this.world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT , SoundCategory.PLAYERS, 0.5F, this.getSoundPitch() + 2.0F);
 			}
-			this.dealDamage(this, target);
+			this.applyDamageEffects(this, target);
 			this.onAttack(target, targetHealth, (target instanceof LivingEntity ? ((LivingEntity) target).getHealth() : 0));
 		}
 		this.isSneakAttacking = false;

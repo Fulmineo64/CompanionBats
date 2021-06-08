@@ -6,19 +6,29 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+		classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
     }
 }
+
+plugins {
+	id 'com.matthewprenger.cursegradle' version '1.4.0'
+}
+
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
-
-version = '1.0'
-group = 'com.fulmineo.companion_bats' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'companion_bats'
+apply plugin: 'org.spongepowered.mixin'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
+
+loadProperties()
+
+def loadProperties() {
+	def configFile = file('config.groovy')
+	def config = new ConfigSlurper().parse(configFile.toURL())
+	project.ext.config = config
+}
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
@@ -35,7 +45,7 @@ minecraft {
     // Simply re-run your setup task after changing the mappings to update your workspace.
     mappings channel: 'official', version: '1.16.5'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
-    
+
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
@@ -46,7 +56,7 @@ minecraft {
             arg "-mixin.config=companion_bats.mixins.json"
 
             // Recommended logging data for a userdev environment
-            // The markers can be changed as needed. 
+            // The markers can be changed as needed.
             // "SCAN": For mods scan.
             // "REGISTRIES": For firing of registry events.
             // "REGISTRYDUMP": For getting the contents of all registries.
@@ -69,7 +79,7 @@ minecraft {
             arg "-mixin.config=companion_bats.mixins.json"
 
             // Recommended logging data for a userdev environment
-            // The markers can be changed as needed. 
+            // The markers can be changed as needed.
             // "SCAN": For mods scan.
             // "REGISTRIES": For firing of registry events.
             // "REGISTRYDUMP": For getting the contents of all registries.
@@ -91,7 +101,7 @@ minecraft {
             workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
-            // The markers can be changed as needed. 
+            // The markers can be changed as needed.
             // "SCAN": For mods scan.
             // "REGISTRIES": For firing of registry events.
             // "REGISTRYDUMP": For getting the contents of all registries.
@@ -140,19 +150,20 @@ dependencies {
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+	annotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
+	archiveName "${project.archives_base_name}-${project.mod_version}-forge.jar"
     manifest {
         attributes([
-            "Specification-Title": "examplemod",
-            "Specification-Vendor": "examplemodsareus",
-            "Specification-Version": "1", // We are version 1 of ourselves
+            "Specification-Title": "Companion Bats",
+            "Specification-Vendor": "Fulmineo",
+            "Specification-Version": "1",
             "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"examplemodsareus",
+            "Implementation-Version": "${project.mod_version}",
+            "Implementation-Vendor" :"Fulmineo",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             "MixinConfigs": "companion_bats.mixins.json"
         ])
@@ -161,7 +172,7 @@ jar {
 
 // Example configuration to allow publishing using the maven-publish task
 // This is the preferred method to reobfuscate your jar file
-jar.finalizedBy('reobfJar') 
+jar.finalizedBy('reobfJar')
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
 //publish.dependsOn('reobfJar')
 
@@ -178,8 +189,25 @@ publishing {
     }
 }
 
-apply plugin: 'org.spongepowered.mixin'
-
 mixin {
     add sourceSets.main, "companion_bats.refmap.json"
+}
+
+curseforge {
+	apiKey = config.curse.api_key
+	project {
+		id = config.curse.project.id
+		changelogType = 'markdown'
+		changelog = file('changelog.md')
+		releaseType = project.release_type
+		addGameVersion project.curse_minecraft_version
+
+		mainArtifact(file("${project.buildDir}/libs/${project.archives_base_name}-${project.mod_version}-forge.jar")) {
+			displayName = "[Forge $project.minecraft_version] Companion bats $project.mod_version"
+		}
+
+		afterEvaluate {
+			uploadTask.dependsOn("reobfJar")
+		}
+	}
 }

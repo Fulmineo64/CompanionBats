@@ -90,6 +90,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
                 this.stop();
             } else {
                 this.navigation.moveTo(this.targetItem, this.speed);
+				this.navigation.getPath().setNextNodeIndex(1);
             }
         }
     }

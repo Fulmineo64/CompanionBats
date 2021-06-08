@@ -10,14 +10,6 @@ import net.minecraft.util.Hand;
 
 import java.util.EnumSet;
 
-import java.util.EnumSet;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.util.EntityPredicates;
-import net.minecraft.util.Hand;
-
 public class CompanionBatMeleeAttackGoal extends Goal {
     protected final CreatureEntity mob;
     private final double speedModifier;
@@ -134,7 +126,9 @@ public class CompanionBatMeleeAttackGoal extends Goal {
 
             if (!this.mob.getNavigation().moveTo(livingentity, this.speedModifier)) {
                 this.ticksUntilNextPathRecalculation += 15;
-            }
+            } else {
+				this.mob.getNavigation().getPath().setNextNodeIndex(1);
+			}
         }
 
         this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);

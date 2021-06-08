@@ -1,3 +1,6 @@
+# 1.16.3
+- Updated to Minecraft version 1.17
+
 # 1.16.2
 - Updated to Minecraft version 1.17-rc1
 

@@ -1,53 +1,42 @@
 package dev.fulmineo.companion_bats;
 
+import com.google.common.collect.ImmutableList;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntityRenderer;
 import dev.fulmineo.companion_bats.entity.DynamiteEntity;
 import dev.fulmineo.companion_bats.init.CompanionBatCommandInit;
 import dev.fulmineo.companion_bats.item.*;
-import dev.fulmineo.companion_bats.nbt.EntityData;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreen;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.passive.BatEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.*;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.gen.feature.structure.IStructurePieceType;
-import net.minecraft.world.gen.feature.structure.StructurePiece;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.world.StructureSpawnListGatherEvent;
+import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.*;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Iterator;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("companion_bats")
@@ -163,23 +152,39 @@ public class CompanionBats
         }
     }*/
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
-    @SubscribeEvent
-    public void onServerStarting(FMLServerStartingEvent event) {
-        // do something when the server starts
-        LOGGER.info("HELLO from server starting");
-    }
+	@SubscribeEvent
+	public void entityTravelToDimension(final EntityTravelToDimensionEvent event) {
+		Entity eventEntity = event.getEntity();
+		if (eventEntity instanceof ServerPlayerEntity) {
+			ServerPlayerEntity player = (ServerPlayerEntity)eventEntity;
+			PlayerInventory inventory = player.inventory;
+			ImmutableList<NonNullList<ItemStack>> mainAndOffhand = ImmutableList.of(inventory.items, inventory.offhand);
+			Iterator<NonNullList<ItemStack>> iterator = mainAndOffhand.iterator();
+			while (iterator.hasNext()) {
+				NonNullList<ItemStack> defaultedList = (NonNullList<ItemStack>) iterator.next();
+				for (int i = 0; i < defaultedList.size(); ++i) {
+					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM.get()) {
+						CompanionBatEntity entity = (CompanionBatEntity) ((ServerWorld) player.level).getEntity(defaultedList.get(i).getTag().getUUID("EntityUUID"));
+						if (entity != null) {
+							defaultedList.set(i, entity.toItemStack());
+							entity.remove();
+						}
+					}
+				}
+			}
+		}
+	}
 
-    // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
+	// You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
     // Event bus for receiving Registry Events)
-    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
+   /* @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents {
         @SubscribeEvent
         public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
             // register a new block here
             LOGGER.info("HELLO from Register Block");
         }
-    }
+    }*/
 
     /*@SubscribeEvent
     public void onEntityInteract(PlayerInteractEvent.EntityInteractSpecific event) {

@@ -8,10 +8,7 @@ import net.minecraft.entity.projectile.PotionEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.pathfinding.PathNavigator;
-import net.minecraft.potion.Effects;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.potion.Potions;
+import net.minecraft.potion.*;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.MathHelper;
@@ -93,6 +90,8 @@ public class CompanionBatThrowPotionGoal extends Goal {
 							potion = Potions.NIGHT_VISION;
 						} else if (!this.owner.hasEffect(Effects.MOVEMENT_SPEED) || this.owner.getEffect(Effects.MOVEMENT_SPEED).getDuration() <= 400) {
 							potion = Potions.SWIFTNESS;
+						} else if (this.effectPotionLevel >= 3 && !this.owner.hasEffect(Effects.DAMAGE_BOOST)) {
+							potion = Potions.STRENGTH;
 						}
 						if (potion != null) this.entity.effectPotionTicks = this.effectPotionCooldown;
 					}

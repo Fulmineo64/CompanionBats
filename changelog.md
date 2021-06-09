@@ -1,7 +1,41 @@
-- Improved Ninja's teleport logic
-- The teleport's cooldown now resets on mob kill
-- When the bat telports it will now automatically attack the target entity
-- Summoned bats will now be automatically recalled when changing dimension
+Forge Port of Fabric version 1.16.3 for Minecraft 1.16.5
+-------------
+# 1.16.3
+- Updated to Minecraft version 1.17
+
+# 1.16.2
+- Updated to Minecraft version 1.17-rc1
+
+# 1.16.1
+- Now the Destroyer won't nuke the owner anymore when in its trajectory (probably)
+- Added Strenght potion to the Alchemist's buffs
+
+# 1.16.0
+- Updated to Minecraft version 1.17-pre1
+- Added Simplified Chinese Localization (thanks to stan9558 & friends)
+
+# 1.14.2 - 1.15.2
+- Now Companion Bat's Classes can be translated. 
+
+	(Many thanks to codehz for the [pull request](https://github.com/Fulmineo64/CompanionBats/pull/9))
+
+# 1.14.1 - 1.15.1
+- Bat flutes now show their bat's custom name
+- Bat flutes now show a message instead of disappearing when their bat isn't around
+
+# 1.14.0 - 1.15.0
+## Portals and Teleports
+
+### Ninjas
+- Revisited Ninja's teleport logic
+- The Ninja will now try to teleport whenever possible behind its target, with a much lesser cooldown than before
+- Targets can be enemies or items to pick up
+- When the target is an enemy the Ninja will automatically perform a guaranteed sneak attack
+### Misc
+- Summoned bats will now be automatically recalled when changing dimension (eg. by traveling through portals)
+
+# 1.13.4
+- Removed unused command_flute recipe
 
 # 1.12.3 - 1.13.3
 - Tweaked slightly the Duelist's buffs

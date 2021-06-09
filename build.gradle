@@ -202,7 +202,7 @@ curseforge {
 		releaseType = project.release_type
 		addGameVersion project.curse_minecraft_version
 
-		mainArtifact(file("${project.buildDir}/libs/${project.archives_base_name}-${project.mod_version}-forge.jar")) {
+		mainArtifact(file("${project.buildDir}/libs/${project.archives_base_name}-${project.mod_version}.jar")) {
 			displayName = "[Forge $project.minecraft_version] Companion bats $project.mod_version"
 		}
 

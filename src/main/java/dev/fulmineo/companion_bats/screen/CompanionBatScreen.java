@@ -121,7 +121,7 @@ public class CompanionBatScreen extends ContainerScreen<CompanionBatScreenHandle
 
 		if (this.currentClass != null){
 			this.font.draw(matrices, new TranslationTextComponent("gui.companion_bats.bat.class"), x, y, 0xFFFFFFFF);
-			this.font.draw(matrices, this.currentClass.toString(), x + strideX, y, 0xFFFFFFFF);
+			this.font.draw(matrices, new TranslationTextComponent("gui.companion_bats.bat.class." + this.currentClass.toString()), x + strideX, y, 0xFFFFFFFF);
 
 			y += strideY;
 

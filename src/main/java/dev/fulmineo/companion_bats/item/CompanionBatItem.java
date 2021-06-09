@@ -11,6 +11,7 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Rarity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -69,7 +70,13 @@ public class CompanionBatItem extends Item {
                 if (entityHealth > 0){
 					CompanionBatEntity batEntity = CompanionBatEntity.spawnFromItemStack((ServerWorld)world, itemStack, user);
                     ItemStack fluteItemStack = new ItemStack(CompanionBats.BAT_FLUTE_ITEM.get());
-					fluteItemStack.getOrCreateTag().putUUID("EntityUUID", batEntity.getUUID());
+					CompoundNBT tag = fluteItemStack.getOrCreateTag();
+					tag.putUUID("EntityUUID", batEntity.getUUID());
+					ITextComponent customName = batEntity.getCustomName();
+					if (customName != null){
+						tag.putString("EntityName", customName.getString());
+						fluteItemStack.setHoverName(new TranslationTextComponent("item.companion_bats.bat_flute.custom_name", customName.getString()));
+					}
                     return ActionResult.sidedSuccess(fluteItemStack, world.isClientSide());
                 } else {
                     user.displayClientMessage(new TranslationTextComponent("item.companion_bats.bat_item.exausted", itemStack.hasCustomHoverName() ? itemStack.getHoverName() : new TranslationTextComponent("entity.companion_bats.bat.your_bat")), false);

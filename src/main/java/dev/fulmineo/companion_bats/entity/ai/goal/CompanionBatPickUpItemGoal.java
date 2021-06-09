@@ -89,6 +89,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
                 this.entity.level.playSound(null, this.entity.blockPosition(), SoundEvents.WOOL_PLACE, SoundCategory.AMBIENT, 0.3F, 1F);
                 this.stop();
             } else {
+				this.entity.scheduleTeleport(this.targetItem);
                 this.navigation.moveTo(this.targetItem, this.speed);
 				this.navigation.getPath().setNextNodeIndex(1);
             }

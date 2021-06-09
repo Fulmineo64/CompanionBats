@@ -8,6 +8,9 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
@@ -28,7 +31,9 @@ public class CompanionBatFluteItem extends Item {
                     entity.returnToPlayerInventory();
                     return ActionResult.success(fluteItemStack);
                 } else {
-                    return ActionResult.fail(new ItemStack(Items.AIR));
+					IFormattableTextComponent name = tag.contains("EntityName") ? new StringTextComponent(tag.getString("EntityName")) : new TranslationTextComponent("entity.companion_bats.bat.your_bat");
+					user.displayClientMessage(name.append(new TranslationTextComponent("item.companion_bats.bat_flute.fail")), true);
+                    return ActionResult.fail(fluteItemStack);
                 }
             }
             return ActionResult.fail(new ItemStack(Items.AIR));

@@ -91,7 +91,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
             } else {
 				this.entity.scheduleTeleport(this.targetItem);
                 this.navigation.moveTo(this.targetItem, this.speed);
-				this.navigation.getPath().setNextNodeIndex(1);
+				// this.navigation.getPath().setNextNodeIndex(1);
             }
         }
     }

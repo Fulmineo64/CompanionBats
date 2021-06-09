@@ -155,7 +155,7 @@ dependencies {
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
-	archiveName "${project.archives_base_name}-${project.mod_version}-forge.jar"
+	archiveName "${project.archives_base_name}-${project.mod_version}.jar"
     manifest {
         attributes([
             "Specification-Title": "Companion Bats",

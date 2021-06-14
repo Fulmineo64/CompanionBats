@@ -1,3 +1,6 @@
+# 1.16.4
+- Added Russian localization (thanks to Lanchel0t)
+
 # 1.16.3
 - Updated to Minecraft version 1.17
 

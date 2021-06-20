@@ -1,3 +1,6 @@
+# 1.16.5
+- Added Advancements to guide the player in the initial phases of the mod
+
 # 1.16.4
 - Added Russian localization (thanks to Lanchel0t)
 

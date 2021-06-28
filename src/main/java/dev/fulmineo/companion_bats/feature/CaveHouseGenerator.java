@@ -55,7 +55,7 @@ public class CaveHouseGenerator {
 
 	static {
 		OFFSETS = ImmutableMap.of(TOP_TEMPLATE, new BlockPos(3, 6, 3), MIDDLE_TEMPLATE, new BlockPos(1, 3, 1), BOTTOM_TEMPLATE, new BlockPos(5, 6, 3));
-		OFFSETS_FROM_TOP = ImmutableMap.of(TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(4, -3, 2), BOTTOM_TEMPLATE, new BlockPos(-2, -3, 0));
+		OFFSETS_FROM_TOP = ImmutableMap.of(TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(5, -3, 3), BOTTOM_TEMPLATE, new BlockPos(-1, -3, 1));
 	}
 
 	public static class Piece extends SimpleStructurePiece {

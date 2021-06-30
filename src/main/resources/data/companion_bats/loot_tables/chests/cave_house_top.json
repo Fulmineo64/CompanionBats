@@ -1,0 +1,62 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 4,
+        "max": 10
+      },
+      "bonus_rolls": 2,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "weight": 15,
+          "name": "minecraft:pumpkin_pie"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:experience_bottle"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 20,
+          "name": "minecraft:pumpkin"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 15,
+          "name": "minecraft:sugar_cane",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 2
+              },
+              "add": false
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 15,
+          "name": "minecraft:pumpkin_seeds",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 2
+              },
+              "add": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

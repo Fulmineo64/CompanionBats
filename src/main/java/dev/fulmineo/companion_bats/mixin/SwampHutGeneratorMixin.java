@@ -8,6 +8,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import dev.fulmineo.companion_bats.CompanionBats;
+
 import org.spongepowered.asm.mixin.injection.At;
 
 import net.minecraft.nbt.NbtCompound;
@@ -46,7 +48,7 @@ public class SwampHutGeneratorMixin extends StructurePieceWithDimensions {
 	public void generateMixin(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos, CallbackInfoReturnable<Boolean> info) {
 		if (this.method_14839(world, boundingBox, 0)) {
 			if (!this.hasMainChest) {
-				this.hasMainChest = this.addChest(world, boundingBox, random, 2, 2, 6, new Identifier("companion_bats", "chests/swamp_hut"));
+				this.hasMainChest = this.addChest(world, boundingBox, random, 2, 2, 6, new Identifier(CompanionBats.MOD_ID, "chests/swamp_hut"));
 			}
 		}
 	}

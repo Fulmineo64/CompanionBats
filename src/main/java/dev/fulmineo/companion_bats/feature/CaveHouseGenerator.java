@@ -12,7 +12,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.SimpleStructurePiece;
@@ -55,7 +54,7 @@ public class CaveHouseGenerator {
 
 	static {
 		OFFSETS = ImmutableMap.of(TOP_TEMPLATE, new BlockPos(3, 6, 3), MIDDLE_TEMPLATE, new BlockPos(1, 3, 1), BOTTOM_TEMPLATE, new BlockPos(5, 6, 3));
-		OFFSETS_FROM_TOP = ImmutableMap.of(TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(5, -3, 3), BOTTOM_TEMPLATE, new BlockPos(-1, -3, 1));
+		OFFSETS_FROM_TOP = ImmutableMap.of(TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(7, -3, 3), BOTTOM_TEMPLATE, new BlockPos(1, -3, 1));
 	}
 
 	public static class Piece extends SimpleStructurePiece {
@@ -75,7 +74,6 @@ public class CaveHouseGenerator {
 
 		private static BlockPos getPosOffset(Identifier identifier, BlockPos pos, int yOffset) {
 			BlockPos newPos = pos.add((Vec3i)CaveHouseGenerator.OFFSETS_FROM_TOP.get(identifier)).down(yOffset);
-			CompanionBats.info(identifier + " pos "+pos+" -> "+newPos);
 			return newPos;
 		}
 
@@ -89,31 +87,28 @@ public class CaveHouseGenerator {
 				world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
 				BlockEntity blockEntity = world.getBlockEntity(pos.down());
 				if (blockEntity instanceof ChestBlockEntity) {
-					((ChestBlockEntity)blockEntity).setLootTable(LootTables.IGLOO_CHEST_CHEST, random.nextLong());
+					((ChestBlockEntity)blockEntity).setLootTable(new Identifier(CompanionBats.MOD_ID, "chests/cave_house_top"), random.nextLong());
 				}
 			} else if ("barrel".equals(metadata)) {
 				world.setBlockState(pos, Blocks.HAY_BLOCK.getDefaultState(), Block.NOTIFY_ALL);
 				BlockEntity blockEntity = world.getBlockEntity(pos.down());
 				if (blockEntity instanceof BarrelBlockEntity) {
-					((BarrelBlockEntity)blockEntity).setLootTable(LootTables.IGLOO_CHEST_CHEST, random.nextLong());
+					((BarrelBlockEntity)blockEntity).setLootTable(new Identifier(CompanionBats.MOD_ID, "chests/cave_house_bottom"), random.nextLong());
 				}
 			}
 		}
 
 		public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-			CompanionBats.info("generating "+this.identifier);
 			Identifier identifier = new Identifier(this.identifier);
 			StructurePlacementData structurePlacementData = createPlacementData(this.placementData.getRotation(), identifier);
 			BlockPos blockPos = (BlockPos)CaveHouseGenerator.OFFSETS_FROM_TOP.get(identifier);
 			BlockPos blockPos2 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3 - blockPos.getX(), 0, -blockPos.getZ())));
 			int i = world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
-			CompanionBats.info("i = "+i);
 			BlockPos blockPos3 = this.pos;
-			this.pos = this.pos.add(0, i - 50 - 20, 0);
-			CompanionBats.info("pos after "+this.pos);
+			this.pos = this.pos.add(0, i - 50 - 25, 0);
 			boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
 			if (identifier.equals(CaveHouseGenerator.TOP_TEMPLATE)) {
-				BlockPos blockPos4 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(6, 0, 4)));
+				BlockPos blockPos4 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(8, 0, 4)));
 				BlockState blockState = world.getBlockState(blockPos4.down());
 				if (!blockState.isAir() && !blockState.isOf(Blocks.LADDER)) {
 					world.setBlockState(blockPos4, Blocks.DEEPSLATE_TILES.getDefaultState(), Block.NOTIFY_ALL);

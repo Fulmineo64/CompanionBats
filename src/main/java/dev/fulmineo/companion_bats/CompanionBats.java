@@ -23,6 +23,7 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -153,14 +154,15 @@ public class CompanionBats implements ModInitializer {
 
 		Registry.register(Registry.STRUCTURE_PIECE, new Identifier("companion_bats", "cave_house_piece"), CAVE_HOUSE_PIECE);
 		FabricStructureBuilder.create(new Identifier("companion_bats", "cave_house"), CAVE_HOUSE_STRUCTURE)
-			.step(GenerationStep.Feature.SURFACE_STRUCTURES)
-			.defaultConfig(32, 8, 12345)
-			.adjustsSurface()
+			.step(GenerationStep.Feature.UNDERGROUND_STRUCTURES)
+			.defaultConfig(48, 12, 478010)
 			.register();
 
 		RegistryKey<ConfiguredStructureFeature<?, ?>> myConfigured = RegistryKey.of(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, new Identifier("companion_bats", "cave_house"));
 		BuiltinRegistries.add(BuiltinRegistries.CONFIGURED_STRUCTURE_FEATURE, myConfigured.getValue(), CAVE_HOUSE_CONFIGURED);
-		BiomeModifications.addStructure(BiomeSelectors.all(), myConfigured);
+		BiomeModifications.addStructure(
+			BiomeSelectors.foundInOverworld().and(BiomeSelectors.excludeByKey(BiomeKeys.DEEP_OCEAN, BiomeKeys.DEEP_COLD_OCEAN, BiomeKeys.DEEP_WARM_OCEAN, BiomeKeys.DEEP_FROZEN_OCEAN, BiomeKeys.DEEP_LUKEWARM_OCEAN))
+		, myConfigured);
 
 		// Init
 

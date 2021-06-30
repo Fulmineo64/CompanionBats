@@ -18,7 +18,7 @@ public class CompanionBatLootTableInit {
 	private static final Identifier DESERT_PYRAMID_ID = new Identifier("minecraft", "chests/desert_pyramid");
 	private static final Identifier JUNGLE_TEMPLE_ID = new Identifier("minecraft", "chests/jungle_temple");
 
-	private static final Identifier SWAMP_HUT_ID = new Identifier("companion_bats", "chests/swamp_hut");
+	private static final Identifier SWAMP_HUT_ID = new Identifier(CompanionBats.MOD_ID, "chests/swamp_hut");
 
 	private static final Identifier SIMPLE_DUNGEON_ID = new Identifier("minecraft", "chests/simple_dungeon");
 	private static final Identifier ABANDONED_MINESHAFT_ID = new Identifier("minecraft", "chests/abandoned_mineshaft");

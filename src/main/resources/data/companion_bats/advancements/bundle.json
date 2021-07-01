@@ -1,0 +1,30 @@
+{
+	"parent": "companion_bats:bat_accessory",
+	"display": {
+		"icon": {
+			"item": "minecraft:bundle"
+		},
+		"title": {
+			"translate": "advancements.companion_bats.bundle"
+		},
+		"description": {
+			"translate": "advancements.companion_bats.bundle.description"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"bundle_trigger": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": ["minecraft:bundle"]
+					}
+				]
+			}
+		}
+	}
+}

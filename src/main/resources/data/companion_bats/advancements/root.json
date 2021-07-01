@@ -1,0 +1,23 @@
+{
+	"display": {
+		"icon": {
+			"item": "companion_bats:bat_item"
+		},
+		"title": {
+			"translate": "itemGroup.companion_bats.group"
+		},
+		"description": {
+			"translate": "advancements.companion_bats.description"
+		},
+		"frame": "task",
+		"show_toast": false,
+		"announce_to_chat": false,
+		"hidden": false,
+		"background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+	},
+	"criteria": {
+		"trivial_trigger": {
+			"trigger": "minecraft:inventory_changed"
+		}
+	}
+}

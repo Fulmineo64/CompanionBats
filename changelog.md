@@ -1,5 +1,17 @@
-Forge Port of Fabric version 1.16.3 for Minecraft 1.16.5
+Forge Port of Fabric version 1.17.0 for Minecraft 1.16.5
 -------------
+# 1.17.0
+## Caves and Houses
+- Added new structure, the Cave House
+- Added 2 new treasure chests
+- Added a new achievement for finding the Cave House
+
+# 1.16.5
+- Added Advancements to guide the player in the initial phases of the mod
+
+# 1.16.4
+- Added Russian localization (thanks to Lanchel0t)
+
 # 1.16.3
 - Updated to Minecraft version 1.17
 

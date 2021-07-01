@@ -1,0 +1,30 @@
+{
+	"parent": "companion_bats:root",
+	"display": {
+		"icon": {
+			"item": "companion_bats:vampiric_attire"
+		},
+		"title": {
+			"translate": "advancements.companion_bats.bat_armor"
+		},
+		"description": {
+			"translate": "advancements.companion_bats.bat_armor.description"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"armors_trigger": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"tag": "companion_bats:bat_armors"
+					}
+				]
+			}
+		}
+    }
+}

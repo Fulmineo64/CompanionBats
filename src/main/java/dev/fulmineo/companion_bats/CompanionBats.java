@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntityRenderer;
 import dev.fulmineo.companion_bats.entity.DynamiteEntity;
+import dev.fulmineo.companion_bats.feature.CaveHouseFeature;
+import dev.fulmineo.companion_bats.feature.CaveHouseGenerator;
 import dev.fulmineo.companion_bats.init.CompanionBatCommandInit;
 import dev.fulmineo.companion_bats.item.*;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreen;
@@ -100,6 +102,14 @@ public class CompanionBats
     public static final RegistryObject<Item> MUMMY_BANDAGES = ITEMS.register("mummy_bandages", () -> new CompanionBatArmorItem("mummy_bandages", CompanionBatClass.MUMMY, new Item.Properties().tab(GROUP).stacksTo(1)));
     public static final RegistryObject<Item> DESTROYER_GEAR = ITEMS.register("destroyer_gear", () -> new CompanionBatArmorItem("destroyer_gear", CompanionBatClass.DESTROYER, new Item.Properties().tab(GROUP).stacksTo(1)));
 
+	// Structure
+
+	public static final StructurePieceType CAVE_HOUSE_PIECE = CaveHouseGenerator.Piece::new;
+	private static final StructureFeature<DefaultFeatureConfig> CAVE_HOUSE_STRUCTURE = new CaveHouseFeature(DefaultFeatureConfig.CODEC);
+	private static final ConfiguredStructureFeature<?, ?> CAVE_HOUSE_CONFIGURED = CAVE_HOUSE_STRUCTURE.configure(DefaultFeatureConfig.DEFAULT);
+
+	public static final Identifier CAVE_HOUSE_POOL = new Identifier("companion_bats","cave_house_pool");
+
     public CompanionBats() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         /*FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);*/
@@ -107,6 +117,20 @@ public class CompanionBats
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 
         MinecraftForge.EVENT_BUS.register(this);
+
+		// Structure
+
+		Registry.register(Registry.STRUCTURE_PIECE, new Identifier("companion_bats", "cave_house_piece"), CAVE_HOUSE_PIECE);
+		FabricStructureBuilder.create(new Identifier("companion_bats", "cave_house"), CAVE_HOUSE_STRUCTURE)
+			.step(GenerationStep.Feature.UNDERGROUND_STRUCTURES)
+			.defaultConfig(48, 12, 478010)
+			.register();
+
+		RegistryKey<ConfiguredStructureFeature<?, ?>> myConfigured = RegistryKey.of(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, new Identifier("companion_bats", "cave_house"));
+		BuiltinRegistries.add(BuiltinRegistries.CONFIGURED_STRUCTURE_FEATURE, myConfigured.getValue(), CAVE_HOUSE_CONFIGURED);
+		BiomeModifications.addStructure(
+			BiomeSelectors.foundInOverworld().and(BiomeSelectors.excludeByKey(BiomeKeys.DEEP_OCEAN, BiomeKeys.DEEP_COLD_OCEAN, BiomeKeys.DEEP_WARM_OCEAN, BiomeKeys.DEEP_FROZEN_OCEAN, BiomeKeys.DEEP_LUKEWARM_OCEAN))
+		, myConfigured);
 
         CONTAINERS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());

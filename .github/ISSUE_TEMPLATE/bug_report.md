@@ -3,7 +3,7 @@ name: Bug report
 about: Please explained in detail what went wrong
 title: ''
 labels: ''
-assignees: ''
+assignees: Fulmineo64
 
 ---
 

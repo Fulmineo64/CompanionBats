@@ -25,7 +25,7 @@ public class CompanionBatLootTableInit extends LootModifier {
 	private static final ResourceLocation DESERT_PYRAMID_ID = new ResourceLocation("minecraft", "chests/desert_pyramid");
 	private static final ResourceLocation JUNGLE_TEMPLE_ID = new ResourceLocation("minecraft", "chests/jungle_temple");
 
-	private static final ResourceLocation SWAMP_HUT_ID = new ResourceLocation("companion_bats", "chests/swamp_hut");
+	private static final Identifier SWAMP_HUT_ID = new Identifier(CompanionBats.MOD_ID, "chests/swamp_hut");
 
 	private static final ResourceLocation SIMPLE_DUNGEON_ID = new ResourceLocation("minecraft", "chests/simple_dungeon");
 	private static final ResourceLocation ABANDONED_MINESHAFT_ID = new ResourceLocation("minecraft", "chests/abandoned_mineshaft");

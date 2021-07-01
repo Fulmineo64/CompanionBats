@@ -1,0 +1,31 @@
+{
+	"parent": "companion_bats:root",
+	"display": {
+		"icon": {
+			"item": "companion_bats:experience_pie"
+		},
+		"title": {
+			"translate": "advancements.companion_bats.power_leveling"
+		},
+		"description": {
+			"translate": "advancements.companion_bats.power_leveling.description"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+        "feed_experience_pie_trigger": {
+            "trigger": "minecraft:player_interacted_with_entity",
+            "conditions": {
+                "item": {
+                    "item": "companion_bats:experience_pie"
+                },
+                "entity": {
+                    "type": "companion_bats:bat"
+                }
+            }
+        }
+    }
+}

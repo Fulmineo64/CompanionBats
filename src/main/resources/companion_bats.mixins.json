@@ -8,7 +8,8 @@
 		"BundleItemMixin",
 		"LivingEntityMixin",
 		"SwampHutGeneratorMixin",
-		"ServerPlayerEntityMixin"
+		"ServerPlayerEntityMixin",
+		"WanderingTraderEntityMixin"
 	],
     "client": [],
     "server": [],

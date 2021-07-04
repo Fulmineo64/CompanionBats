@@ -1,3 +1,6 @@
+# 1.17.1
+- Added Spirit Shard trade to the Wandering Trader
+
 # 1.17.0
 ## Caves and Houses
 - Added new structure, the Cave House

@@ -1,3 +1,10 @@
+# 1.17.2
+- Updated to Minecraft version 1.17.1
+- Added Spirit Crystal trade to the Wandering Trader
+- Slightly increased the Spirit Shard's price
+- Now the Wandering Trader will have a random amount of Spirit Shards ranging from 2 to 4
+- Spirit Crystals have a 20% chance to be traded for, while Spirit Shards a 50% chance
+
 # 1.17.1
 - Added Spirit Shard trade to the Wandering Trader
 

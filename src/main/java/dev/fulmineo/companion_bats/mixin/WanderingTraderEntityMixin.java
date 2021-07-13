@@ -26,10 +26,10 @@ public abstract class WanderingTraderEntityMixin extends MerchantEntity {
     public void fillRecipesMixin(CallbackInfo info) {
 		TradeOfferList tradeOfferList = this.getOffers();
 		if (random.nextDouble() < 0.2D) {
-			tradeOfferList.add(new TradeOffer(new ItemStack(Items.EMERALD, 40), new ItemStack(Items.DIAMOND, 20), new ItemStack(CompanionBats.SPIRIT_CRYSTAL, 1), 1, 1, 0.05F));
+			tradeOfferList.add(new TradeOffer(new ItemStack(Items.EMERALD, 32), new ItemStack(Items.DIAMOND, 16), new ItemStack(CompanionBats.SPIRIT_CRYSTAL, 1), 1, 1, 0.05F));
 		}
 		if (random.nextDouble() < 0.5D) {
-			tradeOfferList.add(new TradeOffer(new ItemStack(Items.EMERALD, 12), new ItemStack(Items.DIAMOND, 6), new ItemStack(CompanionBats.SPIRIT_SHARD, 1), random.nextInt(2) + 2, 1, 0.05F));
+			tradeOfferList.add(new TradeOffer(new ItemStack(Items.EMERALD, 10), new ItemStack(Items.DIAMOND, 5), new ItemStack(CompanionBats.SPIRIT_SHARD, 1), random.nextInt(2) + 2, 1, 0.05F));
 		}
     }
 }

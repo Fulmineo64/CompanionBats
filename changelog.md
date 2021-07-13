@@ -1,3 +1,6 @@
+# 1.17.3
+- Lowered the Wandering Trader's prices
+
 # 1.17.2
 - Updated to Minecraft version 1.17.1
 - Added Spirit Crystal trade to the Wandering Trader

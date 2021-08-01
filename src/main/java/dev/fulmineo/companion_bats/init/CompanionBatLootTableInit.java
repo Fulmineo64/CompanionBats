@@ -47,7 +47,7 @@ public class CompanionBatLootTableInit {
 				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootNumberProvider.create(1)).with(ItemEntry.builder(CompanionBats.DUELIST_COSTUME));
 				supplier.pool(poolBuilder);
 			} else if (END_CITY_TREASURE_ID.equals(id)) {
-				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(BinomialLootNumberProvider.create(1, 0.35F)).with(ItemEntry.builder(CompanionBats.NINJA_GARB));
+				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(ConstantLootNumberProvider.create(1)).with(ItemEntry.builder(CompanionBats.NINJA_GARB));
 				supplier.pool(poolBuilder);
 			} else if (DESERT_PYRAMID_ID.equals(id)) {
 				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(BinomialLootNumberProvider.create(1, 0.25F)).with(ItemEntry.builder(CompanionBats.MUMMY_BANDAGES));

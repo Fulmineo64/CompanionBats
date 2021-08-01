@@ -122,6 +122,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private static final int RANGED_ATTACK_TICKS = 100;
 	private static int EFFECT_TICKS = 320;
 
+	public static final Predicate<ItemStack> IS_TAMING_ITEM;
 	public static final Predicate<ItemStack> IS_FOOD_ITEM;
 	public static final Predicate<ItemEntity> IS_FOOD_ITEM_ENTITY;
 	public BlockPos hangingPosition;
@@ -620,6 +621,8 @@ public class CompanionBatEntity extends TameableEntity {
 	public static float getItemHealAmount(ItemStack stack) {
 		if (stack.isOf(Items.PUMPKIN_PIE) || stack.isOf(CompanionBats.EXPERIENCE_PIE)) {
 			return 6.0F;
+		} else if (stack.isOf(Items.GLOW_BERRIES)) {
+			return 2.0F;
 		}
 		return 0;
 	}
@@ -1060,7 +1063,8 @@ public class CompanionBatEntity extends TameableEntity {
 	static {
 		BAT_FLAGS = DataTracker.registerData(CompanionBatEntity.class, TrackedDataHandlerRegistry.BYTE);
 		COMBO_PARTICLE_LEVEL = DataTracker.registerData(CompanionBatEntity.class, TrackedDataHandlerRegistry.BYTE);
-		IS_FOOD_ITEM = (itemStack) -> itemStack.isOf(Items.PUMPKIN_PIE) || itemStack.isOf(CompanionBats.EXPERIENCE_PIE);
+		IS_TAMING_ITEM = (itemStack) -> itemStack.isOf(Items.PUMPKIN_PIE) || itemStack.isOf(CompanionBats.EXPERIENCE_PIE);
+		IS_FOOD_ITEM = (itemStack) -> IS_TAMING_ITEM.test(itemStack) || itemStack.isOf(Items.GLOW_BERRIES);
 		IS_FOOD_ITEM_ENTITY = (itemEntity) -> IS_FOOD_ITEM.test(itemEntity.getStack());
 	}
 }

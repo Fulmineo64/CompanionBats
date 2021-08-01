@@ -83,7 +83,7 @@ public class CompanionBatLevels {
 	}
 
 	static {
-		LEVELS = new CompanionBatLevel[20];
+		LEVELS = new CompanionBatLevel[25];
 		LEVELS[0] = new CompanionBatLevel(0, 0F, 0F, 0F);
 		LEVELS[1] = new CompanionBatLevel(50, 1F, 0F, 0F); 			// Health
 		LEVELS[2] = new CompanionBatLevel(150, 2F, 0F, 0F); 		// Health
@@ -104,6 +104,11 @@ public class CompanionBatLevels {
 		LEVELS[17] = new CompanionBatLevel(7650, 10F, 3F, 0.12F); 	// Health
 		LEVELS[18] = new CompanionBatLevel(8550, 10F, 3F, 0.15F); 	// Speed
 		LEVELS[19] = new CompanionBatLevel(9550, 10F, 4F, 0.15F); 	// Attack
+		LEVELS[20] = new CompanionBatLevel(10600, 11F, 4F, 0.15F); 	// Health
+		LEVELS[21] = new CompanionBatLevel(11700, 12F, 4F, 0.15F); 	// Health
+		LEVELS[22] = new CompanionBatLevel(13200, 12F, 4F, 0.20F); 	// Speed x 1.6
+		LEVELS[23] = new CompanionBatLevel(14950, 12F, 5F, 0.20F); 	// Attack
+		LEVELS[24] = new CompanionBatLevel(16950, 14F, 5F, 0.20F); 	// Health x 2
 
 		CompanionBatClassLevel[] INFERNO_LEVELS = new CompanionBatClassLevel[10];
 		INFERNO_LEVELS[0] = new CompanionBatClassLevel(0);

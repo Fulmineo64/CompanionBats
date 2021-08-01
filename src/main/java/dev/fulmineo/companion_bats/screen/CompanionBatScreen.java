@@ -114,7 +114,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		float x = i + 28;
 		float y = j + 20;
 		int strideY = 10;
-		int strideX = 59;
+		int strideX = 52;
 
 		// Draws the text
 		this.textRenderer.draw(matrices, new TranslatableText("gui.companion_bats.bat.level"), x, y, 0xFFFFFFFF);
@@ -128,7 +128,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 
 			y += strideY;
 
-			this.textRenderer.draw(matrices, new TranslatableText("gui.companion_bats.bat.class_level"), x, y, 0xFFFFFFFF);
+		this.textRenderer.draw(matrices, new TranslatableText("gui.companion_bats.bat.class_level"), x, y, 0xFFFFFFFF);
 			this.textRenderer.draw(matrices, new TranslatableText("").append(""+(this.classLevel + 1)).append(" [").append(this.maxClassExpReached ? new TranslatableText("gui.companion_bats.bat.max") : new TranslatableText("").append(this.currentClassLevelExp+" / "+this.nextClassLevelExp)).append("]"), x + strideX, y, 0xFFFFFFFF);
 		} else {
 			y += strideY;

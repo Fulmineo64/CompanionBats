@@ -19,9 +19,11 @@
         "feed_experience_pie_trigger": {
             "trigger": "minecraft:player_interacted_with_entity",
             "conditions": {
-                "item": {
-                    "item": "companion_bats:experience_pie"
-                },
+				"item": {
+					"items": [
+						"companion_bats:experience_pie"
+					]
+				},
                 "entity": {
                     "type": "companion_bats:bat"
                 }

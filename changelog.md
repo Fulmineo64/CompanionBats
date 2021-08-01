@@ -1,3 +1,10 @@
+# 1.17.4
+- Companion Bats can now eat Glow Berries to restore a small amount of health.
+Glow berries can be used directy on the bat by right-clicking it and can be used when the bat is exausted to revivify it. Glow Berries cannot be used to tame new bats.
+- Fixed Power Leveling achievement being obtainable with any food
+- Added 5 new Combat Levels with big stat rewards
+- Increased chance back to 100% to find Ninja Garbs in End City treasures
+
 # 1.17.3
 - Lowered the Wandering Trader's prices
 

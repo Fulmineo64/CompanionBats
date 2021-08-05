@@ -110,7 +110,7 @@ public class CompanionBats implements ModInitializer {
 
 	public static final StructurePieceType CAVE_HOUSE_PIECE = CaveHouseGenerator.Piece::new;
 	private static final StructureFeature<DefaultFeatureConfig> CAVE_HOUSE_STRUCTURE = new CaveHouseFeature(DefaultFeatureConfig.CODEC);
-	private static final ConfiguredStructureFeature<?, ?> CAVE_HOUSE_CONFIGURED = CAVE_HOUSE_STRUCTURE.configure(DefaultFeatureConfig.DEFAULT);
+	private static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> CAVE_HOUSE_CONFIGURED = CAVE_HOUSE_STRUCTURE.configure(DefaultFeatureConfig.DEFAULT);
 
 	public static final Identifier CAVE_HOUSE_POOL = new Identifier("companion_bats","cave_house_pool");
 
@@ -156,6 +156,7 @@ public class CompanionBats implements ModInitializer {
 		FabricStructureBuilder.create(new Identifier("companion_bats", "cave_house"), CAVE_HOUSE_STRUCTURE)
 			.step(GenerationStep.Feature.UNDERGROUND_STRUCTURES)
 			.defaultConfig(48, 12, 478010)
+			.superflatFeature(CAVE_HOUSE_CONFIGURED)
 			.register();
 
 		RegistryKey<ConfiguredStructureFeature<?, ?>> myConfigured = RegistryKey.of(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, new Identifier("companion_bats", "cave_house"));

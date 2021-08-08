@@ -1,3 +1,8 @@
+# 1.17.5
+- Fixed super flat worlds crashing because of the Cave House incorrectly generating.
+
+	Many thanks to Alluysl for opening the [issue](https://github.com/Fulmineo64/CompanionBats/issues/12) and helpimnotdrowning for the [pull request](https://github.com/Fulmineo64/CompanionBats/pull/13)!
+
 # 1.17.4
 - Companion Bats can now eat Glow Berries to restore a small amount of health.
 Glow berries can be used directy on the bat by right-clicking it and can be used when the bat is exausted to revivify it. Glow Berries cannot be used to tame new bats.

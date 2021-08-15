@@ -108,6 +108,17 @@ public class CaveHouseGenerator {
 			this.pos = this.pos.add(0, i - 50 - 25, 0);
 			boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
 			if (identifier.equals(CaveHouseGenerator.TOP_TEMPLATE)) {
+				/*
+				// TODO: AzaleaSaplingGenerator softlocks the entire game
+				BlockPos surfacePos = new BlockPos(pos.getX(), i, pos.getZ());
+				BlockState surfaceState = world.getBlockState(surfacePos);
+				if (surfaceState.isAir()) {
+					world.setBlockState(surfacePos.down(), Blocks.GRASS.getDefaultState(), Block.NOTIFY_ALL);
+					AzaleaSaplingGenerator gen = new AzaleaSaplingGenerator();
+					gen.generate(world.toServerWorld(), world.toServerWorld().getChunkManager().getChunkGenerator(), pos, surfaceState, random);
+				}
+				*/
+
 				BlockPos blockPos4 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(8, 0, 4)));
 				BlockState blockState = world.getBlockState(blockPos4.down());
 				if (!blockState.isAir() && !blockState.isOf(Blocks.LADDER)) {

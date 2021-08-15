@@ -155,7 +155,7 @@ public class CompanionBats implements ModInitializer {
 		Registry.register(Registry.STRUCTURE_PIECE, new Identifier("companion_bats", "cave_house_piece"), CAVE_HOUSE_PIECE);
 		FabricStructureBuilder.create(new Identifier("companion_bats", "cave_house"), CAVE_HOUSE_STRUCTURE)
 			.step(GenerationStep.Feature.UNDERGROUND_STRUCTURES)
-			.defaultConfig(48, 12, 478010)
+			.defaultConfig(24, 8, 478010)
 			.superflatFeature(CAVE_HOUSE_CONFIGURED)
 			.register();
 

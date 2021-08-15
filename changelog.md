@@ -1,3 +1,8 @@
+# 1.17.6
+- Glow berries can no longer be used to revivify an exausted bat (too OP!).
+- Companion Bats don't really like being underwater, so now they'll avoid diving in it when possible.
+- Made Cave Houses more common
+
 # 1.17.5
 - Fixed super flat worlds crashing because of the Cave House incorrectly generating.
 

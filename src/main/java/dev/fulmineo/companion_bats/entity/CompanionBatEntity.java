@@ -124,7 +124,7 @@ public class CompanionBatEntity extends TameableEntity {
 
 	public static final Predicate<ItemStack> IS_TAMING_ITEM;
 	public static final Predicate<ItemStack> IS_FOOD_ITEM;
-	public static final Predicate<ItemEntity> IS_FOOD_ITEM_ENTITY;
+	public static final Predicate<ItemEntity> IS_REVIVE_ITEM_ENTITY;
 	public BlockPos hangingPosition;
 	public BlockPos fleeingPosition;
 	public BlockPos diggingPosition;
@@ -157,6 +157,7 @@ public class CompanionBatEntity extends TameableEntity {
 		this.moveControl = new CompanionBatMoveControl(this, 10);
 		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, -1.0F);
 		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
 		this.setRoosting(false);
 		this.setSitting(false);
 	}
@@ -1065,6 +1066,6 @@ public class CompanionBatEntity extends TameableEntity {
 		COMBO_PARTICLE_LEVEL = DataTracker.registerData(CompanionBatEntity.class, TrackedDataHandlerRegistry.BYTE);
 		IS_TAMING_ITEM = (itemStack) -> itemStack.isOf(Items.PUMPKIN_PIE) || itemStack.isOf(CompanionBats.EXPERIENCE_PIE);
 		IS_FOOD_ITEM = (itemStack) -> IS_TAMING_ITEM.test(itemStack) || itemStack.isOf(Items.GLOW_BERRIES);
-		IS_FOOD_ITEM_ENTITY = (itemEntity) -> IS_FOOD_ITEM.test(itemEntity.getStack());
+		IS_REVIVE_ITEM_ENTITY = (itemEntity) -> IS_TAMING_ITEM.test(itemEntity.getStack());
 	}
 }

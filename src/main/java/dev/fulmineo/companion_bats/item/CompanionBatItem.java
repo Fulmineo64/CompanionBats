@@ -72,7 +72,7 @@ public class CompanionBatItem extends Item {
             } else {
                 float entityHealth = entityData.getHealth();
                 if (entityHealth == 0){
-                    List<ItemEntity> list = world.getEntitiesByClass(ItemEntity.class, user.getBoundingBox().expand(8.0D, 8.0D, 8.0D), CompanionBatEntity.IS_FOOD_ITEM_ENTITY);
+                    List<ItemEntity> list = world.getEntitiesByClass(ItemEntity.class, user.getBoundingBox().expand(8.0D, 8.0D, 8.0D), CompanionBatEntity.IS_REVIVE_ITEM_ENTITY);
                     if (list.size() > 0){
                         ItemEntity foodItemEntity = list.get(0);
                         ItemStack stack = foodItemEntity.getStack();

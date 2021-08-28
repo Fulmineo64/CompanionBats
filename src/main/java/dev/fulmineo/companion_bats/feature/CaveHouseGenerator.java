@@ -9,38 +9,35 @@ import dev.fulmineo.companion_bats.CompanionBats;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BarrelBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.structure.SimpleStructurePiece;
-import net.minecraft.structure.Structure;
-import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructurePiecesHolder;
-import net.minecraft.structure.StructurePlacementData;
-import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockBox;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.rcon.IServer;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.util.math.MutableBoundingBox;
+import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.world.IServerWorld;
+import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.gen.feature.jigsaw.FeatureJigsawPiece;
+import net.minecraft.world.gen.feature.jigsaw.SingleJigsawPiece;
+import net.minecraft.world.gen.feature.structure.IglooPieces;
+import net.minecraft.world.gen.feature.structure.Structure;
+import net.minecraft.world.gen.feature.structure.StructureManager;
+import net.minecraft.world.gen.feature.structure.TemplateStructurePiece;
+import net.minecraft.world.gen.feature.template.BlockIgnoreStructureProcessor;
+import net.minecraft.world.server.ServerWorld;
 
 public class CaveHouseGenerator {
-	static final Identifier TOP_TEMPLATE = new Identifier("companion_bats","cave_house/top");
-	private static final Identifier MIDDLE_TEMPLATE = new Identifier("companion_bats","cave_house/middle");
-	private static final Identifier BOTTOM_TEMPLATE = new Identifier("companion_bats","cave_house/bottom");
-	static final Map<Identifier, BlockPos> OFFSETS;
-	static final Map<Identifier, BlockPos> OFFSETS_FROM_TOP;
+	static final ResourceLocation TOP_TEMPLATE = new ResourceLocation("companion_bats","cave_house/top");
+	private static final ResourceLocation MIDDLE_TEMPLATE = new ResourceLocation("companion_bats","cave_house/middle");
+	private static final ResourceLocation BOTTOM_TEMPLATE = new ResourceLocation("companion_bats","cave_house/bottom");
+	static final Map<ResourceLocation, BlockPos> OFFSETS;
+	static final Map<ResourceLocation, BlockPos> OFFSETS_FROM_TOP;
 
-	public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder structurePiecesHolder, Random random) {
+	public static void addPieces(StructureManager manager, BlockPos pos, Rotation rotation, StructurePiecesHolder structurePiecesHolder, Random random) {
 		if (random.nextDouble() < 0.5D) {
 			int i = random.nextInt(4) + 4;
 			structurePiecesHolder.addPiece(new CaveHouseGenerator.Piece(manager, BOTTOM_TEMPLATE, pos, rotation, i * 3));
@@ -54,53 +51,53 @@ public class CaveHouseGenerator {
 
 	static {
 		OFFSETS = ImmutableMap.of(TOP_TEMPLATE, new BlockPos(3, 6, 3), MIDDLE_TEMPLATE, new BlockPos(1, 3, 1), BOTTOM_TEMPLATE, new BlockPos(5, 6, 3));
-		OFFSETS_FROM_TOP = ImmutableMap.of(TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(7, -3, 3), BOTTOM_TEMPLATE, new BlockPos(1, -3, 1));
+		OFFSETS_FROM_TOP = ImmutableMap.of(TOP_TEMPLATE, BlockPos.ZERO, MIDDLE_TEMPLATE, new BlockPos(7, -3, 3), BOTTOM_TEMPLATE, new BlockPos(1, -3, 1));
 	}
 
-	public static class Piece extends SimpleStructurePiece {
-		public Piece(StructureManager manager, Identifier identifier, BlockPos pos, BlockRotation rotation, int yOffset) {
+	public static class Piece extends TemplateStructurePiece {
+		public Piece(StructureManager manager, ResourceLocation identifier, BlockPos pos, Rotation rotation, int yOffset) {
 			super(CompanionBats.CAVE_HOUSE_PIECE, 0, manager, identifier, identifier.toString(), createPlacementData(rotation, identifier), getPosOffset(identifier, pos, yOffset));
 		}
 
-		public Piece(ServerWorld world, NbtCompound nbt) {
+		public Piece(ServerWorld world, CompoundNBT nbt) {
 			super(CompanionBats.CAVE_HOUSE_PIECE, nbt, world, (identifier) -> {
-				return createPlacementData(BlockRotation.valueOf(nbt.getString("Rot")), identifier);
+				return createPlacementData(Rotation.valueOf(nbt.getString("Rot")), identifier);
 			});
 		}
 
-		private static StructurePlacementData createPlacementData(BlockRotation rotation, Identifier identifier) {
-			return (new StructurePlacementData()).setRotation(rotation).setMirror(BlockMirror.NONE).setPosition((BlockPos)CaveHouseGenerator.OFFSETS.get(identifier)).addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
+		private static StructurePlacementData createPlacementData(Rotation rotation, ResourceLocation identifier) {
+			return (new StructurePlacementData()).setRotation(rotation).setMirror(Mirror.NONE).setPosition((BlockPos)CaveHouseGenerator.OFFSETS.get(identifier)).addProcessor(BlockIgnoreStructureProcessor.STRUCTURE_BLOCK);
 		}
 
-		private static BlockPos getPosOffset(Identifier identifier, BlockPos pos, int yOffset) {
-			BlockPos newPos = pos.add((Vec3i)CaveHouseGenerator.OFFSETS_FROM_TOP.get(identifier)).down(yOffset);
+		private static BlockPos getPosOffset(ResourceLocation identifier, BlockPos pos, int yOffset) {
+			BlockPos newPos = pos.offset((Vector3i)CaveHouseGenerator.OFFSETS_FROM_TOP.get(identifier)).below(yOffset);
 			return newPos;
 		}
 
-		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-			super.writeNbt(world, nbt);
-			nbt.putString("Rot", this.placementData.getRotation().name());
+		protected void addAdditionalSaveData(CompoundNBT nbt) {
+			super.addAdditionalSaveData(nbt);
+			nbt.putString("Rot", this.placeSettings.getRotation().name());
 		}
 
-		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
+		protected void handleDataMarker(String metadata, BlockPos pos, IServerWorld world, Random random, MutableBoundingBox boundingBox) {
 			if ("chest".equals(metadata)) {
-				world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
-				BlockEntity blockEntity = world.getBlockEntity(pos.down());
+				world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+				BlockEntity blockEntity = world.getBlockEntity(pos.below());
 				if (blockEntity instanceof ChestBlockEntity) {
-					((ChestBlockEntity)blockEntity).setLootTable(new Identifier(CompanionBats.MOD_ID, "chests/cave_house_top"), random.nextLong());
+					((ChestBlockEntity)blockEntity).setLootTable(new ResourceLocation(CompanionBats.MOD_ID, "chests/cave_house_top"), random.nextLong());
 				}
 			} else if ("barrel".equals(metadata)) {
-				world.setBlockState(pos, Blocks.HAY_BLOCK.getDefaultState(), Block.NOTIFY_ALL);
-				BlockEntity blockEntity = world.getBlockEntity(pos.down());
+				world.setBlock(pos, Blocks.HAY_BLOCK.defaultBlockState(), 3);
+				BlockEntity blockEntity = world.getBlockEntity(pos.below());
 				if (blockEntity instanceof BarrelBlockEntity) {
-					((BarrelBlockEntity)blockEntity).setLootTable(new Identifier(CompanionBats.MOD_ID, "chests/cave_house_bottom"), random.nextLong());
+					((BarrelBlockEntity)blockEntity).setLootTable(new ResourceLocation(CompanionBats.MOD_ID, "chests/cave_house_bottom"), random.nextLong());
 				}
 			}
 		}
 
-		public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-			Identifier identifier = new Identifier(this.identifier);
-			StructurePlacementData structurePlacementData = createPlacementData(this.placementData.getRotation(), identifier);
+		public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, MutableBoundingBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+			ResourceLocation identifier = new ResourceLocation(this.identifier);
+			StructurePlacementData structurePlacementData = createPlacementData(this.placeSettings.getRotation(), identifier);
 			BlockPos blockPos = (BlockPos)CaveHouseGenerator.OFFSETS_FROM_TOP.get(identifier);
 			BlockPos blockPos2 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3 - blockPos.getX(), 0, -blockPos.getZ())));
 			int i = world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());

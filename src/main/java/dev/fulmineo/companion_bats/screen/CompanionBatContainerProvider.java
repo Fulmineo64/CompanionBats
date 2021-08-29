@@ -7,7 +7,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Component;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
@@ -23,7 +23,7 @@ public class CompanionBatContainerProvider implements INamedContainerProvider {
         this.hand = hand;
     }
 
-    public ITextComponent getDisplayName() {
+    public Component getDisplayName() {
         return new TranslationTextComponent(this.batItem.getDescriptionId());
     }
 

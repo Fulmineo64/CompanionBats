@@ -22,7 +22,7 @@ import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.passive.horse.AbstractHorseEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -46,8 +46,8 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.*;
@@ -57,7 +57,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -142,7 +142,7 @@ public class CompanionBatEntity extends TameableEntity {
 		this.entityData.define(COMBO_PARTICLE_LEVEL, (byte) 0);
 	}
 
-	public void addAdditionalSaveData(CompoundNBT tag) {
+	public void addAdditionalSaveData(CompoundTag tag) {
 		super.addAdditionalSaveData(tag);
 		EntityData entityData = new EntityData(tag);
 		entityData.putExp(this.getExp());
@@ -151,7 +151,7 @@ public class CompanionBatEntity extends TameableEntity {
 		this.writePotionTicks(entityData);
 	}
 
-	public void readAdditionalSaveData(CompoundNBT tag) {
+	public void readAdditionalSaveData(CompoundTag tag) {
 		EntityData entityData = new EntityData(tag);
 		this.setCurrentLevel(entityData.getExp());
 		this.setLevelAttributes(this.currentLevel);
@@ -896,15 +896,15 @@ public class CompanionBatEntity extends TameableEntity {
 		if (level > 0) {
 			IFormattableTextComponent message = new TranslationTextComponent("entity.companion_bats.bat.level_up", this.hasCustomName() ? this.getCustomName() : new TranslationTextComponent("entity.companion_bats.bat.your_bat"), level + 1).append("\n");
 			if (CompanionBatLevels.LEVELS[level].healthBonus > CompanionBatLevels.LEVELS[level - 1].healthBonus) {
-				message.append(new StringTextComponent("+").withStyle(TextFormatting.GOLD)).append(" ");
+				message.append(new StringTextComponent("+").withStyle(ChatFormatting.GOLD)).append(" ");
 				message.append(new TranslationTextComponent("entity.companion_bats.bat.level_up_health", (int) (CompanionBatLevels.LEVELS[level].healthBonus - CompanionBatLevels.LEVELS[level - 1].healthBonus))).append(" ");
 			}
 			if (CompanionBatLevels.LEVELS[level].attackBonus > CompanionBatLevels.LEVELS[level - 1].attackBonus) {
-				message.append(new StringTextComponent("+").withStyle(TextFormatting.GOLD)).append(" ");
+				message.append(new StringTextComponent("+").withStyle(ChatFormatting.GOLD)).append(" ");
 				message.append(new TranslationTextComponent("entity.companion_bats.bat.level_up_attack", (int) (CompanionBatLevels.LEVELS[level].attackBonus - CompanionBatLevels.LEVELS[level - 1].attackBonus))).append(" ");
 			}
 			if (CompanionBatLevels.LEVELS[level].speedBonus > CompanionBatLevels.LEVELS[level - 1].speedBonus) {
-				message.append(new StringTextComponent("+").withStyle(TextFormatting.GOLD)).append(" ");
+				message.append(new StringTextComponent("+").withStyle(ChatFormatting.GOLD)).append(" ");
 				message.append(new TranslationTextComponent("entity.companion_bats.bat.level_up_speed", Math.round(100 - ((BASE_SPEED + CompanionBatLevels.LEVELS[level - 1].speedBonus) / (BASE_SPEED + CompanionBatLevels.LEVELS[level].speedBonus) * 100)))).append(" ");
 			}
 			((PlayerEntity) this.getOwner()).displayClientMessage(message, false);
@@ -917,9 +917,9 @@ public class CompanionBatEntity extends TameableEntity {
 			message.append("\n");
 			String obtainedOrLevelUp = "ability_obtained";
 			if (classLevels[classLevel].permanent){
-				message.append(new TranslationTextComponent("entity.companion_bats.bat.permanent_ability").withStyle(TextFormatting.LIGHT_PURPLE)).append(" ");
+				message.append(new TranslationTextComponent("entity.companion_bats.bat.permanent_ability").withStyle(ChatFormatting.LIGHT_PURPLE)).append(" ");
 			} else {
-				message.append(new TranslationTextComponent("entity.companion_bats.bat.ability").withStyle(TextFormatting.GREEN)).append(" ");
+				message.append(new TranslationTextComponent("entity.companion_bats.bat.ability").withStyle(ChatFormatting.GREEN)).append(" ");
 				if (this.abilities.has(classLevels[classLevel].ability)){
 					obtainedOrLevelUp = "ability_level_up";
 				}

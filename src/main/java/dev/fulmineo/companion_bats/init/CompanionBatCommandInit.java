@@ -13,8 +13,8 @@ import dev.fulmineo.companion_bats.nbt.EntityData;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.StringTextComponent;
 
@@ -57,7 +57,7 @@ public class CompanionBatCommandInit {
 						if (player != null && player.getItemInHand(Hand.MAIN_HAND).getItem() == CompanionBats.BAT_ITEM.get()) {
 							ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
 							EntityData entityData = new EntityData(stack);
-							CompoundNBT armorItem = entityData.getArmor();
+							CompoundTag armorItem = entityData.getArmor();
 							if (armorItem != null){
 								ItemStack armorStack = ItemStack.of(armorItem);
 								if (armorStack.getItem() instanceof CompanionBatArmorItem){

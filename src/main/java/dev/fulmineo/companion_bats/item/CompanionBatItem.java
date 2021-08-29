@@ -10,10 +10,10 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Rarity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.text.Component;
+import net.minecraft.ChatFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,8 +26,8 @@ import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
 import dev.fulmineo.companion_bats.nbt.EntityData;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
@@ -70,9 +70,9 @@ public class CompanionBatItem extends Item {
                 if (entityHealth > 0){
 					CompanionBatEntity batEntity = CompanionBatEntity.spawnFromItemStack((ServerWorld)world, itemStack, user);
                     ItemStack fluteItemStack = new ItemStack(CompanionBats.BAT_FLUTE_ITEM.get());
-					CompoundNBT tag = fluteItemStack.getOrCreateTag();
+					CompoundTag tag = fluteItemStack.getOrCreateTag();
 					tag.putUUID("EntityUUID", batEntity.getUUID());
-					ITextComponent customName = batEntity.getCustomName();
+					Component customName = batEntity.getCustomName();
 					if (customName != null){
 						tag.putString("EntityName", customName.getString());
 						fluteItemStack.setHoverName(new TranslationTextComponent("item.companion_bats.bat_flute.custom_name", customName.getString()));
@@ -88,14 +88,14 @@ public class CompanionBatItem extends Item {
     }
 
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag context) {
+	public void appendHoverText(ItemStack stack, @Nullable World world, List<Component> tooltip, ITooltipFlag context) {
 		CompanionBatAbilities abilities = new CompanionBatAbilities();
 		abilities.setFromNbt(new EntityData(stack));
 		Set<Entry<CompanionBatAbility, Integer>> entrySet = abilities.entrySet();
 		if (entrySet.size() > 0){
-			tooltip.add(new TranslationTextComponent("item.companion_bats.bat_item.abilities").withStyle(TextFormatting.AQUA));
+			tooltip.add(new TranslationTextComponent("item.companion_bats.bat_item.abilities").withStyle(ChatFormatting.AQUA));
 			for (Map.Entry<CompanionBatAbility, Integer> entry : entrySet) {
-				tooltip.add(entry.getKey().toTranslatedText().append(" " + entry.getValue()).withStyle(TextFormatting.GRAY));
+				tooltip.add(entry.getKey().toTranslatedText().append(" " + entry.getValue()).withStyle(ChatFormatting.GRAY));
 			}
 		}
 	}

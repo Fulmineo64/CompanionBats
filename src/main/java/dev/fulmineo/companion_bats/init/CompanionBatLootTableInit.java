@@ -2,7 +2,7 @@ package dev.fulmineo.companion_bats.init;
 
 import com.google.gson.JsonObject;
 import dev.fulmineo.companion_bats.CompanionBats;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.util.ResourceLocation;

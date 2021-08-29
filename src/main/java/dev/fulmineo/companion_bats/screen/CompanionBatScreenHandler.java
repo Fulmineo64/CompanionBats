@@ -9,8 +9,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Hand;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
@@ -43,7 +43,7 @@ public class CompanionBatScreenHandler extends Container {
 				ItemStack batItemStack = player.getItemInHand(hand);
 				if (batItemStack.getItem() == CompanionBats.BAT_ITEM.get()){
 					EntityData entityData = new EntityData(batItemStack);
-					entityData.putAccessory(stack.save(new CompoundNBT()));
+					entityData.putAccessory(stack.save(new CompoundTag()));
 					entityData.toStack(batItemStack);
 				}
             }
@@ -66,7 +66,7 @@ public class CompanionBatScreenHandler extends Container {
 				ItemStack batItemStack = player.getItemInHand(hand);
 				if (batItemStack.getItem() == CompanionBats.BAT_ITEM.get()){
 					EntityData entityData = new EntityData(batItemStack);
-					entityData.putArmor(stack.save(new CompoundNBT()));
+					entityData.putArmor(stack.save(new CompoundTag()));
 					entityData.toStack(batItemStack);
 				}
             }
@@ -90,7 +90,7 @@ public class CompanionBatScreenHandler extends Container {
                     ItemStack batItemStack = player.getItemInHand(hand);
                     if (batItemStack.getItem() == CompanionBats.BAT_ITEM.get()){
 						EntityData entityData = new EntityData(batItemStack);
-						entityData.putBundle(stack.save(new CompoundNBT()));
+						entityData.putBundle(stack.save(new CompoundTag()));
 						entityData.toStack(batItemStack);
                     }
                 }

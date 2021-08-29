@@ -12,10 +12,10 @@ import dev.fulmineo.companion_bats.CompanionBatClass;
 import dev.fulmineo.companion_bats.nbt.EntityData;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Component;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public class CompanionBatScreen extends ContainerScreen<CompanionBatScreenHandler> {
@@ -36,7 +36,7 @@ public class CompanionBatScreen extends ContainerScreen<CompanionBatScreenHandle
 	private ItemStack armorStack;
 	private PlayerInventory inventory;
 
-   	public CompanionBatScreen(CompanionBatScreenHandler handler, PlayerInventory inventory, ITextComponent title) {
+   	public CompanionBatScreen(CompanionBatScreenHandler handler, PlayerInventory inventory, Component title) {
 		super(handler, inventory, title);
 
 		this.inventory = inventory;
@@ -65,7 +65,7 @@ public class CompanionBatScreen extends ContainerScreen<CompanionBatScreenHandle
 	}
 
 	private void setClassLevel(EntityData entityData){
-		this.armorStack = ItemStack.of((CompoundNBT)entityData.getArmor());
+		this.armorStack = ItemStack.of((CompoundTag)entityData.getArmor());
 		if (this.armorStack.getItem() instanceof CompanionBatArmorItem){
 			this.currentClass = ((CompanionBatArmorItem)this.armorStack.getItem()).getBatClass();
 			if (this.currentClass != null){

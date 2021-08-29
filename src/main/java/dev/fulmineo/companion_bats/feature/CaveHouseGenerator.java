@@ -9,7 +9,7 @@ import dev.fulmineo.companion_bats.CompanionBats;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.rcon.IServer;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.ResourceLocation;
@@ -59,7 +59,7 @@ public class CaveHouseGenerator {
 			super(CompanionBats.CAVE_HOUSE_PIECE, 0, manager, identifier, identifier.toString(), createPlacementData(rotation, identifier), getPosOffset(identifier, pos, yOffset));
 		}
 
-		public Piece(ServerWorld world, CompoundNBT nbt) {
+		public Piece(ServerWorld world, CompoundTag nbt) {
 			super(CompanionBats.CAVE_HOUSE_PIECE, nbt, world, (identifier) -> {
 				return createPlacementData(Rotation.valueOf(nbt.getString("Rot")), identifier);
 			});
@@ -74,7 +74,7 @@ public class CaveHouseGenerator {
 			return newPos;
 		}
 
-		protected void addAdditionalSaveData(CompoundNBT nbt) {
+		protected void addAdditionalSaveData(CompoundTag nbt) {
 			super.addAdditionalSaveData(nbt);
 			nbt.putString("Rot", this.placeSettings.getRotation().name());
 		}

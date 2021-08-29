@@ -2,12 +2,11 @@ package dev.fulmineo.companion_bats.entity.ai.control;
 
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.controller.MovementController;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.MoveControl;
+import net.minecraft.world.entity.monster.Monster;
 
-public class CompanionBatMoveControl extends MovementController {
+public class CompanionBatMoveControl extends MoveControl {
     private final int maxPitchChange;
 
     public CompanionBatMoveControl(CompanionBatEntity entity, int maxPitchChange) {
@@ -16,8 +15,8 @@ public class CompanionBatMoveControl extends MovementController {
     }
 
     public void tick() {
-        if (this.operation == MovementController.Action.MOVE_TO) {
-            this.operation = MovementController.Action.WAIT;
+        if (this.operation == MoveControl.Operation.MOVE_TO) {
+            this.operation = MoveControl.Operation.WAIT;
             // Entity is set on ground movement because otherwise its flying speed would be capped.
             this.mob.setOnGround(true);
             this.mob.setNoGravity(true);

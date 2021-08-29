@@ -6,9 +6,9 @@ import dev.fulmineo.companion_bats.item.CompanionBatPouchItem;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 
@@ -42,7 +42,7 @@ public class CompanionBatTransferItemsToOwnerGoal extends Goal {
                 return false;
             } else if (livingEntity instanceof PlayerEntity) {
                 this.owner = (PlayerEntity)livingEntity;
-                CompoundNBT tag = this.bundleStack.getTag();
+                CompoundTag tag = this.bundleStack.getTag();
                 if (tag == null) return false;
 				this.canContinue = tag.contains("item");
                 return this.canContinue;

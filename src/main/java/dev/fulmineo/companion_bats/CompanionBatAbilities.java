@@ -10,7 +10,7 @@ import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLe
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.nbt.EntityData;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 public class CompanionBatAbilities {
 	public static final int BLOCK_ATTACK_MULTIPLIER = 10;

@@ -2,7 +2,7 @@ package dev.fulmineo.companion_bats.mixin;
 
 import java.util.Random;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MutableBoundingBox;
 import net.minecraft.world.ISeedReader;
@@ -34,8 +34,8 @@ public class SwampHutGeneratorMixin extends ScatteredStructurePiece {
 		super(IStructurePieceType.SWAMPLAND_HUT, random, i, 64, j, 7, 7, 9);
  	}
 
-	@Inject(at = @At("RETURN"), method = "<init>(Lnet/minecraft/world/gen/feature/template/TemplateManager;Lnet/minecraft/nbt/CompoundNBT;)V")
-	public void swampHutGeneratorMixin(TemplateManager structureManager, CompoundNBT nbt, CallbackInfo ci) {
+	@Inject(at = @At("RETURN"), method = "<init>(Lnet/minecraft/world/gen/feature/template/TemplateManager;Lnet/minecraft/nbt/CompoundTag;)V")
+	public void swampHutGeneratorMixin(TemplateManager structureManager, CompoundTag nbt, CallbackInfo ci) {
 		this.hasMainChest = nbt.getBoolean("MainChest");
 	}
 
@@ -54,8 +54,8 @@ public class SwampHutGeneratorMixin extends ScatteredStructurePiece {
 		}
 	}
 
-	@Inject(at = @At("TAIL"), method = "addAdditionalSaveData(Lnet/minecraft/nbt/CompoundNBT;)V")
-	protected void addAdditionalSaveDataMixin(CompoundNBT nbt, CallbackInfo info) {
+	@Inject(at = @At("TAIL"), method = "addAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V")
+	protected void addAdditionalSaveDataMixin(CompoundTag nbt, CallbackInfo info) {
 		nbt.putBoolean("MainChest", this.hasMainChest);
 	}
 }

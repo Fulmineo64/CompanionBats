@@ -2,10 +2,10 @@ package dev.fulmineo.companion_bats.item;
 
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.text.IFormattableTextComponent;
@@ -24,7 +24,7 @@ public class CompanionBatFluteItem extends Item {
     public ActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack fluteItemStack = user.getItemInHand(hand);
         if (world instanceof ServerWorld) {
-            CompoundNBT tag = fluteItemStack.getTag();
+            CompoundTag tag = fluteItemStack.getTag();
             if (tag != null) {
                 CompanionBatEntity entity = (CompanionBatEntity) ((ServerWorld) world).getEntity(tag.getUUID("EntityUUID"));
                 if (entity != null) {

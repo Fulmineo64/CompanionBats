@@ -2,19 +2,21 @@ package dev.fulmineo.companion_bats.item;
 
 import java.util.List;
 
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import dev.fulmineo.companion_bats.CompanionBatAbility;
 import dev.fulmineo.companion_bats.CompanionBats;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 
@@ -36,10 +38,10 @@ public class CompanionBatAccessoryItem extends Item {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
-		tooltip.add(new TranslationTextComponent("item.companion_bats.accessory").withStyle(TextFormatting.GOLD));
-		tooltip.add(new TranslationTextComponent("item.companion_bats.accessory.ability_when_equipped").withStyle(TextFormatting.AQUA));
-		tooltip.add(this.ability.toTranslatedText().withStyle(TextFormatting.GRAY));
+	public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
+		tooltip.add(new TranslatableComponent("item.companion_bats.accessory").withStyle(ChatFormatting.GOLD));
+		tooltip.add(new TranslatableComponent("item.companion_bats.accessory.ability_when_equipped").withStyle(ChatFormatting.AQUA));
+		tooltip.add(this.ability.toTranslatedText().withStyle(ChatFormatting.GRAY));
 	}
 
 	public CompanionBatAbility getAbility() {

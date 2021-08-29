@@ -6,9 +6,10 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.Component;
+import net.minecraft.ChatFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -19,8 +20,8 @@ import dev.fulmineo.companion_bats.CompanionBatClass;
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLevel;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -38,7 +39,7 @@ public class CompanionBatArmorItem extends Item {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+	public void appendHoverText(ItemStack stack, @Nullable World world, List<Component> tooltip, ITooltipFlag flag) {
 		CompanionBatAbilities abilities = new CompanionBatAbilities();
 		CompanionBatAbilities permanentAbilities = new CompanionBatAbilities();
 		for (CompanionBatClassLevel level : CompanionBatLevels.CLASS_LEVELS.get(batClass)){
@@ -48,25 +49,25 @@ public class CompanionBatArmorItem extends Item {
 			}
 		}
 
-		tooltip.add(new TranslationTextComponent("item.companion_bats.armor").withStyle(TextFormatting.GOLD));
+		tooltip.add(new TranslatableComponent("item.companion_bats.armor").withStyle(ChatFormatting.GOLD));
 
 		Set<Entry<CompanionBatAbility, Integer>> entrySet = abilities.entrySet();
 		if (entrySet.size() > 0){
-			tooltip.add(new TranslationTextComponent("item.companion_bats.armor.abilities").withStyle(TextFormatting.AQUA));
+			tooltip.add(new TranslationTextComponent("item.companion_bats.armor.abilities").withStyle(ChatFormatting.AQUA));
 			for (Map.Entry<CompanionBatAbility, Integer> entry : entrySet) {
-				tooltip.add(entry.getKey().toTranslatedText().withStyle(TextFormatting.GRAY));
+				tooltip.add(entry.getKey().toTranslatedText().withStyle(ChatFormatting.GRAY));
 			}
 		}
 
 		entrySet = permanentAbilities.entrySet();
 		if (entrySet.size() > 0){
-			tooltip.add(new TranslationTextComponent("item.companion_bats.armor.permanent_ability").withStyle(TextFormatting.AQUA));
+			tooltip.add(new TranslationTextComponent("item.companion_bats.armor.permanent_ability").withStyle(ChatFormatting.AQUA));
 			for (Map.Entry<CompanionBatAbility, Integer> entry : entrySet) {
-				tooltip.add(entry.getKey().toTranslatedText().withStyle(TextFormatting.GRAY));
+				tooltip.add(entry.getKey().toTranslatedText().withStyle(ChatFormatting.GRAY));
 			}
 		}
 
-		tooltip.add(new TranslationTextComponent("item.companion_bats."+this.identifier+".tooltip").withStyle(TextFormatting.DARK_GRAY).withStyle(TextFormatting.ITALIC));
+		tooltip.add(new TranslationTextComponent("item.companion_bats."+this.identifier+".tooltip").withStyle(ChatFormatting.DARK_GRAY).withStyle(ChatFormatting.ITALIC));
 	}
 
     @OnlyIn(Dist.CLIENT)

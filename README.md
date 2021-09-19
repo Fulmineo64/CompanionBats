@@ -1,6 +1,4 @@
-<img src="https://i.imgur.com/Ol1Tcf8.png" width="250">
-
-<img src="https://i.imgur.com/W2ttBy9.png" width="250">
+<img src="https://i.imgur.com/Ol1Tcf8.png" width="250"> <img src="https://i.imgur.com/W2ttBy9.png" width="250">
 
 # Related mods
 

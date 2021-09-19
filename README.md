@@ -28,6 +28,7 @@ When summoned the bat will give the player a special flute to recall it back.
 When in danger the companion bat will teleport automatically into the player's inventory, as long as its flute is still present.
 
 *Image: Companion Bat and Bat Flute.*
+
 ![Companion Bat and Bat Flute](https://i.imgur.com/wQ5gbQv.png)
 
 ## Leveling system
@@ -37,6 +38,7 @@ The companion bat initially starts weak but gets stronger by leveling up.
 The bat can obtain experience by attacking mobs.
 
 *Image: Gui showing bat level and stats.*
+
 ![Companion bat gui](https://media.forgecdn.net/attachments/369/447/bat_gui.png)
 
 You can also train your Companion Bat by feeding it the rare **Pie o' Enchanting** whch can be found in treasure chests.

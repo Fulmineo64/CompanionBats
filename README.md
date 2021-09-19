@@ -35,10 +35,6 @@ The companion bat initially starts weak but gets stronger by leveling up.
 
 The bat can obtain experience by attacking mobs.
 
-*Image: Gui showing bat level and stats.*
-
-![Companion bat gui](https://media.forgecdn.net/attachments/369/447/bat_gui.png)
-
 You can also train your Companion Bat by feeding it the rare **Pie o' Enchanting** whch can be found in treasure chests.
 
 ## Item pick up
@@ -58,10 +54,6 @@ These equipments can be found in treasure chests across the various dimensions.
 Each equipment grants a class that gives bat an unique set of abilities.
 
 Accessories grant a single ability; most of these accessories possess an unique ability.
-
-*Image: Gui showing all companion bats items*
-
-![Creative gui](https://media.forgecdn.net/attachments/369/443/all_items.png)
 
 ## Appearance
 

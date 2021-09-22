@@ -680,7 +680,7 @@ public class CompanionBatEntity extends TameableEntity {
 			while (iterator.hasNext()) {
 				DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
 				for (int i = 0; i < defaultedList.size(); ++i) {
-					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getTag().getUuid("EntityUUID").equals(this.getUuid())) {
+					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getNbt().getUuid("EntityUUID").equals(this.getUuid())) {
 						defaultedList.set(i, this.toItemStack());
 						this.discard();
 						world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_SLIME_ATTACK, SoundCategory.AMBIENT, 1F, 1F);
@@ -701,7 +701,7 @@ public class CompanionBatEntity extends TameableEntity {
 			while (iterator.hasNext()) {
 				DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
 				for (int i = 0; i < defaultedList.size(); ++i) {
-					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getTag().getUuid("EntityUUID").equals(this.getUuid())) {
+					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM && defaultedList.get(i).getNbt().getUuid("EntityUUID").equals(this.getUuid())) {
 						return defaultedList.get(i);
 					}
 				}
@@ -1050,7 +1050,7 @@ public class CompanionBatEntity extends TameableEntity {
 				for (int i = 0; i < defaultedList.size(); ++i) {
 					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM) {
 						ServerWorld serverWorld = (ServerWorld)player.world;
-						Entity entity = serverWorld.getEntity(defaultedList.get(i).getTag().getUuid("EntityUUID"));
+						Entity entity = serverWorld.getEntity(defaultedList.get(i).getNbt().getUuid("EntityUUID"));
 						if (entity != null){
 							entities.add((CompanionBatEntity)entity);
 						}

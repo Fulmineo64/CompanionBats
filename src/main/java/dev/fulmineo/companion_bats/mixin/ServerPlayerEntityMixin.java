@@ -9,6 +9,7 @@ import com.mojang.authlib.GameProfile;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import dev.fulmineo.companion_bats.CompanionBats;
@@ -36,6 +37,11 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 		this.recallOwnedBats();
 	}
 
+	@Inject(at = @At("HEAD"), method = "onDisconnect()V")
+	public void onDisconnectMixin(CallbackInfo info) {
+		this.recallOwnedBats();
+	}
+
 	public void recallOwnedBats(){
 		PlayerInventory inventory = this.getInventory();
 		ImmutableList<DefaultedList<ItemStack>> mainAndOffhand = ImmutableList.of(inventory.main, inventory.offHand);
@@ -44,7 +50,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 			DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
 			for (int i = 0; i < defaultedList.size(); ++i) {
 				if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM) {
-					CompanionBatEntity entity = (CompanionBatEntity) ((ServerWorld) this.world).getEntity(defaultedList.get(i).getTag().getUuid("EntityUUID"));
+					CompanionBatEntity entity = (CompanionBatEntity) ((ServerWorld) this.world).getEntity(defaultedList.get(i).getNbt().getUuid("EntityUUID"));
 					if (entity != null){
 						defaultedList.set(i, entity.toItemStack());
 						entity.discard();

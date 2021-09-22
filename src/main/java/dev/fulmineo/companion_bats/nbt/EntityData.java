@@ -15,7 +15,7 @@ public class EntityData {
 	private NbtCompound tag;
 
 	public EntityData(ItemStack itemStack){
-		this.tag = itemStack.getSubTag("EntityTag");
+		this.tag = itemStack.getSubNbt("EntityTag");
 		if (this.tag == null){
 			this.tag = new NbtCompound();
 		}
@@ -44,11 +44,11 @@ public class EntityData {
 	}
 
 	public static NbtCompound getFromStack(ItemStack itemStack){
-		return itemStack.getSubTag("EntityTag");
+		return itemStack.getSubNbt("EntityTag");
 	}
 
 	public static void toStack(ItemStack itemStack, NbtCompound entityTag){
-		itemStack.putSubTag("EntityTag", entityTag);
+		itemStack.setSubNbt("EntityTag", entityTag);
 	}
 
 	public void init(){
@@ -188,7 +188,7 @@ public class EntityData {
 	}
 
 	public static void createIfMissing(ItemStack batItemStack){
-		NbtCompound tag = batItemStack.getOrCreateTag();
+		NbtCompound tag = batItemStack.getOrCreateNbt();
 		if (!tag.contains("EntityTag")) {
 			EntityData entityData = new EntityData(batItemStack);
 			entityData.init();

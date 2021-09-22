@@ -84,7 +84,7 @@ public class CompanionBatItem extends Item {
                 if (entityHealth > 0){
 					CompanionBatEntity batEntity = CompanionBatEntity.spawnFromItemStack((ServerWorld)world, itemStack, user);
                     ItemStack fluteItemStack = new ItemStack(CompanionBats.BAT_FLUTE_ITEM);
-					NbtCompound tag = fluteItemStack.getOrCreateTag();
+					NbtCompound tag = fluteItemStack.getOrCreateNbt();
 					tag.putUuid("EntityUUID", batEntity.getUuid());
 					Text customName = batEntity.getCustomName();
 					if (customName != null){

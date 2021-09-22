@@ -46,7 +46,7 @@ public class SwampHutGeneratorMixin extends StructurePieceWithDimensions {
 
 	@Inject(at = @At("TAIL"), method = "generate(Lnet/minecraft/world/StructureWorldAccess;Lnet/minecraft/world/gen/StructureAccessor;Lnet/minecraft/world/gen/chunk/ChunkGenerator;Ljava/util/Random;Lnet/minecraft/util/math/BlockBox;Lnet/minecraft/util/math/ChunkPos;Lnet/minecraft/util/math/BlockPos;)Z")
 	public void generateMixin(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos, CallbackInfoReturnable<Boolean> info) {
-		if (this.method_14839(world, boundingBox, 0)) {
+		if (this.adjustToAverageHeight(world, boundingBox, 0)) {
 			if (!this.hasMainChest) {
 				this.hasMainChest = this.addChest(world, boundingBox, random, 2, 2, 6, new Identifier(CompanionBats.MOD_ID, "chests/swamp_hut"));
 			}

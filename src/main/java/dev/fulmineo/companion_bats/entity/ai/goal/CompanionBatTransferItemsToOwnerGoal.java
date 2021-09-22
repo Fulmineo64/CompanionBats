@@ -46,7 +46,7 @@ public class CompanionBatTransferItemsToOwnerGoal extends Goal {
                 return false;
             } else if (livingEntity instanceof PlayerEntity) {
                 this.owner = (PlayerEntity)livingEntity;
-                NbtCompound tag = this.bundleStack.getTag();
+                NbtCompound tag = this.bundleStack.getNbt();
                 if (tag == null) return false;
 				NbtList listTag = tag.getList("Items", 10);
 				this.canContinue = listTag.size() > 0;

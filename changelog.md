@@ -1,3 +1,8 @@
+# 1.17.7
+- Bats get now automatically recalled when the player disconnects
+- Changed Speed icon in the Bat GUI
+- Updated to fabric API 0.40.1+1.17
+
 # 1.17.6
 - Glow berries can no longer be used to revivify an exausted bat (too OP!).
 - Companion Bats don't really like being underwater, so now they'll avoid diving in it when possible.

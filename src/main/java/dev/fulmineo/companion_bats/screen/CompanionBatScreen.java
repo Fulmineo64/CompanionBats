@@ -148,7 +148,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		this.textRenderer.draw(matrices, "🗡", x + offset , y, 0xFFFFFFFF);
 		this.textRenderer.draw(matrices, ""+this.attack, x + offset + strideX, y, 0xFFFFFFFF);
 
-		this.textRenderer.draw(matrices, "⬈", x + speedOffset, y, 0xFFFFFFFF);
+		this.textRenderer.draw(matrices, "➶", x + speedOffset, y, 0xFFFFFFFF);
 		this.textRenderer.draw(matrices, ""+this.speed, x + speedOffset + strideX - 2, y, 0xFFFFFFFF);
 	}
 

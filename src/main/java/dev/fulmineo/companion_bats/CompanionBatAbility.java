@@ -41,7 +41,7 @@ public enum CompanionBatAbility {
 
 	// Accessory
 
-	CANNOT_ATTACK, ATTACK_EVERYONE, ATTACK_HOSTILES, ATTACK_PASSIVE, NATURAL_REGENERATION;
+	CANNOT_ATTACK, ATTACK_EVERYONE, ATTACK_HOSTILES, ATTACK_PASSIVE, NATURAL_REGENERATION, MAGIC_PROTECTION;
 
 	public TranslatableText toTranslatedText() {
 		return new TranslatableText("ability.companion_bats."+this.toString());

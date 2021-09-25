@@ -1,3 +1,7 @@
+# 1.17.8
+- Added new accessory, the Ankh, when equipped protects the bat from all magic damage
+- Added the ability to cure the bat from Status Effects with a Milk Bucket
+
 # 1.17.7
 - Bats get now automatically recalled when the player disconnects
 - Changed Speed icon in the Bat GUI

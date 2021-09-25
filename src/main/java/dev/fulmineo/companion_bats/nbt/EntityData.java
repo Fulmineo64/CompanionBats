@@ -150,7 +150,7 @@ public class EntityData {
 		this.tag.remove("Pos");
 		this.tag.remove("Motion");
 		this.tag.remove("Rotation");
-		// Vanilla Stat attibrutes
+		// Vanilla Stat attributes
 		this.tag.remove("Attributes");
 		// Vanilla Negative effects
 		this.tag.remove("Fire");

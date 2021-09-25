@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		" g ",
+		"geg",
+		" g "
+	],
+	"key": {
+		"g": {
+			"item": "minecraft:gold_ingot"
+		},
+		"e": {
+			"item": "minecraft:emerald"
+		}
+	},
+	"result": {
+		"item": "companion_bats:ankh"
+	}
+}

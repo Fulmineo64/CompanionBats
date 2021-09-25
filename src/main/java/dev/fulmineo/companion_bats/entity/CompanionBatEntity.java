@@ -362,6 +362,10 @@ public class CompanionBatEntity extends TameableEntity {
 		return true;
 	}
 
+	public boolean isInvulnerableTo(DamageSource damageSource) {
+		return super.isInvulnerableTo(damageSource) || (damageSource.isMagic() && this.abilities.has(CompanionBatAbility.MAGIC_PROTECTION));
+	}
+
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
@@ -580,8 +584,19 @@ public class CompanionBatEntity extends TameableEntity {
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (this.world.isClient) {
-			return this.canEat(itemStack) ? ActionResult.CONSUME : ActionResult.PASS;
+			return (itemStack.isOf(Items.MILK_BUCKET) || this.canEat(itemStack)) ? ActionResult.CONSUME : ActionResult.PASS;
 		} else {
+			if (itemStack.isOf(Items.MILK_BUCKET)) {
+				boolean ok = this.clearStatusEffects();
+				if (ok) {
+					this.world.sendEntityStatus(this, (byte)8);
+					if (!player.getAbilities().creativeMode) {
+						player.setStackInHand(hand, new ItemStack(Items.BUCKET));
+					}
+					return ActionResult.SUCCESS;
+				}
+				return ActionResult.PASS;
+			}
 			boolean res = this.healWithItem(itemStack);
 			if (res) {
 				if (!player.getAbilities().creativeMode) {

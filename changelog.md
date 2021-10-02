@@ -1,3 +1,8 @@
+# 1.17.9
+- Added wither immunity to the Ankh
+- Increased the Duelist's combo reset timer from 10s to 15s
+- Reduced Effect Potion cooldown from 90 to 80
+
 # 1.17.8
 - Added new accessory, the Ankh, when equipped protects the bat from all magic damage
 - Added the ability to cure the bat from Status Effects with a Milk Bucket

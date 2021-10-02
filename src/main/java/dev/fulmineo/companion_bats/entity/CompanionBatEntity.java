@@ -116,8 +116,8 @@ public class CompanionBatEntity extends TameableEntity {
 	private static final int ROOST_START_TICKS = 200;
 	private static final int HEAL_TICKS = 600;
 	private static final int EMERGENCY_POTION_TICKS = 4800;
-	private static final int EFFECT_POTION_TICKS = 1800;
-	private static final int COMBO_ATTACK_RESET_TICKS = 200;
+	private static final int EFFECT_POTION_TICKS = 1600;
+	private static final int COMBO_ATTACK_RESET_TICKS = 300;
 	private static final int TELEPORT_TICKS = 7;
 	private static final int RANGED_ATTACK_TICKS = 100;
 	private static int EFFECT_TICKS = 320;
@@ -363,7 +363,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return super.isInvulnerableTo(damageSource) || (damageSource.isMagic() && this.abilities.has(CompanionBatAbility.MAGIC_PROTECTION));
+		return super.isInvulnerableTo(damageSource) || ((damageSource.isMagic() || damageSource == DamageSource.WITHER) && this.abilities.has(CompanionBatAbility.MAGIC_PROTECTION));
 	}
 
 	public boolean damage(DamageSource source, float amount) {

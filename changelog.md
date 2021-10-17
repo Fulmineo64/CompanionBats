@@ -1,3 +1,7 @@
+# 1.18.0
+- Added configuration for the Companion Bat's variables
+- Added the ability to swim to the Companion Bat
+
 # 1.17.9
 - Added wither immunity to the Ankh
 - Increased the Duelist's combo reset timer from 10s to 15s

@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import dev.fulmineo.companion_bats.config.CompanionBatsConfig;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.entity.DynamiteEntity;
 import dev.fulmineo.companion_bats.feature.CaveHouseFeature;
@@ -48,10 +49,13 @@ import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatFluteItem;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 
 public class CompanionBats implements ModInitializer {
 
 	public static Logger LOGGER = LogManager.getLogger();
+	public static CompanionBatsConfig CONFIG;
 
     // Identifiers
 
@@ -117,6 +121,8 @@ public class CompanionBats implements ModInitializer {
 
     @Override
     public void onInitialize() {
+		AutoConfig.register(CompanionBatsConfig.class, JanksonConfigSerializer::new);
+		CONFIG = AutoConfig.getConfigHolder(CompanionBatsConfig.class).getConfig();
         FabricDefaultAttributeRegistry.register(COMPANION_BAT, CompanionBatEntity.createMobAttributes());
 
 		// Items

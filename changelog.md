@@ -1,6 +1,10 @@
 # 1.18.0
 - Added configuration for the Companion Bat's variables
 - Added the ability to swim to the Companion Bat
+- Added new class the Merling
+- New ability swim that makes the bat faster in fluids
+- New ability Trident that makes the bat launch tridents that apply on-hit effects!
+- New ability Merling Aura that grants the bat and its owner a constant Conduit Power effect
 
 # 1.17.9
 - Added wither immunity to the Ankh

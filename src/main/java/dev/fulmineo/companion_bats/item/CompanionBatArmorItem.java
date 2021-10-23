@@ -78,6 +78,6 @@ public class CompanionBatArmorItem extends Item {
 	}
 
 	public int getProtectionAmount(){
-		return 10;
+		return CompanionBats.CONFIG.armorProtectionAmount;
 	}
 }

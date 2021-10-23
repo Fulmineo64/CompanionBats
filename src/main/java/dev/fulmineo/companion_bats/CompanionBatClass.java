@@ -9,5 +9,6 @@ public enum CompanionBatClass {
 	DUELIST,
 	NINJA,
 	MUMMY,
-	DESTROYER;
+	DESTROYER,
+	MERLING;
 }

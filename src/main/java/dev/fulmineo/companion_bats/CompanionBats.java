@@ -80,7 +80,7 @@ public class CompanionBats implements ModInitializer {
 
 	public static final ItemGroup GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID,"group"), () -> new ItemStack(Registry.ITEM.get(new Identifier(MOD_ID,"bat_item"))));
 
-    public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage((int)CompanionBatEntity.getMaxLevelHealth()).group(GROUP));
+    public static Item BAT_ITEM;
 	public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
 	public static final Item COMMAND_FLUTE_ATTACK = new CompanionBatCommandFluteAttackItem(new FabricItemSettings().maxCount(1).group(GROUP));
 	public static final Item COMMAND_FLUTE_REST = new CompanionBatCommandFluteRestItem(new FabricItemSettings().maxCount(1));
@@ -110,6 +110,7 @@ public class CompanionBats implements ModInitializer {
 	public static final Item NINJA_GARB = new CompanionBatArmorItem("ninja_garb", CompanionBatClass.NINJA, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item MUMMY_BANDAGES = new CompanionBatArmorItem("mummy_bandages", CompanionBatClass.MUMMY, new FabricItemSettings().group(GROUP).maxCount(1));
 	public static final Item DESTROYER_GEAR = new CompanionBatArmorItem("destroyer_gear", CompanionBatClass.DESTROYER, new FabricItemSettings().group(GROUP).maxCount(1));
+	public static final Item MERLING_SCALES = new CompanionBatArmorItem("merling_scales", CompanionBatClass.MERLING, new FabricItemSettings().group(GROUP).maxCount(1));
 
 	// Structure
 
@@ -126,6 +127,8 @@ public class CompanionBats implements ModInitializer {
         FabricDefaultAttributeRegistry.register(COMPANION_BAT, CompanionBatEntity.createMobAttributes());
 
 		// Items
+
+		BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage((int)CompanionBatEntity.getMaxLevelHealth()).group(GROUP));
 
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_item"), 		  	BAT_ITEM);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_flute"), 	 	  	BAT_FLUTE_ITEM);
@@ -157,6 +160,7 @@ public class CompanionBats implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "ninja_garb"),		  	NINJA_GARB);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "mummy_bandages"),		MUMMY_BANDAGES);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "destroyer_gear"),		DESTROYER_GEAR);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "merling_scales"),		MERLING_SCALES);
 
 		// Structure
 

@@ -1,17 +1,18 @@
 package dev.fulmineo.companion_bats.entity.ai.control;
 
+import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.MathHelper;
 
 public class CompanionBatMoveControl extends MoveControl {
     private final int maxPitchChange;
+	private final CompanionBatEntity entity;
 
-    public CompanionBatMoveControl(MobEntity entity, int maxPitchChange) {
+    public CompanionBatMoveControl(CompanionBatEntity entity, int maxPitchChange) {
         super(entity);
         this.maxPitchChange = maxPitchChange;
+		this.entity = entity;
     }
 
     public void tick() {
@@ -32,14 +33,8 @@ public class CompanionBatMoveControl extends MoveControl {
 
 			float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875D) - 90.0F;
 			this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), h, 90.0F));
-			float j = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
-			if (this.entity.isSubmergedIn(FluidTags.LAVA)) {
-				this.entity.setMovementSpeed(j / 3);
-			} else if (this.entity.isSubmergedIn(FluidTags.WATER)) {
-				this.entity.setMovementSpeed(j / 2);
-			} else {
-				this.entity.setMovementSpeed(j);
-			}
+			float j = (float)(speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+			this.entity.setMovementSpeed(this.entity.calculateMovementSpeed(j));
 			double k = Math.sqrt(d * d + f * f);
 			float l = (float)(-(MathHelper.atan2(e, k) * 57.2957763671875D));
 			this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), l, (float)this.maxPitchChange));

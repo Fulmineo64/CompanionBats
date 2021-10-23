@@ -37,7 +37,15 @@ public enum CompanionBatAbility {
 
 	// Destroyer
 
-	DYNAMITE, DESTROYER_AURA,
+	DYNAMITE,
+
+	// Merling
+
+	SWIM, TRIDENT, MERLING_AURA,
+
+	// Unused
+
+	MINER_AURA,
 
 	// Accessory
 

@@ -13,14 +13,6 @@ import dev.fulmineo.companion_bats.nbt.EntityData;
 import net.minecraft.item.ItemStack;
 
 public class CompanionBatAbilities {
-	public static final int BLOCK_ATTACK_MULTIPLIER = 10;
-	public static final int BURN_MULTIPLIER = 3;
-	public static final int INCREASED_ARMOR_MULTIPLIER = 2;
-	public static final int INCREASED_ATTACK_MULTIPLIER = 10;
-	public static final int INCREASED_SPEED_MULTIPLIER = 15;
-	public static final int LIFESTEAL_MULTIPLIER = 10;
-	public static final int TELEPORT_MULTIPLIER = 25;
-
 	private Map<CompanionBatAbility, Integer> levels = new HashMap<>();
 
 	public void add(CompanionBatAbility ability, Integer levelIncrease){
@@ -75,25 +67,25 @@ public class CompanionBatAbilities {
 		if (level != null) {
 			switch (ability) {
 				case BLOCK_ATTACK: {
-					return level * BLOCK_ATTACK_MULTIPLIER;
+					return level * CompanionBats.CONFIG.blockAttackMultiplier;
 				}
 				case BURN: {
-					return level * BURN_MULTIPLIER;
+					return level * CompanionBats.CONFIG.burnMultiplier;
 				}
 				case INCREASED_ARMOR: {
-					return level * INCREASED_ARMOR_MULTIPLIER;
+					return level * CompanionBats.CONFIG.increasedArmorMultiplier;
 				}
 				case INCREASED_ATTACK: {
-					return level * INCREASED_ATTACK_MULTIPLIER;
+					return level * CompanionBats.CONFIG.increasedAttackMultiplier;
 				}
 				case INCREASED_SPEED: {
-					return level * INCREASED_SPEED_MULTIPLIER;
+					return level * CompanionBats.CONFIG.increasedSpeedMultiplier;
 				}
 				case LIFESTEAL: {
-					return level * LIFESTEAL_MULTIPLIER;
+					return level * CompanionBats.CONFIG.lifestealMultiplier;
 				}
 				case TELEPORT: {
-					return level * TELEPORT_MULTIPLIER;
+					return level * CompanionBats.CONFIG.teleportMultiplier;
 				}
 				case SLOWNESS:
 				case WEAKNESS:

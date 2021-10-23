@@ -235,5 +235,19 @@ public class CompanionBatLevels {
 		DESTROYER_LEVELS[9] = new CompanionBatClassLevel(1600, CompanionBatAbility.INCREASED_ARMOR, true);
 
 		CLASS_LEVELS.put(CompanionBatClass.DESTROYER, DESTROYER_LEVELS);
+
+		CompanionBatClassLevel[] MERLING_LEVELS = new CompanionBatClassLevel[10];
+		MERLING_LEVELS[0] = new CompanionBatClassLevel(0);
+		MERLING_LEVELS[1] = new CompanionBatClassLevel(50, CompanionBatAbility.SWIM);
+		MERLING_LEVELS[2] = new CompanionBatClassLevel(150, CompanionBatAbility.SLOWNESS);
+		MERLING_LEVELS[3] = new CompanionBatClassLevel(275, CompanionBatAbility.INCREASED_ATTACK);
+		MERLING_LEVELS[4] = new CompanionBatClassLevel(425, CompanionBatAbility.TRIDENT);
+		MERLING_LEVELS[5] = new CompanionBatClassLevel(600, CompanionBatAbility.MERLING_AURA);
+		MERLING_LEVELS[6] = new CompanionBatClassLevel(800, CompanionBatAbility.SLOWNESS);
+		MERLING_LEVELS[7] = new CompanionBatClassLevel(1025, CompanionBatAbility.INCREASED_ATTACK);
+		MERLING_LEVELS[8] = new CompanionBatClassLevel(1275, CompanionBatAbility.SLOWNESS);
+		MERLING_LEVELS[9] = new CompanionBatClassLevel(1600, CompanionBatAbility.INCREASED_ATTACK, true);
+
+		CLASS_LEVELS.put(CompanionBatClass.MERLING, MERLING_LEVELS);
 	}
 }

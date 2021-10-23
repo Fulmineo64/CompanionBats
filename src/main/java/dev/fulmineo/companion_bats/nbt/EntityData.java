@@ -203,7 +203,7 @@ public class EntityData {
 					entityData.putClassExp(batClass, oldEntityData.getInt(batClass.toString().toLowerCase() + "_exp"));
 				}
 			} else {
-				entityData.putHealth(CompanionBatEntity.BASE_HEALTH);
+				entityData.putHealth(CompanionBats.CONFIG.baseHealth);
 			}
 			entityData.toStack(batItemStack);
 		}

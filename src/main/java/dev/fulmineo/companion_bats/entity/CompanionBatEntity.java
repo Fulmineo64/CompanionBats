@@ -75,6 +75,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.TranslatableText;
@@ -112,6 +113,7 @@ public class CompanionBatEntity extends TameableEntity {
 	public int emergencyPotionTicks;
 	public int effectPotionTicks;
 	public int roostTicks;
+	public int rangedAttackTicks = CompanionBats.CONFIG.dynamiteTicks;
 
 	private CompanionBatClass currentClass;
 	private int exp = 0;
@@ -122,8 +124,10 @@ public class CompanionBatEntity extends TameableEntity {
 	private boolean hasTeleport;
 	private boolean hasAdventurerAura;
 	private boolean hasMinerAura;
+	private boolean hasMerlingAura;
 	private boolean hasPotionGoal;
 	private boolean hasNaturalRegeneration;
+	private boolean canSwim;
 	private int comboAttackResetTicks = CompanionBats.CONFIG.comboAttackResetTicks;
 	private int comboLevel = 0;
 	private int teleportTicks = CompanionBats.CONFIG.teleportTicks;
@@ -139,7 +143,7 @@ public class CompanionBatEntity extends TameableEntity {
 		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, -1.0F);
 		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
 		// TODO: Remove penalty when the new class is applied
-		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
+		// this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
 		this.setRoosting(false);
 		this.setSitting(false);
 	}
@@ -313,11 +317,15 @@ public class CompanionBatEntity extends TameableEntity {
 						this.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, this.effectTicks + 20, 0, false, false));
 					}
 
-					if (this.hasAdventurerAura || this.hasMinerAura){
+					if (this.hasAdventurerAura || this.hasMinerAura || this.hasMerlingAura){
 						LivingEntity owner = this.getOwner();
 						if (owner != null){
 							if (this.hasAdventurerAura) owner.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, CompanionBats.CONFIG.statusEffectTicks, 0, false, false));
 							if (this.hasMinerAura) owner.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, CompanionBats.CONFIG.statusEffectTicks, 0, false, false));
+							if (this.hasMerlingAura){
+								owner.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, CompanionBats.CONFIG.statusEffectTicks, 0, false, false));
+								this.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, this.effectTicks + 20, 0, false, false));
+							}
 						}
 					}
 				}
@@ -368,7 +376,7 @@ public class CompanionBatEntity extends TameableEntity {
 							this.world.playSound(null, this.getBlockPos(), SoundEvents.BLOCK_ANVIL_LAND , SoundCategory.PLAYERS, 0.15F, this.getSoundPitch() + 2F);
 							float targetHealth = target.getHealth();
 							target.damage(source, ((float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) + amount) * this.abilities.getValue(CompanionBatAbility.COUNTER_ATTACK) / 4);
-							this.onAttack(target, targetHealth, target.getHealth());
+							this.applyOnHitEffects(target, targetHealth, target.getHealth());
 							return false;
 						}
 					}
@@ -436,7 +444,7 @@ public class CompanionBatEntity extends TameableEntity {
 		return null;
 	}
 
-	public boolean tryRangedAttack(Entity target) {
+	public void dynamiteAttack(Entity target) {
 		Box trajectoryBox = new Box(this.getX(), this.getY(), this.getZ(), target.getX(), target.getY(), target.getZ()).expand(2);
 		if (!trajectoryBox.contains(this.getOwner().getPos())) {
 			Vec3d vec3d = target.getVelocity();
@@ -456,9 +464,25 @@ public class CompanionBatEntity extends TameableEntity {
 
 			this.world.spawnEntity(dynamite);
 			this.setVelocity(d * -0.4, 0, f * -0.4);
-			return true;
+			this.rangedAttackTicks = CompanionBats.CONFIG.dynamiteTicks;
 		}
-		return false;
+	}
+
+	public void tridentAttack(Entity target) {
+		Box trajectoryBox = new Box(this.getX(), this.getY(), this.getZ(), target.getX(), target.getY(), target.getZ());
+		if (!trajectoryBox.contains(this.getOwner().getPos())) {
+			CompanionBatTridentEntity tridentEntity = new CompanionBatTridentEntity(this.world, this, new ItemStack(Items.TRIDENT));
+			double d = target.getX() - tridentEntity.getX();
+			double e = target.getBodyY(0.3333333333333333D) - tridentEntity.getY();
+			double f = target.getZ() - tridentEntity.getZ();
+			double g = Math.sqrt(d * d + f * f);
+			tridentEntity.setVelocity(d, e + g * 0.20000000298023224D, f, 1.6F, 2.0F);
+			this.world.spawnEntity(tridentEntity);
+			if (!this.isSilent()) {
+				this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+			}
+			this.rangedAttackTicks = CompanionBats.CONFIG.tridentTicks;
+		}
 	}
 
 	public boolean tryAttack(Entity target) {
@@ -469,7 +493,7 @@ public class CompanionBatEntity extends TameableEntity {
 				this.world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT , SoundCategory.PLAYERS, 0.5F, this.getSoundPitch() + 2.0F);
 			}
 			this.applyDamageEffects(this, target);
-			this.onAttack(target, targetHealth, (target instanceof LivingEntity ? ((LivingEntity) target).getHealth() : 0));
+			this.applyOnHitEffects(target, targetHealth, (target instanceof LivingEntity ? ((LivingEntity) target).getHealth() : 0));
 		}
 		this.isSneakAttacking = false;
 		return bl;
@@ -488,7 +512,7 @@ public class CompanionBatEntity extends TameableEntity {
 		return this.guaranteedSneakAttack || target.getHorizontalFacing().equals(this.getHorizontalFacing());
 	}
 
-	private void onAttack(Entity target, float healthBefore, float healthAfter) {
+	public void applyOnHitEffects(Entity target, float healthBefore, float healthAfter) {
 		float damageDealt = healthBefore - healthAfter;
 		if (damageDealt > 0) {
 			this.gainExp(CompanionBats.CONFIG.expGain);
@@ -671,6 +695,16 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 	}
 
+	public float calculateMovementSpeed(float movementSpeed) {
+		if (this.isSubmergedIn(FluidTags.LAVA)) {
+			return movementSpeed / (this.canSwim ? 1.5F : 3);
+		} else if (this.isSubmergedIn(FluidTags.WATER)) {
+			return movementSpeed / (this.canSwim ? 1 : 2);
+		} else {
+			return movementSpeed;
+		}
+	}
+
 	public boolean returnToPlayerInventory() {
 		if (this.world.isClient) return false;
 		ServerPlayerEntity player = (ServerPlayerEntity) this.getOwner();
@@ -806,7 +840,9 @@ public class CompanionBatEntity extends TameableEntity {
 			this.goalSelector.add(6, new CompanionBatRoostGoal(this, 0.75F, 4.0F, CompanionBats.CONFIG.roostStartTicks));
 			if (!this.abilities.has(CompanionBatAbility.CANNOT_ATTACK)){
 				if (this.abilities.has(CompanionBatAbility.DYNAMITE)){
-					this.goalSelector.add(1, new CompanionBatRangedAttackGoal(this, 5.0F, 9.0F, CompanionBats.CONFIG.rangedAttackTicks));
+					this.goalSelector.add(1, new CompanionBatRangedAttackGoal(this, 5.0F, 9.0F, this::dynamiteAttack));
+				} else if (this.abilities.has(CompanionBatAbility.TRIDENT)) {
+					this.goalSelector.add(1, new CompanionBatRangedAttackGoal(this, 1.0F, 12.0F, this::tridentAttack));
 				}
 				this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0D, true));
 				this.targetSelector.add(1, new CompanionBatTrackOwnerAttackerGoal(this));
@@ -851,11 +887,17 @@ public class CompanionBatEntity extends TameableEntity {
 		if (this.abilities.has(CompanionBatAbility.ADVENTURER_AURA)) {
 			this.hasAdventurerAura = true;
 		}
-		if (this.abilities.has(CompanionBatAbility.DESTROYER_AURA)) {
+		if (this.abilities.has(CompanionBatAbility.MINER_AURA)) {
 			this.hasMinerAura = true;
+		}
+		if (this.abilities.has(CompanionBatAbility.MERLING_AURA)) {
+			this.hasMerlingAura = true;
 		}
 		if (this.abilities.has(CompanionBatAbility.NATURAL_REGENERATION)) {
 			this.hasNaturalRegeneration = true;
+		}
+		if (this.abilities.has(CompanionBatAbility.SWIM)) {
+			this.canSwim = true;
 		}
 		if (this.abilities.has(CompanionBatAbility.LOOTING)) {
 			ItemStack stack = new ItemStack(Items.STICK);

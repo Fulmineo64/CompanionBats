@@ -1,0 +1,5 @@
+{
+	"name": "knight_plate",
+	"batClass": "KNIGHT",
+	"chest": "minecraft:chests/village/village_weaponsmith"
+}

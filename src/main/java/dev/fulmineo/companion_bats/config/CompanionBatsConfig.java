@@ -33,7 +33,7 @@ public class CompanionBatsConfig implements ConfigData {
 	public int teleportTicks = 7;
 	public int statusEffectTicks = 320;
 	public int dynamiteTicks = 100;
-	public int tridentTicks = 200;
+	public int tridentTicks = 60;
 
 	// Ability level multipliers
 

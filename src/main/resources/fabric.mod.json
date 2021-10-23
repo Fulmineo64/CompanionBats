@@ -23,6 +23,9 @@
 		"client": [
 			"dev.fulmineo.companion_bats.CompanionBatsClient"
 		],
+		"modmenu": [
+			"dev.fulmineo.companion_bats.config.CompanionBatsModMenuIntegration"
+		],
 		"server": []
 	},
 	"mixins": [

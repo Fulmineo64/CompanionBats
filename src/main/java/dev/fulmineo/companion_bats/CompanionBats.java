@@ -34,21 +34,22 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import dev.fulmineo.companion_bats.config.CompanionBatsConfig;
+import dev.fulmineo.companion_bats.data.CompanionBatAccessoryData;
+import dev.fulmineo.companion_bats.data.CompanionBatArmorData;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.entity.DynamiteEntity;
 import dev.fulmineo.companion_bats.feature.CaveHouseFeature;
 import dev.fulmineo.companion_bats.feature.CaveHouseGenerator;
 import dev.fulmineo.companion_bats.init.CompanionBatCommandInit;
 import dev.fulmineo.companion_bats.init.CompanionBatLootTableInit;
-import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.item.CompanionBatCommandFluteAttackItem;
 import dev.fulmineo.companion_bats.item.CompanionBatCommandFluteGuardItem;
 import dev.fulmineo.companion_bats.item.CompanionBatCommandFluteRestItem;
 import dev.fulmineo.companion_bats.item.CompanionBatExperiencePieItem;
-import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatFluteItem;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
+import draylar.staticcontent.StaticContent;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 
@@ -89,29 +90,6 @@ public class CompanionBats implements ModInitializer {
     public static final Item SPIRIT_CRYSTAL = new Item(new FabricItemSettings().group(GROUP));
     public static final Item EXPERIENCE_PIE = new CompanionBatExperiencePieItem(new FabricItemSettings().food((new FoodComponent.Builder()).hunger(10).saturationModifier(0.5F).build()).rarity(Rarity.UNCOMMON).group(GROUP));
 
-	// Accessories
-
-	public static final Item BUNNY_EARS = new CompanionBatAccessoryItem("bunny_ears", CompanionBatAbility.CANNOT_ATTACK, 1, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item WITHER_MASK = new CompanionBatAccessoryItem("wither_mask", CompanionBatAbility.ATTACK_EVERYONE, 1, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item DECORATIVE_FLOWER = new CompanionBatAccessoryItem("decorative_flower", CompanionBatAbility.ATTACK_HOSTILES, 1, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item WOLF_PELT = new CompanionBatAccessoryItem("wolf_pelt", CompanionBatAbility.ATTACK_PASSIVE, 1, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item PLATED_BOOTS = new CompanionBatAccessoryItem("plated_boots", CompanionBatAbility.INCREASED_ARMOR, 1, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item PUMPKIN_BANDANA = new CompanionBatAccessoryItem("pumpkin_bandana", CompanionBatAbility.NATURAL_REGENERATION, 1, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item ANKH = new CompanionBatAccessoryItem("ankh", CompanionBatAbility.MAGIC_PROTECTION, 1, new FabricItemSettings().group(GROUP).maxCount(1));
-
-	// Armors
-
-	public static final Item INFERNO_SUIT = new CompanionBatArmorItem("inferno_suit", CompanionBatClass.INFERNO, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item VAMPIRIC_ATTIRE = new CompanionBatArmorItem("vampiric_attire", CompanionBatClass.VAMPIRE, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item LOOTER_JACKET = new CompanionBatArmorItem("looter_jacket", CompanionBatClass.LOOTER, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item KNIGHT_PLATE = new CompanionBatArmorItem("knight_plate", CompanionBatClass.KNIGHT, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item ALCHEMIST_ROBE = new CompanionBatArmorItem("alchemist_robe", CompanionBatClass.ALCHEMIST, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item DUELIST_COSTUME = new CompanionBatArmorItem("duelist_costume", CompanionBatClass.DUELIST, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item NINJA_GARB = new CompanionBatArmorItem("ninja_garb", CompanionBatClass.NINJA, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item MUMMY_BANDAGES = new CompanionBatArmorItem("mummy_bandages", CompanionBatClass.MUMMY, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item DESTROYER_GEAR = new CompanionBatArmorItem("destroyer_gear", CompanionBatClass.DESTROYER, new FabricItemSettings().group(GROUP).maxCount(1));
-	public static final Item MERLING_SCALES = new CompanionBatArmorItem("merling_scales", CompanionBatClass.MERLING, new FabricItemSettings().group(GROUP).maxCount(1));
-
 	// Structure
 
 	public static final StructurePieceType CAVE_HOUSE_PIECE = CaveHouseGenerator.Piece::new;
@@ -141,26 +119,11 @@ public class CompanionBats implements ModInitializer {
 
 		// Accessories
 
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bunny_ears"), 		  	BUNNY_EARS);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wither_mask"), 	  	WITHER_MASK);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "decorative_flower"), 	DECORATIVE_FLOWER);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wolf_pelt"), 		  	WOLF_PELT);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "plated_boots"), 		PLATED_BOOTS);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "pumpkin_bandana"), 	PUMPKIN_BANDANA);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "ankh"), 				ANKH);
+		StaticContent.load(new Identifier(CompanionBats.MOD_ID, "accessories"), CompanionBatAccessoryData.class);
 
 		// Armors
 
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "inferno_suit"), 	  	INFERNO_SUIT);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "vampiric_attire"),   	VAMPIRIC_ATTIRE);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "looter_jacket"), 	  	LOOTER_JACKET);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "knight_plate"), 	  	KNIGHT_PLATE);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "alchemist_robe"), 	  	ALCHEMIST_ROBE);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "duelist_costume"),	  	DUELIST_COSTUME);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "ninja_garb"),		  	NINJA_GARB);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "mummy_bandages"),		MUMMY_BANDAGES);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "destroyer_gear"),		DESTROYER_GEAR);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "merling_scales"),		MERLING_SCALES);
+		StaticContent.load(new Identifier(CompanionBats.MOD_ID, "armors"), CompanionBatArmorData.class);
 
 		// Structure
 

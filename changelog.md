@@ -1,10 +1,13 @@
 # 1.18.0
+## Tweaks and Tridents
+- Reworked the mod to be data-driven meaning that now you'll be able to create your own accessories and armors with just some JSONs and a texture!
 - Added configuration for the Companion Bat's variables
 - Added the ability to swim to the Companion Bat
 - Added new class the Merling
-- New ability swim that makes the bat faster in fluids
-- New ability Trident that makes the bat launch tridents that apply on-hit effects!
-- New ability Merling Aura that grants the bat and its owner a constant Conduit Power effect
+- New ability "Swim" that makes the bat faster in water (and also lava)
+- New ability "Trident" that makes the bat launch tridents that apply on-hit effects!
+- New ability "Merling Aura" that grants the bat and its owner a constant Conduit Power effect
+- Buffed the "Plated Boots" accessory
 
 # 1.17.9
 - Added wither immunity to the Ankh

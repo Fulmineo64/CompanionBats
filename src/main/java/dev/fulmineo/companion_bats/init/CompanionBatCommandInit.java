@@ -3,12 +3,12 @@ package dev.fulmineo.companion_bats.init;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 import dev.fulmineo.companion_bats.CompanionBats;
+import dev.fulmineo.companion_bats.data.EntityData;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLevel;
-import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatLevel;
+import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatCombatLevel;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.CompanionBatClass;
-import dev.fulmineo.companion_bats.nbt.EntityData;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -34,9 +34,9 @@ public class CompanionBatCommandInit {
 								ItemStack stack = player.getStackInHand(Hand.MAIN_HAND);
 								EntityData entityData = new EntityData(stack);
 								int exp = IntegerArgumentType.getInteger(context, "exp");
-								CompanionBatLevel maxLevel = CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length-1];
-								if (exp > maxLevel.totalExpNeeded) {
-									exp = maxLevel.totalExpNeeded;
+								CompanionBatCombatLevel maxLevel = CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length-1];
+								if (exp > maxLevel.totalExp) {
+									exp = maxLevel.totalExp;
 								}
 								entityData.putExp(exp);
 							} else {
@@ -67,8 +67,8 @@ public class CompanionBatCommandInit {
 										int exp = IntegerArgumentType.getInteger(context, "exp");
 										CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(cls);
 										CompanionBatClassLevel maxLevel = classLevels[classLevels.length-1];
-										if (exp > maxLevel.totalExpNeeded) {
-											exp = maxLevel.totalExpNeeded;
+										if (exp > maxLevel.totalExp) {
+											exp = maxLevel.totalExp;
 										}
 										entityData.putClassExp(cls, exp);
 									} else {

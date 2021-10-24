@@ -1,6 +1,6 @@
 {
 	"name": "mummy_bandages",
-	"batClass": "MUMMY",
+	"className": "MUMMY",
 	"chest": "minecraft:chests/desert_pyramid",
 	"chance": 0.25
 }

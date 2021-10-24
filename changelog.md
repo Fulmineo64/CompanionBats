@@ -1,6 +1,6 @@
 # 1.18.0
 ## Tweaks and Tridents
-- Reworked the mod to be data-driven meaning that now you'll be able to create your own accessories and armors with just some JSONs and a texture!
+- Reworked the mod to be data-driven meaning that you'll be able to create your own accessories and armors with just some JSONs and a texture!
 - Added configuration for the Companion Bat's variables
 - Added the ability to swim to the Companion Bat
 - Added new class the Merling

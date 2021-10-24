@@ -36,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 import dev.fulmineo.companion_bats.config.CompanionBatsConfig;
 import dev.fulmineo.companion_bats.data.CompanionBatAccessoryData;
 import dev.fulmineo.companion_bats.data.CompanionBatArmorData;
+import dev.fulmineo.companion_bats.data.ServerDataManager;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.entity.DynamiteEntity;
 import dev.fulmineo.companion_bats.feature.CaveHouseFeature;
@@ -61,7 +62,7 @@ public class CompanionBats implements ModInitializer {
     // Identifiers
 
     public static final String MOD_ID = "companion_bats";
-
+    public static final Identifier REQUEST_CLASS_LEVELS_DATA_ID = new Identifier(MOD_ID, "request_class_levels_data_packet");
     public static final ScreenHandlerType<CompanionBatScreenHandler> BAT_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(new Identifier(MOD_ID, "bat_item"), CompanionBatScreenHandler::new);
 
     // Entities
@@ -81,7 +82,7 @@ public class CompanionBats implements ModInitializer {
 
 	public static final ItemGroup GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID,"group"), () -> new ItemStack(Registry.ITEM.get(new Identifier(MOD_ID,"bat_item"))));
 
-    public static Item BAT_ITEM;
+    public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage(100).group(GROUP));
 	public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
 	public static final Item COMMAND_FLUTE_ATTACK = new CompanionBatCommandFluteAttackItem(new FabricItemSettings().maxCount(1).group(GROUP));
 	public static final Item COMMAND_FLUTE_REST = new CompanionBatCommandFluteRestItem(new FabricItemSettings().maxCount(1));
@@ -105,8 +106,6 @@ public class CompanionBats implements ModInitializer {
         FabricDefaultAttributeRegistry.register(COMPANION_BAT, CompanionBatEntity.createMobAttributes());
 
 		// Items
-
-		BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage((int)CompanionBatEntity.getMaxLevelHealth()).group(GROUP));
 
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_item"), 		  	BAT_ITEM);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_flute"), 	 	  	BAT_FLUTE_ITEM);
@@ -144,6 +143,7 @@ public class CompanionBats implements ModInitializer {
 
 		CompanionBatLootTableInit.init();
 		CompanionBatCommandInit.init();
+		ServerDataManager.init();
     }
 
 	public static void info(String message){

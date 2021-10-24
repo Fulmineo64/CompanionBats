@@ -1,5 +1,5 @@
 {
 	"name": "inferno_suit",
-	"batClass": "INFERNO",
+	"className": "INFERNO",
 	"chest": "minecraft:chests/bastion_treasure"
 }

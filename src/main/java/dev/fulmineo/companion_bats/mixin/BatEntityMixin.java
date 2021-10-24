@@ -3,8 +3,8 @@ package dev.fulmineo.companion_bats.mixin;
 import org.spongepowered.asm.mixin.Mixin;
 
 import dev.fulmineo.companion_bats.CompanionBats;
+import dev.fulmineo.companion_bats.data.EntityData;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
-import dev.fulmineo.companion_bats.nbt.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.mob.AmbientEntity;

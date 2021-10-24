@@ -5,11 +5,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import dev.fulmineo.companion_bats.data.EntityData;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
 import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
-import dev.fulmineo.companion_bats.nbt.EntityData;
 import net.minecraft.item.ItemStack;
 
 public class CompanionBatAbilities {
@@ -44,7 +44,7 @@ public class CompanionBatAbilities {
 		for (CompanionBatClass batClass : CompanionBatClass.values()) {
 			float classExp = entityData.getClassExp(batClass);
 			for (CompanionBatClassLevel level : CompanionBatLevels.CLASS_LEVELS.get(batClass)) {
-				if (level.totalExpNeeded > classExp) {
+				if (level.totalExp > classExp) {
 					break;
 				}
 				if (currentClass == batClass || level.permanent) {

@@ -1,5 +1,5 @@
 {
 	"name": "ninja_garb",
-	"batClass": "NINJA",
+	"className": "NINJA",
 	"chest": "minecraft:chests/end_city_treasure"
 }

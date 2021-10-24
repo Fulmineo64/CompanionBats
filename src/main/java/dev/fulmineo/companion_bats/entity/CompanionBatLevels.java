@@ -7,18 +7,18 @@ import dev.fulmineo.companion_bats.CompanionBatAbility;
 import dev.fulmineo.companion_bats.CompanionBatClass;
 
 public class CompanionBatLevels {
-	public static final CompanionBatLevel[] LEVELS;
+	public static final CompanionBatCombatLevel[] LEVELS;
 
 	public static final Map<CompanionBatClass, CompanionBatClassLevel[]> CLASS_LEVELS = new HashMap<>();
 
-	public static class CompanionBatLevel {
-		public int totalExpNeeded;
+	public static class CompanionBatCombatLevel {
+		public int totalExp;
 		public float healthBonus;
 		public float attackBonus;
 		public float speedBonus;
 
-		CompanionBatLevel(int totalExpNeeded, float healthBonus, float attackBonus, float speedBonus) {
-			this.totalExpNeeded = totalExpNeeded;
+		CompanionBatCombatLevel(int totalExp, float healthBonus, float attackBonus, float speedBonus) {
+			this.totalExp = totalExp;
 			this.healthBonus = healthBonus;
 			this.attackBonus = attackBonus;
 			this.speedBonus = speedBonus;
@@ -26,56 +26,36 @@ public class CompanionBatLevels {
 	}
 
 	public static class CompanionBatClassLevel {
-		public int totalExpNeeded;
+		public int totalExp;
 		public CompanionBatAbility ability;
 		public boolean permanent;
 		public int abilityLevelIncrease;
 
-		CompanionBatClassLevel(int totalExpNeeded) {
-			this(totalExpNeeded, null, false, 0);
+		CompanionBatClassLevel(int totalExp) {
+			this(totalExp, null, false, 0);
 		}
 
-		CompanionBatClassLevel(int totalExpNeeded, CompanionBatAbility ability) {
-			this(totalExpNeeded, ability, false, 1);
+		CompanionBatClassLevel(int totalExp, CompanionBatAbility ability) {
+			this(totalExp, ability, false, 1);
 		}
 
-		CompanionBatClassLevel(int totalExpNeeded, CompanionBatAbility ability, boolean permanent) {
-			this(totalExpNeeded, ability, permanent, 1);
+		CompanionBatClassLevel(int totalExp, CompanionBatAbility ability, boolean permanent) {
+			this(totalExp, ability, permanent, 1);
 		}
 
-		CompanionBatClassLevel(int totalExpNeeded, CompanionBatAbility ability, boolean permanent, int abilityLevelIncrease) {
-			this.totalExpNeeded = totalExpNeeded;
+		CompanionBatClassLevel(int totalExp, CompanionBatAbility ability, boolean permanent, int abilityLevelIncrease) {
+			this.totalExp = totalExp;
 			this.ability = ability;
 			this.permanent = permanent;
 			this.abilityLevelIncrease = abilityLevelIncrease;
 		}
 	}
 
-	public static float getLevelHealth(int level) {
-		return LEVELS[level].healthBonus;
-	}
-
-	public static float getLevelAttack(int level) {
-		return LEVELS[level].attackBonus;
-	}
-
-	public static float getLevelSpeed(int level) {
-		return LEVELS[level].speedBonus;
-	}
-
-	public static int getLevelByExp(int exp) {
-		for (int i = CompanionBatLevels.LEVELS.length - 1; i >= 0; i--) {
-			if (CompanionBatLevels.LEVELS[i].totalExpNeeded <= exp) {
-				return i;
-			}
-		}
-		return CompanionBatLevels.LEVELS.length - 1;
-	}
 
 	public static int getClassLevelByExp(CompanionBatClass batClass, int exp) {
 		CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(batClass);
 		for (int i = classLevels.length - 1; i >= 0; i--) {
-			if (classLevels[i].totalExpNeeded <= exp) {
+			if (classLevels[i].totalExp <= exp) {
 				return i;
 			}
 		}
@@ -83,32 +63,32 @@ public class CompanionBatLevels {
 	}
 
 	static {
-		LEVELS = new CompanionBatLevel[25];
-		LEVELS[0] = new CompanionBatLevel(0, 0F, 0F, 0F);
-		LEVELS[1] = new CompanionBatLevel(50, 1F, 0F, 0F); 			// Health
-		LEVELS[2] = new CompanionBatLevel(150, 2F, 0F, 0F); 		// Health
-		LEVELS[3] = new CompanionBatLevel(300, 2F, 0F, 0.03F); 		// Speed
-		LEVELS[4] = new CompanionBatLevel(500, 2F, 1F, 0.03F); 		// Attack
-		LEVELS[5] = new CompanionBatLevel(750, 3F, 1F, 0.03F); 		// Health
-		LEVELS[6] = new CompanionBatLevel(1050, 4F, 1F, 0.03F); 	// Health
-		LEVELS[7] = new CompanionBatLevel(1400, 4F, 1F, 0.06F); 	// Speed
-		LEVELS[8] = new CompanionBatLevel(1800, 4F, 2F, 0.06F); 	// Attack
-		LEVELS[9] = new CompanionBatLevel(2250, 5F, 2F, 0.06F);	 	// Health
-		LEVELS[10] = new CompanionBatLevel(2750, 6F, 2F, 0.06F); 	// Health
-		LEVELS[11] = new CompanionBatLevel(3300, 6F, 2F, 0.09F); 	// Speed
-		LEVELS[12] = new CompanionBatLevel(3900, 6F, 3F, 0.09F); 	// Attack
-		LEVELS[13] = new CompanionBatLevel(4550, 7F, 3F, 0.09F); 	// Health
-		LEVELS[14] = new CompanionBatLevel(5250, 8F, 3F, 0.09F); 	// Health
-		LEVELS[15] = new CompanionBatLevel(6000, 8F, 3F, 0.12F); 	// Speed
-		LEVELS[16] = new CompanionBatLevel(6800, 9F, 3F, 0.12F); 	// Health
-		LEVELS[17] = new CompanionBatLevel(7650, 10F, 3F, 0.12F); 	// Health
-		LEVELS[18] = new CompanionBatLevel(8550, 10F, 3F, 0.15F); 	// Speed
-		LEVELS[19] = new CompanionBatLevel(9550, 10F, 4F, 0.15F); 	// Attack
-		LEVELS[20] = new CompanionBatLevel(10600, 11F, 4F, 0.15F); 	// Health
-		LEVELS[21] = new CompanionBatLevel(11700, 12F, 4F, 0.15F); 	// Health
-		LEVELS[22] = new CompanionBatLevel(13200, 12F, 4F, 0.20F); 	// Speed x 1.6
-		LEVELS[23] = new CompanionBatLevel(14950, 12F, 5F, 0.20F); 	// Attack
-		LEVELS[24] = new CompanionBatLevel(16950, 14F, 5F, 0.20F); 	// Health x 2
+		LEVELS = new CompanionBatCombatLevel[25];
+		LEVELS[0] = new CompanionBatCombatLevel(0, 0F, 0F, 0F);
+		LEVELS[1] = new CompanionBatCombatLevel(50, 1F, 0F, 0F); 			// Health
+		LEVELS[2] = new CompanionBatCombatLevel(150, 2F, 0F, 0F); 		// Health
+		LEVELS[3] = new CompanionBatCombatLevel(300, 2F, 0F, 0.03F); 		// Speed
+		LEVELS[4] = new CompanionBatCombatLevel(500, 2F, 1F, 0.03F); 		// Attack
+		LEVELS[5] = new CompanionBatCombatLevel(750, 3F, 1F, 0.03F); 		// Health
+		LEVELS[6] = new CompanionBatCombatLevel(1050, 4F, 1F, 0.03F); 	// Health
+		LEVELS[7] = new CompanionBatCombatLevel(1400, 4F, 1F, 0.06F); 	// Speed
+		LEVELS[8] = new CompanionBatCombatLevel(1800, 4F, 2F, 0.06F); 	// Attack
+		LEVELS[9] = new CompanionBatCombatLevel(2250, 5F, 2F, 0.06F);	 	// Health
+		LEVELS[10] = new CompanionBatCombatLevel(2750, 6F, 2F, 0.06F); 	// Health
+		LEVELS[11] = new CompanionBatCombatLevel(3300, 6F, 2F, 0.09F); 	// Speed
+		LEVELS[12] = new CompanionBatCombatLevel(3900, 6F, 3F, 0.09F); 	// Attack
+		LEVELS[13] = new CompanionBatCombatLevel(4550, 7F, 3F, 0.09F); 	// Health
+		LEVELS[14] = new CompanionBatCombatLevel(5250, 8F, 3F, 0.09F); 	// Health
+		LEVELS[15] = new CompanionBatCombatLevel(6000, 8F, 3F, 0.12F); 	// Speed
+		LEVELS[16] = new CompanionBatCombatLevel(6800, 9F, 3F, 0.12F); 	// Health
+		LEVELS[17] = new CompanionBatCombatLevel(7650, 10F, 3F, 0.12F); 	// Health
+		LEVELS[18] = new CompanionBatCombatLevel(8550, 10F, 3F, 0.15F); 	// Speed
+		LEVELS[19] = new CompanionBatCombatLevel(9550, 10F, 4F, 0.15F); 	// Attack
+		LEVELS[20] = new CompanionBatCombatLevel(10600, 11F, 4F, 0.15F); 	// Health
+		LEVELS[21] = new CompanionBatCombatLevel(11700, 12F, 4F, 0.15F); 	// Health
+		LEVELS[22] = new CompanionBatCombatLevel(13200, 12F, 4F, 0.20F); 	// Speed x 1.6
+		LEVELS[23] = new CompanionBatCombatLevel(14950, 12F, 5F, 0.20F); 	// Attack
+		LEVELS[24] = new CompanionBatCombatLevel(16950, 14F, 5F, 0.20F); 	// Health x 2
 
 		CompanionBatClassLevel[] INFERNO_LEVELS = new CompanionBatClassLevel[10];
 		INFERNO_LEVELS[0] = new CompanionBatClassLevel(0);

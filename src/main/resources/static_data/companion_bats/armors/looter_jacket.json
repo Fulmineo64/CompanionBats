@@ -1,5 +1,5 @@
 {
 	"name": "looter_jacket",
-	"batClass": "LOOTER",
+	"className": "LOOTER",
 	"chest": "minecraft:chests/buried_treasure"
 }

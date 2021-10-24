@@ -10,9 +10,11 @@ import org.jetbrains.annotations.Nullable;
 import dev.fulmineo.companion_bats.CompanionBatAbilities;
 import dev.fulmineo.companion_bats.CompanionBatAbility;
 import dev.fulmineo.companion_bats.CompanionBats;
+import dev.fulmineo.companion_bats.data.CompanionBatClassLevel;
+import dev.fulmineo.companion_bats.data.CompanionBatCombatLevel;
+import dev.fulmineo.companion_bats.data.EntityData;
+import dev.fulmineo.companion_bats.data.ServerDataManager;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
-import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
-import dev.fulmineo.companion_bats.nbt.EntityData;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -25,6 +27,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -33,7 +36,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
@@ -57,6 +59,27 @@ public class CompanionBatItem extends Item {
                     @Override
                     public void writeScreenOpeningData(ServerPlayerEntity serverPlayerEntity, PacketByteBuf packetByteBuf) {
                         packetByteBuf.writeEnumConstant(hand);
+
+						NbtCompound nbt = new NbtCompound();
+
+						// Combat levels
+						NbtList combatLevels = new NbtList();
+						for (CompanionBatCombatLevel l: ServerDataManager.combatLevels) {
+							combatLevels.add(l.writeNbt(new NbtCompound()));
+						}
+						nbt.put("combatLevels", combatLevels);
+
+						// Class levels
+						NbtCompound classLevels = new NbtCompound();
+						for (Entry<String, CompanionBatClassLevel[]> entry: ServerDataManager.classLevels.entrySet()) {
+							NbtList levels = new NbtList();
+							for (CompanionBatClassLevel cl: entry.getValue()) {
+								levels.add(cl.writeNbt(new NbtCompound()));
+							}
+							classLevels.put(entry.getKey(), levels);
+						}
+						nbt.put("classLevels", classLevels);
+						packetByteBuf.writeNbt(nbt);
                     }
 
                     @Override
@@ -116,18 +139,5 @@ public class CompanionBatItem extends Item {
 
     public boolean isUsedOnRelease(ItemStack stack) {
         return true;
-    }
-
-    public Rarity getRarity(ItemStack stack) {
-		EntityData entityData = new EntityData(stack);
-		int level = CompanionBatLevels.getLevelByExp(entityData.getExp());
-		float levelProgression = level / CompanionBatLevels.LEVELS.length;
-		if (levelProgression < 0.5) {
-			return Rarity.COMMON;
-		} else if (levelProgression < 1) {
-			return Rarity.RARE;
-		} else {
-			return Rarity.EPIC;
-		}
     }
 }

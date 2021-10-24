@@ -1,4 +1,4 @@
-package dev.fulmineo.companion_bats.nbt;
+package dev.fulmineo.companion_bats.data;
 
 import dev.fulmineo.companion_bats.CompanionBatClass;
 import dev.fulmineo.companion_bats.CompanionBats;

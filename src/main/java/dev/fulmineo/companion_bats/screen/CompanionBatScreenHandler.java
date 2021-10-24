@@ -1,9 +1,14 @@
 package dev.fulmineo.companion_bats.screen;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import dev.fulmineo.companion_bats.CompanionBats;
+import dev.fulmineo.companion_bats.data.CompanionBatClassLevel;
+import dev.fulmineo.companion_bats.data.CompanionBatCombatLevel;
+import dev.fulmineo.companion_bats.data.EntityData;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
-import dev.fulmineo.companion_bats.nbt.EntityData;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,6 +18,8 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -22,9 +29,28 @@ import net.minecraft.util.Hand;
 public class CompanionBatScreenHandler extends ScreenHandler {
     private final Inventory inventory;
     public Hand hand;
+	public CompanionBatCombatLevel[] combatLevels;
+	public Map<String, CompanionBatClassLevel[]> classLevels = new HashMap<>();
 
     public CompanionBatScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf){
         this(syncId, playerInventory, new SimpleInventory(3), buf.readEnumConstant(Hand.class));
+		NbtCompound nbt = buf.readNbt();
+		// Combat level
+		NbtList list = nbt.getList("combatLevels", NbtElement.COMPOUND_TYPE);
+		this.combatLevels = new CompanionBatCombatLevel[list.size()];
+		for (int i = 0; i < list.size(); i++) {
+			this.combatLevels[i] = CompanionBatCombatLevel.fromNbt((NbtCompound)list.get(i));
+		}
+		// Class levels
+		NbtCompound classLevels = nbt.getCompound("classLevels");
+		for (String key: classLevels.getKeys()) {
+			list = classLevels.getList(key, NbtElement.COMPOUND_TYPE);
+			CompanionBatClassLevel[] levels = new CompanionBatClassLevel[list.size()];
+			for (int i = 0; i < list.size(); i++) {
+				levels[i] = CompanionBatClassLevel.fromNbt((NbtCompound)list.get(i));
+			}
+			this.classLevels.put(key, levels);
+		}
     }
 
     public CompanionBatScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, Hand hand) {

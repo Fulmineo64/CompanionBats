@@ -78,6 +78,7 @@
     "gui.companion_bats.bat.health": "Health",
     "gui.companion_bats.bat.attack": "Attack",
     "gui.companion_bats.bat.speed": "Speed",
+	"ability.companion_bats.on_hit": "On-hit",
 	"ability.companion_bats.INCREASED_ATTACK": "Increased Attack",
 	"ability.companion_bats.FIRE_RESISTANCE": "Fire Resistance",
 	"ability.companion_bats.BURN": "Burn",

@@ -1,35 +1,17 @@
 package dev.fulmineo.companion_bats.data;
 
-import dev.fulmineo.companion_bats.CompanionBatAbility;
 import net.minecraft.nbt.NbtCompound;
 
 public class CompanionBatClassLevel {
 	public int totalExp;
-	public CompanionBatAbility ability;
+	public String abilityType;
+	public String ability;
 	public boolean permanent;
-	public int abilityLevelIncrease;
+	public int abilityIncrement;
+	public int duration;
 
-	CompanionBatClassLevel(int totalExp) {
-		this(totalExp, null, false, 0);
-	}
-
-	CompanionBatClassLevel(int totalExp, CompanionBatAbility ability) {
-		this(totalExp, ability, false, 1);
-	}
-
-	CompanionBatClassLevel(int totalExp, CompanionBatAbility ability, boolean permanent) {
-		this(totalExp, ability, permanent, 1);
-	}
-
-	CompanionBatClassLevel(int totalExp, CompanionBatAbility ability, boolean permanent, int abilityLevelIncrease) {
-		this.totalExp = totalExp;
-		this.ability = ability;
-		this.permanent = permanent;
-		this.abilityLevelIncrease = abilityLevelIncrease;
-	}
-
-	public int getAbilityLevelIncrease() {
-		return this.abilityLevelIncrease == 0 ? 1 : this.abilityLevelIncrease;
+	public int getAbilityIncrement() {
+		return this.abilityIncrement == 0 ? 1 : this.abilityIncrement;
 	}
 
 	public static int getClassLevelByExp(CompanionBatClassLevel[] classLevels, int exp) {
@@ -43,15 +25,22 @@ public class CompanionBatClassLevel {
 
 	public NbtCompound writeNbt(NbtCompound nbt) {
 		nbt.putInt("totalExp", this.totalExp);
+		if (this.abilityType != null) nbt.putString("abilityType", this.abilityType);
 		if (this.ability != null) nbt.putString("ability", this.ability.toString());
+		nbt.putBoolean("permanent", this.permanent);
+		nbt.putInt("abilityIncrement", this.abilityIncrement);
+		nbt.putInt("duration", this.duration);
 		return nbt;
 	}
 
 	public static CompanionBatClassLevel fromNbt(NbtCompound nbt) {
-		if (nbt.contains("ability")) {
-			return new CompanionBatClassLevel(nbt.getInt("totalExp"), CompanionBatAbility.valueOf(nbt.getString("ability")));
-		} else {
-			return new CompanionBatClassLevel(nbt.getInt("totalExp"));
-		}
+		CompanionBatClassLevel level = new CompanionBatClassLevel();
+		level.totalExp = nbt.getInt("totalExp");
+		if (nbt.contains("abilityType")) level.abilityType = nbt.getString("abilityType");
+		if (nbt.contains("ability")) level.ability = nbt.getString("ability");
+		level.permanent = nbt.getBoolean("permanent");
+		level.abilityIncrement = nbt.getInt("abilityIncrement");
+		level.duration = nbt.getInt("duration");
+		return level;
 	}
 }

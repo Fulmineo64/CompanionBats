@@ -1,14 +1,10 @@
 package dev.fulmineo.companion_bats.item;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 
 import org.jetbrains.annotations.Nullable;
 
 import dev.fulmineo.companion_bats.CompanionBatAbilities;
-import dev.fulmineo.companion_bats.CompanionBatAbility;
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.data.ClientDataManager;
 import dev.fulmineo.companion_bats.data.EntityData;
@@ -29,10 +25,12 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Pair;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
@@ -104,11 +102,11 @@ public class CompanionBatItem extends Item {
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		CompanionBatAbilities abilities = new CompanionBatAbilities();
 		abilities.setFromNbt(ClientDataManager.classes, new EntityData(stack));
-		Set<Entry<CompanionBatAbility, Integer>> entrySet = abilities.entrySet();
-		if (entrySet.size() > 0){
+		List<Pair<MutableText, Integer>> list = abilities.toTranslatedList();
+		if (list.size() > 0){
 			tooltip.add(new TranslatableText("item.companion_bats.bat_item.abilities").formatted(Formatting.AQUA));
-			for (Map.Entry<CompanionBatAbility, Integer> entry : entrySet) {
-				tooltip.add(entry.getKey().toTranslatedText().append(" " + entry.getValue()).formatted(Formatting.GRAY));
+			for (Pair<MutableText, Integer> entry: list) {
+				tooltip.add(entry.getLeft().append(" " + entry.getRight()).formatted(Formatting.GRAY));
 			}
 		}
 	}

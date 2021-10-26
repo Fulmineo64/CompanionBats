@@ -1,14 +1,10 @@
 package dev.fulmineo.companion_bats.item;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 
 import org.jetbrains.annotations.Nullable;
 
 import dev.fulmineo.companion_bats.CompanionBatAbilities;
-import dev.fulmineo.companion_bats.CompanionBatAbility;
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.data.ClientDataManager;
 import dev.fulmineo.companion_bats.data.CompanionBatClass;
@@ -19,10 +15,12 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.world.World;
 
 public class CompanionBatArmorItem extends Item {
@@ -52,19 +50,19 @@ public class CompanionBatArmorItem extends Item {
 
 		tooltip.add(new TranslatableText("item.companion_bats.armor").formatted(Formatting.GOLD));
 
-		Set<Entry<CompanionBatAbility, Integer>> entrySet = abilities.entrySet();
-		if (entrySet.size() > 0){
+		List<Pair<MutableText, Integer>> list = abilities.toTranslatedList();
+		if (list.size() > 0){
 			tooltip.add(new TranslatableText("item.companion_bats.armor.abilities").formatted(Formatting.AQUA));
-			for (Map.Entry<CompanionBatAbility, Integer> entry : entrySet) {
-				tooltip.add(entry.getKey().toTranslatedText().formatted(Formatting.GRAY));
+			for (Pair<MutableText, Integer> entry: list) {
+				tooltip.add(entry.getLeft().formatted(Formatting.GRAY));
 			}
 		}
 
-		entrySet = permanentAbilities.entrySet();
-		if (entrySet.size() > 0){
+		list = permanentAbilities.toTranslatedList();
+		if (list.size() > 0){
 			tooltip.add(new TranslatableText("item.companion_bats.armor.permanent_ability").formatted(Formatting.AQUA));
-			for (Map.Entry<CompanionBatAbility, Integer> entry : entrySet) {
-				tooltip.add(entry.getKey().toTranslatedText().formatted(Formatting.GRAY));
+			for (Pair<MutableText, Integer> entry: list) {
+				tooltip.add(entry.getLeft().formatted(Formatting.GRAY));
 			}
 		}
 

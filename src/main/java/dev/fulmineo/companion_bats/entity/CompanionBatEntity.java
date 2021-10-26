@@ -83,6 +83,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -354,7 +355,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return super.isInvulnerableTo(damageSource) || ((damageSource.isMagic() || damageSource == DamageSource.WITHER) && this.abilities.has(CompanionBatAbility.MAGIC_PROTECTION));
+		return super.isInvulnerableTo(damageSource) || ((damageSource.isMagic() || damageSource == DamageSource.WITHER) && this.abilities.hasAbility(CompanionBatAbility.MAGIC_PROTECTION));
 	}
 
 	public boolean damage(DamageSource source, float amount) {
@@ -367,10 +368,10 @@ public class CompanionBatEntity extends TameableEntity {
 				}
 			}
 
-			if (!source.bypassesArmor() && source != DamageSource.LAVA && this.abilities.has(CompanionBatAbility.BLOCK_ATTACK)) {
+			if (!source.bypassesArmor() && source != DamageSource.LAVA && this.abilities.hasAbility(CompanionBatAbility.BLOCK_ATTACK)) {
 				int roll = this.world.random.nextInt(100);
 				if (roll < this.abilities.getValue(CompanionBatAbility.BLOCK_ATTACK)) {
-					if (this.abilities.has(CompanionBatAbility.COUNTER_ATTACK) && source.getAttacker() instanceof LivingEntity) {
+					if (this.abilities.hasAbility(CompanionBatAbility.COUNTER_ATTACK) && source.getAttacker() instanceof LivingEntity) {
 						LivingEntity target = (LivingEntity) source.getAttacker();
 						LivingEntity owner = this.getOwner();
 						if (target != owner && this.canAttackWithOwner(target, this.getOwner()) && this.isWithinDistanceToAttack(target)){
@@ -502,7 +503,7 @@ public class CompanionBatEntity extends TameableEntity {
 
 	private float getAttackDamage(Entity target) {
 		float attackDamage = (float) ((int) this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
-		if (this.abilities.has(CompanionBatAbility.SNEAK_ATTACK) && target instanceof LivingEntity && this.isBehind((LivingEntity) target)) {
+		if (this.abilities.hasAbility(CompanionBatAbility.SNEAK_ATTACK) && target instanceof LivingEntity && this.isBehind((LivingEntity) target)) {
 			attackDamage += attackDamage * this.abilities.getValue(CompanionBatAbility.SNEAK_ATTACK) / 4;
 			this.isSneakAttacking = true;
 		}
@@ -517,25 +518,14 @@ public class CompanionBatEntity extends TameableEntity {
 		float damageDealt = healthBefore - healthAfter;
 		if (damageDealt > 0) {
 			this.gainExp(CompanionBats.CONFIG.expGain);
-			if (this.abilities.has(CompanionBatAbility.LIFESTEAL)) {
+			if (this.abilities.hasAbility(CompanionBatAbility.LIFESTEAL)) {
 				this.heal(damageDealt * this.abilities.getValue(CompanionBatAbility.LIFESTEAL) / 100);
 			}
-			if (this.abilities.has(CompanionBatAbility.BURN)) {
+			if (this.abilities.hasAbility(CompanionBatAbility.BURN)) {
 				target.setOnFireFor(this.abilities.getValue(CompanionBatAbility.BURN));
 			}
-			if (target instanceof LivingEntity){
-				LivingEntity livingTarget = (LivingEntity)target;
-				if (this.abilities.has(CompanionBatAbility.SLOWNESS)) {
-					livingTarget.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, this.abilities.getValue(CompanionBatAbility.SLOWNESS)));
-				}
-				if (this.abilities.has(CompanionBatAbility.WEAKNESS)) {
-					livingTarget.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 60, this.abilities.getValue(CompanionBatAbility.WEAKNESS)));
-				}
-				if (this.abilities.has(CompanionBatAbility.WITHER)) {
-					livingTarget.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 60, this.abilities.getValue(CompanionBatAbility.WITHER)));
-				}
-			}
-			if (this.abilities.has(CompanionBatAbility.COMBO_ATTACK)) {
+			if (target instanceof LivingEntity) this.abilities.applyOnHitEffects((LivingEntity)target);
+			if (this.abilities.hasAbility(CompanionBatAbility.COMBO_ATTACK)) {
 				this.increaseComboLevel();
 			}
 			if (healthAfter <= 0 && this.hasTeleport){
@@ -808,9 +798,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void setCurrentClassLevelAbilities() {
-		if (this.currentClass == null) {
-			return;
-		}
+		if (this.currentClass == null) return;
 		CompanionBatClassLevel[] classLevels = ServerDataManager.classes.get(this.currentClass).levels;
 		this.abilities.addFromClassLevel(classLevels[this.classLevel]);
 	}
@@ -821,68 +809,68 @@ public class CompanionBatEntity extends TameableEntity {
 			this.goalSelector.add(4, new CompanionBatFollowOwnerGoal(this, 1.0D, 2.5F, 24.0F));
 			this.goalSelector.add(5, new CompanionBatTransferItemsToOwnerGoal(this, 2.5F));
 			this.goalSelector.add(6, new CompanionBatRoostGoal(this, 0.75F, 4.0F, CompanionBats.CONFIG.roostStartTicks));
-			if (!this.abilities.has(CompanionBatAbility.CANNOT_ATTACK)){
-				if (this.abilities.has(CompanionBatAbility.DYNAMITE)){
+			if (!this.abilities.hasAbility(CompanionBatAbility.CANNOT_ATTACK)){
+				if (this.abilities.hasAbility(CompanionBatAbility.DYNAMITE)){
 					this.goalSelector.add(1, new CompanionBatRangedAttackGoal(this, 5.0F, 9.0F, this::dynamiteAttack));
-				} else if (this.abilities.has(CompanionBatAbility.TRIDENT)) {
+				} else if (this.abilities.hasAbility(CompanionBatAbility.TRIDENT)) {
 					this.goalSelector.add(1, new CompanionBatRangedAttackGoal(this, 1.0F, 12.0F, this::tridentAttack));
 				}
 				this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0D, true));
 				this.targetSelector.add(1, new CompanionBatTrackOwnerAttackerGoal(this));
 				this.targetSelector.add(2, new CompanionBatAttackWithOwnerGoal(this));
 				this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge());
-				if (this.abilities.has(CompanionBatAbility.ATTACK_EVERYONE)){
+				if (this.abilities.hasAbility(CompanionBatAbility.ATTACK_EVERYONE)){
 					this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_EVERYONE));
-				} else if (this.abilities.has(CompanionBatAbility.ATTACK_HOSTILES)){
+				} else if (this.abilities.hasAbility(CompanionBatAbility.ATTACK_HOSTILES)){
 					this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_HOSTILES));
-				} else if (this.abilities.has(CompanionBatAbility.ATTACK_PASSIVE)){
+				} else if (this.abilities.hasAbility(CompanionBatAbility.ATTACK_PASSIVE)){
 					this.targetSelector.add(4, new CompanionBatTargetSelectorGoal(this, CompanionBatAbility.ATTACK_PASSIVE));
 				}
 			}
 		}
-		if (this.abilities.has(CompanionBatAbility.EMERGENCY_POTION) || this.abilities.has(CompanionBatAbility.EFFECT_POTION)) {
+		if (this.abilities.hasAbility(CompanionBatAbility.EMERGENCY_POTION) || this.abilities.hasAbility(CompanionBatAbility.EFFECT_POTION)) {
 			if (!this.hasPotionGoal){
 				this.goalSelector.add(7, new CompanionBatThrowPotionGoal(this, 3.0F, CompanionBats.CONFIG.emergencyPotionTicks, CompanionBats.CONFIG.effectPotionTicks));
 				this.hasPotionGoal = true;
 			}
 		}
-		if (this.abilities.has(CompanionBatAbility.INCREASED_ARMOR)) {
+		if (this.abilities.hasAbility(CompanionBatAbility.INCREASED_ARMOR)) {
 			EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR);
 			if (!firstTime) attr.removeModifier(BAT_ARMOR_BONUS_ID);
 			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_ARMOR_BONUS_ID, "Ability armor bonus", this.abilities.getValue(CompanionBatAbility.INCREASED_ARMOR), EntityAttributeModifier.Operation.ADDITION));
 		}
-		if (this.abilities.has(CompanionBatAbility.INCREASED_ATTACK)) {
+		if (this.abilities.hasAbility(CompanionBatAbility.INCREASED_ATTACK)) {
 			EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 			if (!firstTime) attr.removeModifier(BAT_ATTACK_BONUS_ID);
 			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_ATTACK_BONUS_ID, "Ability attack bonus", (double) (attr.getBaseValue() * this.abilities.getValue(CompanionBatAbility.INCREASED_ATTACK) / 100), EntityAttributeModifier.Operation.ADDITION));
 		}
-		if (this.abilities.has(CompanionBatAbility.INCREASED_SPEED)) {
+		if (this.abilities.hasAbility(CompanionBatAbility.INCREASED_SPEED)) {
 			EntityAttributeInstance attr = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 			if (!firstTime) attr.removeModifier(BAT_SPEED_BONUS_ID);
 			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_SPEED_BONUS_ID, "Ability speed bonus", (double) (attr.getBaseValue() * this.abilities.getValue(CompanionBatAbility.INCREASED_SPEED) / 100), EntityAttributeModifier.Operation.ADDITION));
 		}
-		if (this.abilities.has(CompanionBatAbility.FIRE_RESISTANCE)) {
+		if (this.abilities.hasAbility(CompanionBatAbility.FIRE_RESISTANCE)) {
 			this.hasFireResistance = true;
 		}
-		if (this.abilities.has(CompanionBatAbility.TELEPORT)) {
+		if (this.abilities.hasAbility(CompanionBatAbility.TELEPORT)) {
 			this.hasTeleport = true;
 		}
-		if (this.abilities.has(CompanionBatAbility.ADVENTURER_AURA)) {
+		if (this.abilities.hasAbility(CompanionBatAbility.ADVENTURER_AURA)) {
 			this.hasAdventurerAura = true;
 		}
-		if (this.abilities.has(CompanionBatAbility.MINER_AURA)) {
+		if (this.abilities.hasAbility(CompanionBatAbility.MINER_AURA)) {
 			this.hasMinerAura = true;
 		}
-		if (this.abilities.has(CompanionBatAbility.MERLING_AURA)) {
+		if (this.abilities.hasAbility(CompanionBatAbility.MERLING_AURA)) {
 			this.hasMerlingAura = true;
 		}
-		if (this.abilities.has(CompanionBatAbility.NATURAL_REGENERATION)) {
+		if (this.abilities.hasAbility(CompanionBatAbility.NATURAL_REGENERATION)) {
 			this.hasNaturalRegeneration = true;
 		}
-		if (this.abilities.has(CompanionBatAbility.SWIM)) {
+		if (this.abilities.hasAbility(CompanionBatAbility.SWIM)) {
 			this.canSwim = true;
 		}
-		if (this.abilities.has(CompanionBatAbility.LOOTING)) {
+		if (this.abilities.hasAbility(CompanionBatAbility.LOOTING)) {
 			ItemStack stack = new ItemStack(Items.STICK);
 			stack.addEnchantment(Enchantments.LOOTING, this.abilities.getValue(CompanionBatAbility.LOOTING));
 			this.equipStack(EquipmentSlot.MAINHAND, stack);
@@ -966,17 +954,18 @@ public class CompanionBatEntity extends TameableEntity {
 	protected void notifyClassLevelUp(int classLevel, CompanionBatClassLevel[] classLevels) {
 		MutableText message = new TranslatableText("entity.companion_bats.bat.class_level_up", this.hasCustomName() ? this.getCustomName() : new TranslatableText("entity.companion_bats.bat.your_bat"), this.currentClass.toString(), classLevel + 1);
 		if (classLevels[classLevel].ability != null){
+			CompanionBatAbilities ability = new CompanionBatAbilities();
+			ability.addFromClassLevel(classLevels[classLevel]);
+			Pair<MutableText, Integer> pair = ability.toTranslatedList().get(0);
 			message.append("\n");
 			String obtainedOrLevelUp = "ability_obtained";
 			if (classLevels[classLevel].permanent){
 				message.append(new TranslatableText("entity.companion_bats.bat.permanent_ability").formatted(Formatting.LIGHT_PURPLE)).append(" ");
 			} else {
 				message.append(new TranslatableText("entity.companion_bats.bat.ability").formatted(Formatting.GREEN)).append(" ");
-				if (this.abilities.has(classLevels[classLevel].ability)){
-					obtainedOrLevelUp = "ability_level_up";
-				}
+				if (this.abilities.has(classLevels[classLevel].abilityType, classLevels[classLevel].ability)) obtainedOrLevelUp = "ability_level_up";
 			}
-			message.append(new TranslatableText("entity.companion_bats.bat."+obtainedOrLevelUp, classLevels[classLevel].ability.toTranslatedText()));
+			message.append(new TranslatableText("entity.companion_bats.bat."+obtainedOrLevelUp, pair.getLeft()));
 		}
 		((PlayerEntity) this.getOwner()).sendMessage(message, false);
 	}

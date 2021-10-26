@@ -28,12 +28,30 @@ public class CompanionBatClassLevel {
 		this.abilityLevelIncrease = abilityLevelIncrease;
 	}
 
+	public int getAbilityLevelIncrease() {
+		return this.abilityLevelIncrease == 0 ? 1 : this.abilityLevelIncrease;
+	}
+
+	public static int getClassLevelByExp(CompanionBatClassLevel[] classLevels, int exp) {
+		for (int i = classLevels.length - 1; i >= 0; i--) {
+			if (classLevels[i].totalExp <= exp) {
+				return i;
+			}
+		}
+		return classLevels.length - 1;
+	}
+
 	public NbtCompound writeNbt(NbtCompound nbt) {
 		nbt.putInt("totalExp", this.totalExp);
+		if (this.ability != null) nbt.putString("ability", this.ability.toString());
 		return nbt;
 	}
 
 	public static CompanionBatClassLevel fromNbt(NbtCompound nbt) {
-		return new CompanionBatClassLevel(nbt.getInt("totalExp"));
+		if (nbt.contains("ability")) {
+			return new CompanionBatClassLevel(nbt.getInt("totalExp"), CompanionBatAbility.valueOf(nbt.getString("ability")));
+		} else {
+			return new CompanionBatClassLevel(nbt.getInt("totalExp"));
+		}
 	}
 }

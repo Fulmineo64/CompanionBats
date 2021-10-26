@@ -8,7 +8,7 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-public class CompanionBatAccessoryData implements ContentData {
+public class CompanionBatAccessory implements ContentData {
 	public String name;
 	public String ability;
 	public int abilityLevel = 1;

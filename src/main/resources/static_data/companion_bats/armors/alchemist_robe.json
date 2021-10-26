@@ -1,5 +1,5 @@
 {
 	"name": "alchemist_robe",
-	"className": "ALCHEMIST",
+	"className": "companion_bats:alchemist",
 	"chest": "companion_bats:chests/swamp_hut"
 }

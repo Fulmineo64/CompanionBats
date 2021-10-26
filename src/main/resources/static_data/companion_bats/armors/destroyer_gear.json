@@ -1,5 +1,5 @@
 {
 	"name": "destroyer_gear",
-	"className": "DESTROYER",
+	"className": "companion_bats:destroyer",
 	"chest": "minecraft:chests/jungle_temple"
 }

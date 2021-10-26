@@ -34,8 +34,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import dev.fulmineo.companion_bats.config.CompanionBatsConfig;
-import dev.fulmineo.companion_bats.data.CompanionBatAccessoryData;
-import dev.fulmineo.companion_bats.data.CompanionBatArmorData;
+import dev.fulmineo.companion_bats.data.CompanionBatAccessory;
+import dev.fulmineo.companion_bats.data.CompanionBatArmor;
 import dev.fulmineo.companion_bats.data.ServerDataManager;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.entity.DynamiteEntity;
@@ -43,12 +43,14 @@ import dev.fulmineo.companion_bats.feature.CaveHouseFeature;
 import dev.fulmineo.companion_bats.feature.CaveHouseGenerator;
 import dev.fulmineo.companion_bats.init.CompanionBatCommandInit;
 import dev.fulmineo.companion_bats.init.CompanionBatLootTableInit;
+import dev.fulmineo.companion_bats.init.ServerEventInit;
 import dev.fulmineo.companion_bats.item.CompanionBatCommandFluteAttackItem;
 import dev.fulmineo.companion_bats.item.CompanionBatCommandFluteGuardItem;
 import dev.fulmineo.companion_bats.item.CompanionBatCommandFluteRestItem;
 import dev.fulmineo.companion_bats.item.CompanionBatExperiencePieItem;
 import dev.fulmineo.companion_bats.item.CompanionBatFluteItem;
 import dev.fulmineo.companion_bats.item.CompanionBatItem;
+import dev.fulmineo.companion_bats.network.ServerNetworkManager;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
 import draylar.staticcontent.StaticContent;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -62,7 +64,8 @@ public class CompanionBats implements ModInitializer {
     // Identifiers
 
     public static final String MOD_ID = "companion_bats";
-    public static final Identifier REQUEST_CLASS_LEVELS_DATA_ID = new Identifier(MOD_ID, "request_class_levels_data_packet");
+    public static final Identifier REQUEST_CLIENT_DATA_ID = new Identifier(MOD_ID, "request_client_data_packet");
+    public static final Identifier TRANSFER_CLIENT_DATA_ID = new Identifier(MOD_ID, "transfer_client_data_packet");
     public static final ScreenHandlerType<CompanionBatScreenHandler> BAT_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(new Identifier(MOD_ID, "bat_item"), CompanionBatScreenHandler::new);
 
     // Entities
@@ -118,11 +121,11 @@ public class CompanionBats implements ModInitializer {
 
 		// Accessories
 
-		StaticContent.load(new Identifier(CompanionBats.MOD_ID, "accessories"), CompanionBatAccessoryData.class);
+		StaticContent.load(new Identifier(CompanionBats.MOD_ID, "accessories"), CompanionBatAccessory.class);
 
 		// Armors
 
-		StaticContent.load(new Identifier(CompanionBats.MOD_ID, "armors"), CompanionBatArmorData.class);
+		StaticContent.load(new Identifier(CompanionBats.MOD_ID, "armors"), CompanionBatArmor.class);
 
 		// Structure
 
@@ -139,11 +142,16 @@ public class CompanionBats implements ModInitializer {
 			BiomeSelectors.foundInOverworld().and(BiomeSelectors.excludeByKey(BiomeKeys.DEEP_OCEAN, BiomeKeys.DEEP_COLD_OCEAN, BiomeKeys.DEEP_WARM_OCEAN, BiomeKeys.DEEP_FROZEN_OCEAN, BiomeKeys.DEEP_LUKEWARM_OCEAN))
 		, myConfigured);
 
+		// Networking
+
+		ServerNetworkManager.registerClientReceiver();
+
 		// Init
 
 		CompanionBatLootTableInit.init();
 		CompanionBatCommandInit.init();
 		ServerDataManager.init();
+		ServerEventInit.init();
     }
 
 	public static void info(String message){

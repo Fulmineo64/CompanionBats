@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import dev.fulmineo.companion_bats.data.CompanionBatClass;
+import dev.fulmineo.companion_bats.data.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.data.EntityData;
-import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
-import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import net.minecraft.item.ItemStack;
@@ -30,24 +30,24 @@ public class CompanionBatAbilities {
 
 	public void addFromClassLevel(CompanionBatClassLevel classLevel){
 		if (classLevel != null){
-			this.add(classLevel.ability, classLevel.abilityLevelIncrease);
+			this.add(classLevel.ability, classLevel.getAbilityLevelIncrease());
 		}
 	}
 
-	public void setFromNbt(EntityData entityData) {
-		CompanionBatClass currentClass = null;
+	public void setFromNbt(Map<String, CompanionBatClass> classes, EntityData entityData) {
+		String currentClass = "";
 		ItemStack armorStack = ItemStack.fromNbt(entityData.getArmor());
 		if (armorStack.getItem() instanceof CompanionBatArmorItem) {
 			CompanionBatArmorItem armor = (CompanionBatArmorItem) armorStack.getItem();
-			currentClass = armor.getBatClass();
+			currentClass = armor.getClassName();
 		}
-		for (CompanionBatClass batClass : CompanionBatClass.values()) {
-			float classExp = entityData.getClassExp(batClass);
-			for (CompanionBatClassLevel level : CompanionBatLevels.CLASS_LEVELS.get(batClass)) {
+		for (Entry<String, CompanionBatClass> entry: classes.entrySet()) {
+			float classExp = entityData.getClassExp(entry.getKey());
+			for (CompanionBatClassLevel level : entry.getValue().levels) {
 				if (level.totalExp > classExp) {
 					break;
 				}
-				if (currentClass == batClass || level.permanent) {
+				if (level.permanent || currentClass.equals(entry.getKey())) {
 					this.addFromClassLevel(level);
 				}
 			}

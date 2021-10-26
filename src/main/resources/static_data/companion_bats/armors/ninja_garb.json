@@ -1,5 +1,5 @@
 {
 	"name": "ninja_garb",
-	"className": "NINJA",
+	"className": "companion_bats:ninja",
 	"chest": "minecraft:chests/end_city_treasure"
 }

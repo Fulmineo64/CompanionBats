@@ -1,5 +1,5 @@
 {
 	"name": "vampiric_attire",
-	"className": "VAMPIRE",
+	"className": "companion_bats:vampire",
 	"chest": "minecraft:chests/woodland_mansion"
 }

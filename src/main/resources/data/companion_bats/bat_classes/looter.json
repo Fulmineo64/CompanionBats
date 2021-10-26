@@ -1,0 +1,14 @@
+{
+	"levels": [
+		{ "totalExp": 0 },
+		{ "totalExp": 50, "ability": "INCREASED_SPEED" },
+		{ "totalExp": 150, "ability": "LOOTING" },
+		{ "totalExp": 275, "ability": "INCREASED_SPEED" },
+		{ "totalExp": 425, "ability": "LOOTING" },
+		{ "totalExp": 600, "ability": "INCREASED_SPEED" },
+		{ "totalExp": 800, "ability": "LOOTING" },
+		{ "totalExp": 1025, "ability": "INCREASED_SPEED" },
+		{ "totalExp": 1275, "ability": "ADVENTURER_AURA" },
+		{ "totalExp": 1600, "ability": "LOOTING", "permanent": true }
+	]
+}

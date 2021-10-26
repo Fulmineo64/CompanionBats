@@ -10,10 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import dev.fulmineo.companion_bats.CompanionBatAbilities;
 import dev.fulmineo.companion_bats.CompanionBatAbility;
 import dev.fulmineo.companion_bats.CompanionBats;
-import dev.fulmineo.companion_bats.data.CompanionBatClassLevel;
-import dev.fulmineo.companion_bats.data.CompanionBatCombatLevel;
+import dev.fulmineo.companion_bats.data.ClientDataManager;
 import dev.fulmineo.companion_bats.data.EntityData;
-import dev.fulmineo.companion_bats.data.ServerDataManager;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;
 import net.fabricmc.api.EnvType;
@@ -27,7 +25,6 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -59,27 +56,6 @@ public class CompanionBatItem extends Item {
                     @Override
                     public void writeScreenOpeningData(ServerPlayerEntity serverPlayerEntity, PacketByteBuf packetByteBuf) {
                         packetByteBuf.writeEnumConstant(hand);
-
-						NbtCompound nbt = new NbtCompound();
-
-						// Combat levels
-						NbtList combatLevels = new NbtList();
-						for (CompanionBatCombatLevel l: ServerDataManager.combatLevels) {
-							combatLevels.add(l.writeNbt(new NbtCompound()));
-						}
-						nbt.put("combatLevels", combatLevels);
-
-						// Class levels
-						NbtCompound classLevels = new NbtCompound();
-						for (Entry<String, CompanionBatClassLevel[]> entry: ServerDataManager.classLevels.entrySet()) {
-							NbtList levels = new NbtList();
-							for (CompanionBatClassLevel cl: entry.getValue()) {
-								levels.add(cl.writeNbt(new NbtCompound()));
-							}
-							classLevels.put(entry.getKey(), levels);
-						}
-						nbt.put("classLevels", classLevels);
-						packetByteBuf.writeNbt(nbt);
                     }
 
                     @Override
@@ -127,7 +103,7 @@ public class CompanionBatItem extends Item {
 	@Environment(EnvType.CLIENT)
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		CompanionBatAbilities abilities = new CompanionBatAbilities();
-		abilities.setFromNbt(new EntityData(stack));
+		abilities.setFromNbt(ClientDataManager.classes, new EntityData(stack));
 		Set<Entry<CompanionBatAbility, Integer>> entrySet = abilities.entrySet();
 		if (entrySet.size() > 0){
 			tooltip.add(new TranslatableText("item.companion_bats.bat_item.abilities").formatted(Formatting.AQUA));

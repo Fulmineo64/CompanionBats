@@ -1,6 +1,9 @@
 package dev.fulmineo.companion_bats.data;
 
-import dev.fulmineo.companion_bats.CompanionBatClass;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import net.minecraft.entity.EquipmentSlot;
@@ -62,6 +65,7 @@ public class EntityData {
 		handDropChances.add(NbtFloat.of(0.0F));
 		handDropChances.add(NbtFloat.of(0.0F));
 		tag.put("HandDropChances", handDropChances);
+		tag.put("ClassExp", new NbtCompound());
 	}
 
 	public void toStack(ItemStack itemStack){
@@ -84,12 +88,30 @@ public class EntityData {
 		this.tag.putInt("Exp", exp);
 	}
 
-	public int getClassExp(CompanionBatClass batClass){
-		return this.tag.getInt(getClassExpName(batClass));
+	public int getClassExp(String className){
+		return this.tag.getCompound("ClassExp").getInt(className);
 	}
 
-	public void putClassExp(CompanionBatClass batClass, int classExp){
-		this.tag.putInt(getClassExpName(batClass), classExp);
+	public Map<String, Integer> getClassesExp() {
+		Map<String, Integer> classesExp = new HashMap<>();
+		NbtCompound nbt = this.tag.getCompound("ClassExp");
+		for (String key: nbt.getKeys()) {
+			classesExp.put(key, nbt.getInt(key));
+		}
+		return classesExp;
+	}
+
+	public void putClassExp(String className, int classExp){
+		this.tag.getCompound("ClassExp").putInt(className, classExp);
+	}
+
+	public void putClassesExp(Map<String, Integer> classesExp) {
+		this.tag.put("ClassExp", new NbtCompound());
+		for (Entry<String, Integer> entry : classesExp.entrySet()) {
+			if (entry.getValue() > 0) {
+				this.putClassExp(entry.getKey(), entry.getValue());
+			}
+		}
 	}
 
 	public NbtList getArmorItems(){
@@ -192,19 +214,7 @@ public class EntityData {
 		if (!tag.contains("EntityTag")) {
 			EntityData entityData = new EntityData(batItemStack);
 			entityData.init();
-			if (tag.contains("entityData")){
-				NbtCompound oldEntityData = tag.getCompound("entityData");
-				entityData.putHealth(oldEntityData.getFloat("health"));
-				entityData.putAccessory(oldEntityData.getCompound("accessory"));
-				entityData.putArmor(oldEntityData.getCompound("armor"));
-				entityData.putBundle(oldEntityData.getCompound("bundle"));
-				entityData.putExp(oldEntityData.getInt("exp"));
-				for (CompanionBatClass batClass: CompanionBatClass.values()){
-					entityData.putClassExp(batClass, oldEntityData.getInt(batClass.toString().toLowerCase() + "_exp"));
-				}
-			} else {
-				entityData.putHealth(CompanionBats.CONFIG.baseHealth);
-			}
+			entityData.putHealth(CompanionBats.CONFIG.baseHealth);
 			entityData.toStack(batItemStack);
 		}
 	}

@@ -3,12 +3,11 @@ package dev.fulmineo.companion_bats.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import dev.fulmineo.companion_bats.CompanionBats;
+import dev.fulmineo.companion_bats.data.ClientDataManager;
+import dev.fulmineo.companion_bats.data.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.data.CompanionBatCombatLevel;
 import dev.fulmineo.companion_bats.data.EntityData;
-import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
-import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
-import dev.fulmineo.companion_bats.CompanionBatClass;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
@@ -34,7 +33,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 	private float maxHealth;
 	private float attack;
 	private float speed;
-	private CompanionBatClass currentClass;
+	private String currentClass;
 	private ItemStack armorStack;
 	private PlayerInventory inventory;
 
@@ -54,14 +53,14 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
    	}
 
 	private void setLevel(EntityData entityData){
-		this.level = CompanionBatCombatLevel.getLevelByExp(this.handler.combatLevels, entityData.getExp());
+		this.level = CompanionBatCombatLevel.getLevelByExp(ClientDataManager.combatLevels, entityData.getExp());
 
-		if (this.level+1 < this.handler.combatLevels.length){
-			this.currentLevelExp = entityData.getExp() - this.handler.combatLevels[this.level].totalExp;
-			this.nextLevelExp = this.handler.combatLevels[this.level+1].totalExp - this.handler.combatLevels[this.level].totalExp;
+		if (this.level+1 < ClientDataManager.combatLevels.length){
+			this.currentLevelExp = entityData.getExp() - ClientDataManager.combatLevels[this.level].totalExp;
+			this.nextLevelExp = ClientDataManager.combatLevels[this.level+1].totalExp - ClientDataManager.combatLevels[this.level].totalExp;
 		} else {
 			this.currentLevelExp = entityData.getExp();
-			this.nextLevelExp = this.handler.combatLevels[this.level].totalExp;
+			this.nextLevelExp = ClientDataManager.combatLevels[this.level].totalExp;
 			this.maxExpReached = this.currentLevelExp >= this.nextLevelExp;
 		}
 	}
@@ -69,11 +68,11 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 	private void setClassLevel(EntityData entityData){
 		this.armorStack = ItemStack.fromNbt((NbtCompound)entityData.getArmor());
 		if (this.armorStack.getItem() instanceof CompanionBatArmorItem){
-			this.currentClass = ((CompanionBatArmorItem)this.armorStack.getItem()).getBatClass();
+			this.currentClass = ((CompanionBatArmorItem)this.armorStack.getItem()).getClassName();
 			if (this.currentClass != null){
 				int classExp = entityData.getClassExp(this.currentClass);
-				this.classLevel = CompanionBatLevels.getClassLevelByExp(this.currentClass, classExp);
-				CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
+				CompanionBatClassLevel[] classLevels = ClientDataManager.classes.get(this.currentClass).levels;
+				this.classLevel = CompanionBatClassLevel.getClassLevelByExp(classLevels, classExp);
 				if (this.classLevel+1 < classLevels.length){
 					this.currentClassLevelExp = classExp - classLevels[this.classLevel].totalExp;
 					this.nextClassLevelExp = classLevels[this.classLevel+1].totalExp - classLevels[this.classLevel].totalExp;
@@ -91,9 +90,9 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 
 	private void setAttributes(EntityData entityData){
 		this.currentHealth = Math.round(entityData.getHealth() * 10F) / 10F;
-		this.maxHealth = CompanionBatCombatLevel.getLevelHealth(this.handler.combatLevels, this.level);
-		this.attack = CompanionBatCombatLevel.getLevelAttack(this.handler.combatLevels, this.level);
-		this.speed = Math.round(CompanionBatCombatLevel.getLevelSpeed(this.handler.combatLevels, this.level) * 100F) / 100F;
+		this.maxHealth = CompanionBatCombatLevel.getLevelHealth(ClientDataManager.combatLevels, this.level);
+		this.attack = CompanionBatCombatLevel.getLevelAttack(ClientDataManager.combatLevels, this.level);
+		this.speed = Math.round(CompanionBatCombatLevel.getLevelSpeed(ClientDataManager.combatLevels, this.level) * 100F) / 100F;
 	}
 
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
@@ -124,7 +123,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 
 		if (this.currentClass != null){
 			this.textRenderer.draw(matrices, new TranslatableText("gui.companion_bats.bat.class"), x, y, 0xFFFFFFFF);
-			this.textRenderer.draw(matrices, new TranslatableText("gui.companion_bats.bat.class." + this.currentClass.toString()), x + strideX, y, 0xFFFFFFFF);
+			this.textRenderer.draw(matrices, new TranslatableText("class." + this.currentClass.replace(":", ".")), x + strideX, y, 0xFFFFFFFF);
 
 			y += strideY;
 

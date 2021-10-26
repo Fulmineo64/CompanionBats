@@ -1,0 +1,13 @@
+{
+	"levels": [
+		{ "totalExp": 50, "ability": "INCREASED_ATTACK" },
+		{ "totalExp": 150, "ability": "BURN" },
+		{ "totalExp": 275, "ability": "INCREASED_ATTACK" },
+		{ "totalExp": 425, "ability": "BURN" },
+		{ "totalExp": 600, "ability": "INCREASED_ATTACK" },
+		{ "totalExp": 800, "ability": "BURN" },
+		{ "totalExp": 1025, "ability": "INCREASED_ATTACK" },
+		{ "totalExp": 1275, "ability": "FIRE_RESISTANCE" },
+		{ "totalExp": 1600, "ability": "INCREASED_ATTACK", "permanent": true }
+	]
+}

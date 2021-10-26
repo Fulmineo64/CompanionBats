@@ -20,7 +20,7 @@ public class ServerDataManager {
     .create();
 
 	public static CompanionBatCombatLevel[] combatLevels;
-	public static Map<String, CompanionBatClassLevel[]> classLevels = new HashMap<>();
+	public static Map<String, CompanionBatClass> classes = new HashMap<>();
 
 	public static void init(){
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
@@ -31,9 +31,9 @@ public class ServerDataManager {
 
 			@Override
 			public void reload(ResourceManager manager) {
-				classLevels.clear();
+				classes.clear();
 
-				Identifier combatLevelsId = new Identifier("companion_bats:levels/combat_levels.json");
+				Identifier combatLevelsId = new Identifier("companion_bats:bat_combat_levels.json");
 				if (!manager.containsResource(combatLevelsId)) {
 					CompanionBats.info("Missing combat levels");
 					return;
@@ -50,11 +50,12 @@ public class ServerDataManager {
 				}
 
 
-				for(Identifier id : manager.findResources("levels/classes", path -> path.endsWith(".json"))) {
+				for(Identifier id : manager.findResources("bat_classes", path -> path.endsWith(".json"))) {
+					CompanionBats.info(id.toString());
 					try(InputStream stream = manager.getResource(id).getInputStream()) {
 						try {
-							CompanionBatClassLevels data = GSON.fromJson(new String(stream.readAllBytes()), CompanionBatClassLevels.class);
-							classLevels.put(data.className, data.levels);
+							String className = id.getNamespace() + ":" + id.getPath().replace("bat_classes/", "").replace(".json", "");
+							classes.put(className, GSON.fromJson(new String(stream.readAllBytes()), CompanionBatClass.class));
 						} catch (Exception e) {
 							CompanionBats.info("Couldn't parse class levels "+id.toString());
 						}

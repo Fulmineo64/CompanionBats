@@ -1,0 +1,14 @@
+{
+	"levels": [
+		{ "totalExp": 0 },
+		{ "totalExp": 50, "ability": "EFFECT_POTION" },
+		{ "totalExp": 150 },
+		{ "totalExp": 275, "ability": "EFFECT_POTION" },
+		{ "totalExp": 425, "ability": "INCREASED_SPEED" },
+		{ "totalExp": 600, "ability": "EMERGENCY_POTION" },
+		{ "totalExp": 800, "ability": "EFFECT_POTION" },
+		{ "totalExp": 1025, "ability": "INCREASED_SPEED" },
+		{ "totalExp": 1275, "ability": "EFFECT_POTION" },
+		{ "totalExp": 1600, "ability": "EMERGENCY_POTION", "permanent": true }
+	]
+}

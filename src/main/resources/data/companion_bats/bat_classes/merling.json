@@ -1,0 +1,14 @@
+{
+	"levels": [
+		{ "totalExp": 0 },
+		{ "totalExp": 50, "ability": "SWIM" },
+		{ "totalExp": 150, "ability": "SLOWNESS" },
+		{ "totalExp": 275, "ability": "INCREASED_ATTACK" },
+		{ "totalExp": 425, "ability": "TRIDENT" },
+		{ "totalExp": 600, "ability": "MERLING_AURA" },
+		{ "totalExp": 800, "ability": "SLOWNESS" },
+		{ "totalExp": 1025, "ability": "INCREASED_ATTACK" },
+		{ "totalExp": 1275, "ability": "SLOWNESS" },
+		{ "totalExp": 1600, "ability": "INCREASED_ATTACK", "permanent": true }
+	]
+}

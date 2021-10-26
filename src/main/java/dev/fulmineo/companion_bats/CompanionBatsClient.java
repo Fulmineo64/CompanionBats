@@ -1,6 +1,8 @@
 package dev.fulmineo.companion_bats;
 
 import dev.fulmineo.companion_bats.entity.CompanionBatEntityRenderer;
+import dev.fulmineo.companion_bats.init.ClientEventInit;
+import dev.fulmineo.companion_bats.network.ClientNetworkManager;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.Environment;
@@ -13,8 +15,18 @@ import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 public class CompanionBatsClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+		// Networking
+
+		ClientNetworkManager.registerServerReceiver();
+
+		// Screen
+
         ScreenRegistry.register(CompanionBats.BAT_SCREEN_HANDLER, CompanionBatScreen::new);
         EntityRendererRegistry.register(CompanionBats.COMPANION_BAT, CompanionBatEntityRenderer::new);
         EntityRendererRegistry.register(CompanionBats.DYNAMITE, FlyingItemEntityRenderer::new);
+
+		// Init
+
+		ClientEventInit.init();
     }
 }

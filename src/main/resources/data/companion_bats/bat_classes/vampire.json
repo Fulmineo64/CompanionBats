@@ -1,0 +1,14 @@
+{
+	"levels": [
+		{ "totalExp": 0 },
+		{ "totalExp": 50 },
+		{ "totalExp": 150, "ability": "INCREASED_ARMOR" },
+		{ "totalExp": 275, "ability": "LIFESTEAL" },
+		{ "totalExp": 425 },
+		{ "totalExp": 600, "ability": "INCREASED_ARMOR" },
+		{ "totalExp": 800, "ability": "LIFESTEAL" },
+		{ "totalExp": 1025 },
+		{ "totalExp": 1275, "ability": "INCREASED_ARMOR" },
+		{ "totalExp": 1600, "ability": "LIFESTEAL", "permanent": true }
+	]
+}

@@ -3,12 +3,11 @@ package dev.fulmineo.companion_bats.init;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 import dev.fulmineo.companion_bats.CompanionBats;
+import dev.fulmineo.companion_bats.data.CompanionBatClassLevel;
+import dev.fulmineo.companion_bats.data.CompanionBatCombatLevel;
 import dev.fulmineo.companion_bats.data.EntityData;
-import dev.fulmineo.companion_bats.entity.CompanionBatLevels;
-import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLevel;
-import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatCombatLevel;
+import dev.fulmineo.companion_bats.data.ServerDataManager;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
-import dev.fulmineo.companion_bats.CompanionBatClass;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -34,7 +33,7 @@ public class CompanionBatCommandInit {
 								ItemStack stack = player.getStackInHand(Hand.MAIN_HAND);
 								EntityData entityData = new EntityData(stack);
 								int exp = IntegerArgumentType.getInteger(context, "exp");
-								CompanionBatCombatLevel maxLevel = CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length-1];
+								CompanionBatCombatLevel maxLevel = ServerDataManager.combatLevels[ServerDataManager.combatLevels.length-1];
 								if (exp > maxLevel.totalExp) {
 									exp = maxLevel.totalExp;
 								}
@@ -63,14 +62,14 @@ public class CompanionBatCommandInit {
 								if (armorItem != null){
 									ItemStack armorStack = ItemStack.fromNbt((NbtCompound)armorItem);
 									if (armorStack.getItem() instanceof CompanionBatArmorItem){
-										CompanionBatClass cls = ((CompanionBatArmorItem)armorStack.getItem()).getBatClass();
+										String className = ((CompanionBatArmorItem)armorStack.getItem()).getClassName();
 										int exp = IntegerArgumentType.getInteger(context, "exp");
-										CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(cls);
+										CompanionBatClassLevel[] classLevels = ServerDataManager.classes.get(className).levels;
 										CompanionBatClassLevel maxLevel = classLevels[classLevels.length-1];
 										if (exp > maxLevel.totalExp) {
 											exp = maxLevel.totalExp;
 										}
-										entityData.putClassExp(cls, exp);
+										entityData.putClassExp(className, exp);
 									} else {
 										context.getSource().sendFeedback(new LiteralText("No class found to set exp"), false);
 									}

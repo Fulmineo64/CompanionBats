@@ -13,10 +13,10 @@ import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.Nullable;
 
 import dev.fulmineo.companion_bats.CompanionBats;
+import dev.fulmineo.companion_bats.data.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.data.CompanionBatCombatLevel;
 import dev.fulmineo.companion_bats.data.EntityData;
 import dev.fulmineo.companion_bats.data.ServerDataManager;
-import dev.fulmineo.companion_bats.entity.CompanionBatLevels.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.entity.ai.control.CompanionBatMoveControl;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatAttackWithOwnerGoal;
 import dev.fulmineo.companion_bats.entity.ai.goal.CompanionBatFollowOwnerGoal;
@@ -31,7 +31,6 @@ import dev.fulmineo.companion_bats.CompanionBatAbilities;
 import dev.fulmineo.companion_bats.CompanionBatAbility;
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
-import dev.fulmineo.companion_bats.CompanionBatClass;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -96,7 +95,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private static final TrackedData<Byte> BAT_FLAGS;
 	private static final TrackedData<Byte> COMBO_PARTICLE_LEVEL;
 	public CompanionBatAbilities abilities = new CompanionBatAbilities();
-	private Map<CompanionBatClass, Integer> classesExp = new HashMap<>();
+	private Map<String, Integer> classesExp = new HashMap<>();
 	private int regenTicks = CompanionBats.CONFIG.regenTicks;
 
 	// Constants
@@ -117,7 +116,7 @@ public class CompanionBatEntity extends TameableEntity {
 	public int roostTicks;
 	public int rangedAttackTicks = CompanionBats.CONFIG.dynamiteTicks;
 
-	private CompanionBatClass currentClass;
+	private String currentClass;
 	private int exp = 0;
 	private int classExp = 0;
 	private int level = -1;
@@ -173,7 +172,7 @@ public class CompanionBatEntity extends TameableEntity {
 		this.setAccessoryAbility();
 		this.setArmorAndClass();
 		this.setClassesExp(entityData);
-		this.abilities.setFromNbt(entityData);
+		this.abilities.setFromNbt(ServerDataManager.classes, entityData);
 		this.setAbilitiesEffects(true);
 		this.setPotionTicks(entityData);
 		this.setGuardMode(entityData.getGuardMode());
@@ -740,8 +739,8 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void setExp(int exp) {
-		if (exp > CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length - 1].totalExp) {
-			exp = CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length - 1].totalExp;
+		if (exp > ServerDataManager.combatLevels[ServerDataManager.combatLevels.length - 1].totalExp) {
+			exp = ServerDataManager.combatLevels[ServerDataManager.combatLevels.length - 1].totalExp;
 		}
 		this.exp = exp;
 		this.tryLevelUp();
@@ -752,11 +751,11 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void gainExp(int expToAdd) {
-		if (this.exp != CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length - 1].totalExp) {
+		if (this.exp != ServerDataManager.combatLevels[ServerDataManager.combatLevels.length - 1].totalExp) {
 			this.addExp(expToAdd);
 		}
 		if (this.currentClass != null) {
-			CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
+			CompanionBatClassLevel[] classLevels = ServerDataManager.classes.get(this.currentClass).levels;
 			if (this.classExp != classLevels[classLevels.length - 1].totalExp) {
 				this.addClassExp(expToAdd);
 			}
@@ -768,7 +767,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void setClassExp(int classExp) {
-		CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
+		CompanionBatClassLevel[] classLevels = ServerDataManager.classes.get(this.currentClass).levels;
 		if (classExp > classLevels[classLevels.length - 1].totalExp) {
 			classExp = classLevels[classLevels.length - 1].totalExp;
 		}
@@ -791,8 +790,7 @@ public class CompanionBatEntity extends TameableEntity {
 		ItemStack chestStack = this.getEquippedStack(EquipmentSlot.CHEST);
 		if (chestStack.getItem() instanceof CompanionBatArmorItem) {
 			CompanionBatArmorItem armor = (CompanionBatArmorItem) chestStack.getItem();
-			this.currentClass = armor.getBatClass();
-			this.currentClass = armor.getBatClass();
+			this.currentClass = armor.getClassName();
 			int armorToAdd = armor.getProtectionAmount();
 			if (armorToAdd != 0) {
 				this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addTemporaryModifier(new EntityAttributeModifier(BAT_EQUIPMENT_ARMOR_BONUS_ID, "Equipment armor bonus", (double) armorToAdd, EntityAttributeModifier.Operation.ADDITION));
@@ -801,12 +799,11 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void setClassesExp(EntityData entityData) {
-		for (CompanionBatClass cls : CompanionBatClass.values()) {
-			this.classesExp.put(cls, entityData.getClassExp(cls));
-		}
+		this.classesExp = entityData.getClassesExp();
 		if (this.currentClass != null) {
-			this.classExp = this.classesExp.get(this.currentClass);
-			this.classLevel = CompanionBatLevels.getClassLevelByExp(this.currentClass, (int) this.classExp);
+			Integer exp = this.classesExp.get(this.currentClass);
+			this.classExp = exp == null ? 0 : exp;
+			this.classLevel = CompanionBatClassLevel.getClassLevelByExp(ServerDataManager.classes.get(this.currentClass).levels, (int) this.classExp);
 		}
 	}
 
@@ -814,7 +811,7 @@ public class CompanionBatEntity extends TameableEntity {
 		if (this.currentClass == null) {
 			return;
 		}
-		CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
+		CompanionBatClassLevel[] classLevels = ServerDataManager.classes.get(this.currentClass).levels;
 		this.abilities.addFromClassLevel(classLevels[this.classLevel]);
 	}
 
@@ -918,7 +915,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void tryLevelUp() {
-		if (CompanionBatLevels.LEVELS.length > this.level + 1 && CompanionBatLevels.LEVELS[this.level + 1].totalExp <= this.exp) {
+		if (ServerDataManager.combatLevels.length > this.level + 1 && ServerDataManager.combatLevels[this.level + 1].totalExp <= this.exp) {
 			this.level++;
 			this.notifyLevelUp(this.level);
 			this.setLevelAttributes(this.level);
@@ -927,7 +924,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	private void tryClassLevelUp() {
-		CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
+		CompanionBatClassLevel[] classLevels = ServerDataManager.classes.get(this.currentClass).levels;
 		if (classLevels.length > this.classLevel + 1 && classLevels[this.classLevel + 1].totalExp <= this.classExp) {
 			this.classLevel++;
 			this.notifyClassLevelUp(this.classLevel, classLevels);
@@ -950,17 +947,17 @@ public class CompanionBatEntity extends TameableEntity {
 	protected void notifyLevelUp(int level) {
 		if (level > 0) {
 			MutableText message = new TranslatableText("entity.companion_bats.bat.level_up", this.hasCustomName() ? this.getCustomName() : new TranslatableText("entity.companion_bats.bat.your_bat"), level + 1).append("\n");
-			if (CompanionBatLevels.LEVELS[level].healthBonus > CompanionBatLevels.LEVELS[level - 1].healthBonus) {
+			if (ServerDataManager.combatLevels[level].healthBonus > ServerDataManager.combatLevels[level - 1].healthBonus) {
 				message.append(new LiteralText("+").formatted(Formatting.GOLD)).append(" ");
-				message.append(new TranslatableText("entity.companion_bats.bat.level_up_health", (int) (CompanionBatLevels.LEVELS[level].healthBonus - CompanionBatLevels.LEVELS[level - 1].healthBonus))).append(" ");
+				message.append(new TranslatableText("entity.companion_bats.bat.level_up_health", (int) (ServerDataManager.combatLevels[level].healthBonus - ServerDataManager.combatLevels[level - 1].healthBonus))).append(" ");
 			}
-			if (CompanionBatLevels.LEVELS[level].attackBonus > CompanionBatLevels.LEVELS[level - 1].attackBonus) {
+			if (ServerDataManager.combatLevels[level].attackBonus > ServerDataManager.combatLevels[level - 1].attackBonus) {
 				message.append(new LiteralText("+").formatted(Formatting.GOLD)).append(" ");
-				message.append(new TranslatableText("entity.companion_bats.bat.level_up_attack", (int) (CompanionBatLevels.LEVELS[level].attackBonus - CompanionBatLevels.LEVELS[level - 1].attackBonus))).append(" ");
+				message.append(new TranslatableText("entity.companion_bats.bat.level_up_attack", (int) (ServerDataManager.combatLevels[level].attackBonus - ServerDataManager.combatLevels[level - 1].attackBonus))).append(" ");
 			}
-			if (CompanionBatLevels.LEVELS[level].speedBonus > CompanionBatLevels.LEVELS[level - 1].speedBonus) {
+			if (ServerDataManager.combatLevels[level].speedBonus > ServerDataManager.combatLevels[level - 1].speedBonus) {
 				message.append(new LiteralText("+").formatted(Formatting.GOLD)).append(" ");
-				message.append(new TranslatableText("entity.companion_bats.bat.level_up_speed", Math.round(100 - ((CompanionBats.CONFIG.baseSpeed + CompanionBatLevels.LEVELS[level - 1].speedBonus) / (CompanionBats.CONFIG.baseSpeed + CompanionBatLevels.LEVELS[level].speedBonus) * 100)))).append(" ");
+				message.append(new TranslatableText("entity.companion_bats.bat.level_up_speed", Math.round(100 - ((CompanionBats.CONFIG.baseSpeed + ServerDataManager.combatLevels[level - 1].speedBonus) / (CompanionBats.CONFIG.baseSpeed + ServerDataManager.combatLevels[level].speedBonus) * 100)))).append(" ");
 			}
 			((PlayerEntity) this.getOwner()).sendMessage(message, false);
 		}
@@ -986,11 +983,7 @@ public class CompanionBatEntity extends TameableEntity {
 
 	private void writeExpToTag(EntityData entityData) {
 		entityData.putExp(this.getExp());
-		for (Map.Entry<CompanionBatClass, Integer> entry : this.classesExp.entrySet()) {
-			if (entry.getValue() > 0) {
-				entityData.putClassExp(entry.getKey(), entry.getValue());
-			}
-		}
+		entityData.putClassesExp(this.classesExp);
 		if (this.currentClass != null) {
 			entityData.putClassExp(this.currentClass, this.getClassExp());
 		}
@@ -1045,10 +1038,10 @@ public class CompanionBatEntity extends TameableEntity {
 	public boolean canEat(ItemStack stack){
 		if (stack.isOf(CompanionBats.EXPERIENCE_PIE)){
 			if (this.currentClass != null) {
-				CompanionBatClassLevel[] classLevels = CompanionBatLevels.CLASS_LEVELS.get(this.currentClass);
+				CompanionBatClassLevel[] classLevels = ServerDataManager.classes.get(this.currentClass).levels;
 				if (this.classExp < classLevels[classLevels.length - 1].totalExp) return true;
 			}
-			return this.isInjured() || (this.exp < CompanionBatLevels.LEVELS[CompanionBatLevels.LEVELS.length - 1].totalExp);
+			return this.isInjured() || (this.exp < ServerDataManager.combatLevels[ServerDataManager.combatLevels.length - 1].totalExp);
 		} else {
 			return this.isInjured() && IS_FOOD_ITEM.test(stack);
 		}

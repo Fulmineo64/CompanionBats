@@ -1,14 +1,14 @@
 {
 	"levels": [
 		{ "totalExp": 0 },
-		{ "totalExp": 50, "ability": "SWIM" },
-		{ "totalExp": 150, "ability": "SLOWNESS" },
-		{ "totalExp": 275, "ability": "INCREASED_ATTACK" },
-		{ "totalExp": 425, "ability": "TRIDENT" },
-		{ "totalExp": 600, "ability": "MERLING_AURA" },
-		{ "totalExp": 800, "ability": "SLOWNESS" },
-		{ "totalExp": 1025, "ability": "INCREASED_ATTACK" },
-		{ "totalExp": 1275, "ability": "SLOWNESS" },
-		{ "totalExp": 1600, "ability": "INCREASED_ATTACK", "permanent": true }
+		{ "totalExp": 50, "abilityType": "ability", "ability": "SWIM" },
+		{ "totalExp": 150, "abilityType": "onHitEffect", "ability": "slowness", "duration": 60 },
+		{ "totalExp": 275, "abilityType": "ability", "ability": "INCREASED_ATTACK" },
+		{ "totalExp": 425, "abilityType": "ability", "ability": "TRIDENT" },
+		{ "totalExp": 600, "abilityType": "auraEffect", "ability": "conduit_power" },
+		{ "totalExp": 800, "abilityType": "onHitEffect", "ability": "slowness", "duration": 60 },
+		{ "totalExp": 1025, "abilityType": "ability", "ability": "INCREASED_ATTACK" },
+		{ "totalExp": 1275, "abilityType": "onHitEffect", "ability": "slowness", "duration": 60 },
+		{ "totalExp": 1600, "abilityType": "ability", "ability": "INCREASED_ATTACK", "permanent": true }
 	]
 }

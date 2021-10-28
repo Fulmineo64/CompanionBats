@@ -2,13 +2,13 @@
 	"levels": [
 		{ "totalExp": 0 },
 		{ "totalExp": 50 },
-		{ "totalExp": 150, "ability": "DYNAMITE" },
-		{ "totalExp": 275, "ability": "INCREASED_ARMOR" },
+		{ "totalExp": 150, "abilityType": "ability", "ability": "DYNAMITE" },
+		{ "totalExp": 275, "abilityType": "ability", "ability": "INCREASED_ARMOR" },
 		{ "totalExp": 425 },
-		{ "totalExp": 600, "ability": "DYNAMITE" },
-		{ "totalExp": 800, "ability": "INCREASED_ARMOR" },
+		{ "totalExp": 600, "abilityType": "ability", "ability": "DYNAMITE" },
+		{ "totalExp": 800, "abilityType": "ability", "ability": "INCREASED_ARMOR" },
 		{ "totalExp": 1025 },
-		{ "totalExp": 1275, "ability": "DYNAMITE" },
-		{ "totalExp": 1600, "ability": "INCREASED_ARMOR", "permanent": true }
+		{ "totalExp": 1275, "abilityType": "ability", "ability": "DYNAMITE" },
+		{ "totalExp": 1600, "abilityType": "ability", "ability": "INCREASED_ARMOR", "permanent": true }
 	]
 }

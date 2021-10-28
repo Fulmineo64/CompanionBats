@@ -1,13 +1,16 @@
-# 1.18.0
+# 2.0.0
 ## Tweaks and Tridents
-- Reworked the mod to be data-driven meaning that you'll be able to create your own accessories and armors with just some JSONs and a texture!
+- Reworked the mod to be data-driven, meaning that you'll be able to create your own accessories, armors and classes with just some JSONs and a texture!
+- Added JSON class representation
+- Added brand new system to assign bat abilities, you can now specify On Hit Effects, Active Effects and Aura Effects in the class JSON
 - Added configuration for the Companion Bat's variables
 - Added the ability to swim to the Companion Bat
 - Added new class the Merling
 - New ability "Swim" that makes the bat faster in water (and also lava)
 - New ability "Trident" that makes the bat launch tridents that apply on-hit effects!
-- New ability "Merling Aura" that grants the bat and its owner a constant Conduit Power effect
 - Buffed the "Plated Boots" accessory
+- Increased Ninja's teleport ticks from 7 to 70
+- Dropped compatibility with versions prior to 1.8
 
 # 1.17.9
 - Added wither immunity to the Ankh

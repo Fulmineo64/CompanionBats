@@ -13,6 +13,8 @@ import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.Nullable;
 
 import dev.fulmineo.companion_bats.CompanionBats;
+import dev.fulmineo.companion_bats.data.ClientDataManager;
+import dev.fulmineo.companion_bats.data.CompanionBatClass;
 import dev.fulmineo.companion_bats.data.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.data.CompanionBatCombatLevel;
 import dev.fulmineo.companion_bats.data.EntityData;
@@ -122,11 +124,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private int classExp = 0;
 	private int level = -1;
 	private int classLevel = -1;
-	private boolean hasFireResistance;
 	private boolean hasTeleport;
-	private boolean hasAdventurerAura;
-	private boolean hasMinerAura;
-	private boolean hasMerlingAura;
 	private boolean hasPotionGoal;
 	private boolean hasNaturalRegeneration;
 	private boolean canSwim;
@@ -315,21 +313,8 @@ public class CompanionBatEntity extends TameableEntity {
 				this.effectTicks--;
 				if (this.effectTicks == 0){
 					this.effectTicks = CompanionBats.CONFIG.statusEffectTicks> 200 ? CompanionBats.CONFIG.statusEffectTicks- 200 : CompanionBats.CONFIG.statusEffectTicks;
-					if (this.hasFireResistance) {
-						this.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, this.effectTicks + 20, 0, false, false));
-					}
-
-					if (this.hasAdventurerAura || this.hasMinerAura || this.hasMerlingAura){
-						LivingEntity owner = this.getOwner();
-						if (owner != null){
-							if (this.hasAdventurerAura) owner.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, CompanionBats.CONFIG.statusEffectTicks, 0, false, false));
-							if (this.hasMinerAura) owner.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, CompanionBats.CONFIG.statusEffectTicks, 0, false, false));
-							if (this.hasMerlingAura){
-								owner.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, CompanionBats.CONFIG.statusEffectTicks, 0, false, false));
-								this.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, this.effectTicks + 20, 0, false, false));
-							}
-						}
-					}
+					this.abilities.applyActiveEffects(this, this.effectTicks + 20);
+					this.abilities.applyAuraEffects(this, CompanionBats.CONFIG.statusEffectTicks);
 				}
 			}
 		}
@@ -849,20 +834,8 @@ public class CompanionBatEntity extends TameableEntity {
 			if (!firstTime) attr.removeModifier(BAT_SPEED_BONUS_ID);
 			attr.addTemporaryModifier(new EntityAttributeModifier(BAT_SPEED_BONUS_ID, "Ability speed bonus", (double) (attr.getBaseValue() * this.abilities.getValue(CompanionBatAbility.INCREASED_SPEED) / 100), EntityAttributeModifier.Operation.ADDITION));
 		}
-		if (this.abilities.hasAbility(CompanionBatAbility.FIRE_RESISTANCE)) {
-			this.hasFireResistance = true;
-		}
 		if (this.abilities.hasAbility(CompanionBatAbility.TELEPORT)) {
 			this.hasTeleport = true;
-		}
-		if (this.abilities.hasAbility(CompanionBatAbility.ADVENTURER_AURA)) {
-			this.hasAdventurerAura = true;
-		}
-		if (this.abilities.hasAbility(CompanionBatAbility.MINER_AURA)) {
-			this.hasMinerAura = true;
-		}
-		if (this.abilities.hasAbility(CompanionBatAbility.MERLING_AURA)) {
-			this.hasMerlingAura = true;
 		}
 		if (this.abilities.hasAbility(CompanionBatAbility.NATURAL_REGENERATION)) {
 			this.hasNaturalRegeneration = true;
@@ -952,7 +925,13 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	protected void notifyClassLevelUp(int classLevel, CompanionBatClassLevel[] classLevels) {
-		MutableText message = new TranslatableText("entity.companion_bats.bat.class_level_up", this.hasCustomName() ? this.getCustomName() : new TranslatableText("entity.companion_bats.bat.your_bat"), this.currentClass.toString(), classLevel + 1);
+		CompanionBatClass cls = ClientDataManager.classes.get(this.currentClass);
+		MutableText message = new TranslatableText(
+			"entity.companion_bats.bat.class_level_up",
+			this.hasCustomName() ? this.getCustomName() : new TranslatableText("entity.companion_bats.bat.your_bat"),
+			cls != null && cls.label != null ? new LiteralText(cls.label) :  new TranslatableText("class." + this.currentClass.replace(":", ".")),
+			classLevel + 1
+		);
 		if (classLevels[classLevel].ability != null){
 			CompanionBatAbilities ability = new CompanionBatAbilities();
 			ability.addFromClassLevel(classLevels[classLevel]);

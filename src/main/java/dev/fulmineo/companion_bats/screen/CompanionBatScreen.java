@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.data.ClientDataManager;
+import dev.fulmineo.companion_bats.data.CompanionBatClass;
 import dev.fulmineo.companion_bats.data.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.data.CompanionBatCombatLevel;
 import dev.fulmineo.companion_bats.data.EntityData;
@@ -13,6 +14,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -122,12 +124,13 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		y += strideY;
 
 		if (this.currentClass != null){
+			CompanionBatClass cls = ClientDataManager.classes.get(this.currentClass);
 			this.textRenderer.draw(matrices, new TranslatableText("gui.companion_bats.bat.class"), x, y, 0xFFFFFFFF);
-			this.textRenderer.draw(matrices, new TranslatableText("class." + this.currentClass.replace(":", ".")), x + strideX, y, 0xFFFFFFFF);
+			this.textRenderer.draw(matrices, cls != null && cls.label != null ? new LiteralText(cls.label) : new TranslatableText("class." + this.currentClass.replace(":", ".")), x + strideX, y, 0xFFFFFFFF);
 
 			y += strideY;
 
-		this.textRenderer.draw(matrices, new TranslatableText("gui.companion_bats.bat.class_level"), x, y, 0xFFFFFFFF);
+			this.textRenderer.draw(matrices, new TranslatableText("gui.companion_bats.bat.class_level"), x, y, 0xFFFFFFFF);
 			this.textRenderer.draw(matrices, new TranslatableText("").append(""+(this.classLevel + 1)).append(" [").append(this.maxClassExpReached ? new TranslatableText("gui.companion_bats.bat.max") : new TranslatableText("").append(this.currentClassLevelExp+" / "+this.nextClassLevelExp)).append("]"), x + strideX, y, 0xFFFFFFFF);
 		} else {
 			y += strideY;

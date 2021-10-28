@@ -1,14 +1,14 @@
 {
 	"levels": [
 		{ "totalExp": 0 },
-		{ "totalExp": 50, "ability": "INCREASED_SPEED" },
-		{ "totalExp": 150, "ability": "LOOTING" },
-		{ "totalExp": 275, "ability": "INCREASED_SPEED" },
-		{ "totalExp": 425, "ability": "LOOTING" },
-		{ "totalExp": 600, "ability": "INCREASED_SPEED" },
-		{ "totalExp": 800, "ability": "LOOTING" },
-		{ "totalExp": 1025, "ability": "INCREASED_SPEED" },
-		{ "totalExp": 1275, "ability": "ADVENTURER_AURA" },
-		{ "totalExp": 1600, "ability": "LOOTING", "permanent": true }
+		{ "totalExp": 50, "abilityType": "ability", "ability": "INCREASED_SPEED" },
+		{ "totalExp": 150, "abilityType": "ability", "ability": "LOOTING" },
+		{ "totalExp": 275, "abilityType": "ability", "ability": "INCREASED_SPEED" },
+		{ "totalExp": 425, "abilityType": "ability", "ability": "LOOTING" },
+		{ "totalExp": 600, "abilityType": "ability", "ability": "INCREASED_SPEED" },
+		{ "totalExp": 800, "abilityType": "ability", "ability": "LOOTING" },
+		{ "totalExp": 1025, "abilityType": "ability", "ability": "INCREASED_SPEED" },
+		{ "totalExp": 1275, "abilityType": "auraEffect", "ability": "luck" },
+		{ "totalExp": 1600, "abilityType": "ability", "ability": "LOOTING", "permanent": true }
 	]
 }

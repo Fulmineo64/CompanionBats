@@ -30,7 +30,7 @@ public class CompanionBatsConfig implements ConfigData {
 	public int emergencyPotionTicks = 4800;
 	public int effectPotionTicks = 1600;
 	public int comboAttackResetTicks = 300;
-	public int teleportTicks = 7;
+	public int teleportTicks = 70;
 	public int statusEffectTicks = 320;
 	public int dynamiteTicks = 100;
 	public int tridentTicks = 60;

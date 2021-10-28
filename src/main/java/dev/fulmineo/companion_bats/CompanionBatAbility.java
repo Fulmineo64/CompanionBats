@@ -5,7 +5,7 @@ import net.minecraft.text.TranslatableText;
 public enum CompanionBatAbility {
 	// Inferno
 
-	INCREASED_ATTACK, FIRE_RESISTANCE, BURN,
+	INCREASED_ATTACK, BURN,
 
 	// Vampire
 
@@ -13,7 +13,7 @@ public enum CompanionBatAbility {
 
 	// Looter
 
-	INCREASED_SPEED, LOOTING, ADVENTURER_AURA,
+	INCREASED_SPEED, LOOTING,
 
 	// Knight
 
@@ -33,19 +33,13 @@ public enum CompanionBatAbility {
 
 	// Mummy
 
-	SLOWNESS, WEAKNESS, WITHER,
-
 	// Destroyer
 
 	DYNAMITE,
 
 	// Merling
 
-	SWIM, TRIDENT, MERLING_AURA,
-
-	// Unused
-
-	MINER_AURA,
+	SWIM, TRIDENT,
 
 	// Accessory
 

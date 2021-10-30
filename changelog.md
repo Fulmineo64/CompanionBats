@@ -1,8 +1,8 @@
-# 2.0.0
+# 1.18.0
 ## Tweaks and Tridents
 - Reworked the mod to be data-driven, meaning that you'll be able to create your own accessories, armors and classes with just some JSONs and a texture!
 - Added JSON class representation
-- Added brand new system to assign bat abilities, you can now specify On Hit Effects, Active Effects and Aura Effects in the class JSON
+- Added brand new system to declare bat abilities, you can now specify On Hit Effects, Active Effects, Aura Effects and Companion Bat Abilities in the class level and accessory JSON
 - Added configuration for the Companion Bat's variables
 - Added the ability to swim to the Companion Bat
 - Added new class the Merling

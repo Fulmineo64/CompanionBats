@@ -1,6 +1,5 @@
 package dev.fulmineo.companion_bats.data;
 
-import dev.fulmineo.companion_bats.CompanionBats;
 import net.minecraft.nbt.NbtCompound;
 
 public class CompanionBatCombatLevel {
@@ -38,20 +37,20 @@ public class CompanionBatCombatLevel {
 	}
 
 
-	public static float getMaxLevelHealth(CompanionBatCombatLevel[] combatLevels) {
-		return CompanionBats.CONFIG.baseHealth + getLevelHealthBonus(combatLevels, combatLevels.length - 1);
+	public static float getMaxLevelHealth(float baseHealth, CompanionBatCombatLevel[] combatLevels) {
+		return baseHealth + getLevelHealthBonus(combatLevels, combatLevels.length - 1);
 	}
 
-	public static float getLevelHealth(CompanionBatCombatLevel[] combatLevels, int level) {
-		return CompanionBats.CONFIG.baseHealth + getLevelHealthBonus(combatLevels, level);
+	public static float getLevelHealth(float baseHealth, CompanionBatCombatLevel[] combatLevels, int level) {
+		return baseHealth + getLevelHealthBonus(combatLevels, level);
 	}
 
-	public static float getLevelAttack(CompanionBatCombatLevel[] combatLevels, int level) {
-		return CompanionBats.CONFIG.baseAttack + getLevelAttackBonus(combatLevels, level);
+	public static float getLevelAttack(float baseAttack, CompanionBatCombatLevel[] combatLevels, int level) {
+		return baseAttack + getLevelAttackBonus(combatLevels, level);
 	}
 
-	public static float getLevelSpeed(CompanionBatCombatLevel[] combatLevels, int level) {
-		return CompanionBats.CONFIG.baseSpeed + getLevelSpeedBonus(combatLevels, level);
+	public static float getLevelSpeed(float baseSpeed, CompanionBatCombatLevel[] combatLevels, int level) {
+		return baseSpeed + getLevelSpeedBonus(combatLevels, level);
 	}
 
 	public static float getLevelHealthBonus(CompanionBatCombatLevel[] combatLevels, int level) {

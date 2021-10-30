@@ -92,9 +92,9 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 
 	private void setAttributes(EntityData entityData){
 		this.currentHealth = Math.round(entityData.getHealth() * 10F) / 10F;
-		this.maxHealth = CompanionBatCombatLevel.getLevelHealth(ClientDataManager.combatLevels, this.level);
-		this.attack = CompanionBatCombatLevel.getLevelAttack(ClientDataManager.combatLevels, this.level);
-		this.speed = Math.round(CompanionBatCombatLevel.getLevelSpeed(ClientDataManager.combatLevels, this.level) * 100F) / 100F;
+		this.maxHealth = CompanionBatCombatLevel.getLevelHealth(ClientDataManager.baseHealth, ClientDataManager.combatLevels, this.level);
+		this.attack = CompanionBatCombatLevel.getLevelAttack(ClientDataManager.baseAttack, ClientDataManager.combatLevels, this.level);
+		this.speed = Math.round(CompanionBatCombatLevel.getLevelSpeed(ClientDataManager.baseSpeed, ClientDataManager.combatLevels, this.level) * 100F) / 100F;
 	}
 
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {

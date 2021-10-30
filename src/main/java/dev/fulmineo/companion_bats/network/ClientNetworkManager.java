@@ -26,6 +26,10 @@ public class ClientNetworkManager {
 			for (String key: classes.getKeys()) {
 				ClientDataManager.classes.put(key, CompanionBatClass.fromNbt((NbtCompound)classes.get(key)));
 			}
+			ClientDataManager.baseHealth = nbt.getFloat("baseHealth");
+			ClientDataManager.baseAttack = nbt.getFloat("baseAttack");
+			ClientDataManager.baseSpeed = nbt.getFloat("baseSpeed");
+			ClientDataManager.experiencePieGain = nbt.getInt("experiencePieGain");
 		});
 	}
 

@@ -1,0 +1,31 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"dhp",
+		"tCt",
+		"psd"
+	],
+	"key": {
+		"d": {
+			"item": "minecraft:dark_prismarine"
+		},
+		"p": {
+			"item": "minecraft:prismarine"
+		},
+		"h": {
+			"item": "minecraft:heart_of_the_sea"
+		},
+		"t": {
+			"item": "minecraft:trident"
+		},
+		"C": {
+			"item": "companion_bats:spirit_crystal"
+		},
+		"s": {
+			"item": "minecraft:sea_lantern"
+		}
+	},
+	"result": {
+		"item": "companion_bats:merling_scales"
+	}
+}

@@ -34,6 +34,11 @@ public class ServerNetworkManager {
 			classes.put(entry.getKey(), entry.getValue().writeNbt(new NbtCompound()));
 		}
 		nbt.put("classes", classes);
+
+		nbt.putFloat("baseHealth", CompanionBats.CONFIG.baseHealth);
+		nbt.putFloat("baseAttack", CompanionBats.CONFIG.baseAttack);
+		nbt.putFloat("baseSpeed", CompanionBats.CONFIG.baseSpeed);
+		nbt.putInt("experiencePieGain", CompanionBats.CONFIG.experiencePieGain);
 		return nbt;
 	}
 

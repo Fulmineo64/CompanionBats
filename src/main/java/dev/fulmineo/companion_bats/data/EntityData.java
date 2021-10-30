@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.util.Identifier;
 
 public class EntityData {
 	private NbtCompound tag;
@@ -26,6 +27,20 @@ public class EntityData {
 
 	public EntityData(NbtCompound tag){
 		this.tag = tag;
+	}
+
+	public void migrate() {
+		// Migration code from 1.17.x to 2.0.0
+		// TODO: Remove me after a while
+		if (this.tag.getCompound("ClassExp").getSize() == 0) {
+			NbtCompound classExp = new NbtCompound();
+			for (String key: ServerDataManager.classes.keySet()) {
+				String oldKey = new Identifier(key).getPath();
+				oldKey = oldKey.substring(0, 1).toUpperCase() + oldKey.substring(1) + "Exp";
+				classExp.putInt(key, this.tag.getInt(oldKey));
+			}
+			this.tag.put("ClassExp", classExp);
+		}
 	}
 
 	public static EntityData fromRegularBatEntity(LivingEntity entity){
@@ -198,15 +213,6 @@ public class EntityData {
 
 	public void putEmergencyPotionTicks(int emergencyPotionTicks){
 		this.tag.putInt("emergencyPotionTicks", emergencyPotionTicks);
-	}
-
-	public static String getCapitalizedClassName(CompanionBatClass batClass){
-		String lower = batClass.toString().toLowerCase();
-		return lower.substring(0, 1).toUpperCase() + lower.substring(1);
-	}
-
-	public static String getClassExpName(CompanionBatClass batClass){
-		return getCapitalizedClassName(batClass) + "Exp";
 	}
 
 	public static void createIfMissing(ItemStack batItemStack){

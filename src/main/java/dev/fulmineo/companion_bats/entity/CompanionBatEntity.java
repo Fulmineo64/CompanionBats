@@ -163,6 +163,7 @@ public class CompanionBatEntity extends TameableEntity {
 
 	public void readCustomDataFromNbt(NbtCompound tag) {
 		EntityData entityData = new EntityData(tag);
+		entityData.migrate();
 		this.setLevel(entityData.getExp());
 		this.setLevelAttributes(this.level);
 		super.readCustomDataFromNbt(tag);
@@ -897,9 +898,9 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	protected void setLevelAttributes(int level) {
-		this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(CompanionBatCombatLevel.getLevelHealth(ServerDataManager.combatLevels, level));
-		this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(CompanionBatCombatLevel.getLevelAttack(ServerDataManager.combatLevels, level));
-		this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(CompanionBatCombatLevel.getLevelSpeed(ServerDataManager.combatLevels, level));
+		this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(CompanionBatCombatLevel.getLevelHealth(CompanionBats.CONFIG.baseHealth, ServerDataManager.combatLevels, level));
+		this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(CompanionBatCombatLevel.getLevelAttack(CompanionBats.CONFIG.baseAttack, ServerDataManager.combatLevels, level));
+		this.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(CompanionBatCombatLevel.getLevelSpeed(CompanionBats.CONFIG.baseSpeed, ServerDataManager.combatLevels, level));
 	}
 
 	protected void notifyLevelUp(int level) {

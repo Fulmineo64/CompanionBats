@@ -1,4 +1,5 @@
 {
 	"name": "merling_scales",
-	"className": "companion_bats:merling"
+	"className": "companion_bats:merling",
+	"chest": "minecraft:chests/underwater_ruin_big"
 }

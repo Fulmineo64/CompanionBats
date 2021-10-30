@@ -1,6 +1,5 @@
 package dev.fulmineo.companion_bats.data;
 
-import dev.fulmineo.companion_bats.CompanionBatAbility;
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import draylar.staticcontent.api.ContentData;
@@ -10,17 +9,15 @@ import net.minecraft.util.registry.Registry;
 
 public class CompanionBatAccessory implements ContentData {
 	public String name;
+	public String abilityType;
 	public String ability;
-	public int abilityLevel = 1;
+	public int abilityIncrement;
+	public int duration;
 
 	@Override
 	public void register(Identifier fileID) {
-		CompanionBatAbility ability = CompanionBatAbility.valueOf(this.ability);
-		if (ability == null) {
-			CompanionBats.info("The ability "+this.ability+ " required by the accessory "+ this.name + " was not found");
-		} else {
-			Registry.register(Registry.ITEM, new Identifier(CompanionBats.MOD_ID, this.name), new CompanionBatAccessoryItem(this.name, ability, this.abilityLevel, new FabricItemSettings().group(CompanionBats.GROUP).maxCount(1)));
-		}
+		CompanionBatAccessoryItem item = new CompanionBatAccessoryItem(this.name, this.abilityType, this.ability, this.abilityIncrement == 0 ? 1 : this.abilityIncrement, this.duration, new FabricItemSettings().group(CompanionBats.GROUP).maxCount(1));
+		Registry.register(Registry.ITEM, new Identifier(CompanionBats.MOD_ID, this.name), item);
 	}
 }
 

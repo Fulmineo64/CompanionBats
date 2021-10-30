@@ -4,28 +4,34 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import dev.fulmineo.companion_bats.CompanionBatAbility;
+import dev.fulmineo.companion_bats.CompanionBatAbilities;
 import dev.fulmineo.companion_bats.CompanionBats;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.world.World;
 
 public class CompanionBatAccessoryItem extends Item {
-	private CompanionBatAbility ability;
-	private Integer abilityLevel;
-	private String identifier;
+	public String abilityType;
+	public String ability;
+	public int abilityIncrement;
+	public int duration;
+	public String identifier;
 
-	public CompanionBatAccessoryItem(String identifier, CompanionBatAbility ability, Integer abilityLevel, Settings settings) {
+	public CompanionBatAccessoryItem(String identifier, String abilityType, String ability, int abilityIncrement, int duration, Settings settings) {
         super(settings);
+		this.abilityType = abilityType;
 		this.ability = ability;
-		this.abilityLevel = abilityLevel;
+		this.abilityIncrement = abilityIncrement;
+		this.duration = duration;
 		this.identifier = identifier;
     }
 
@@ -37,15 +43,14 @@ public class CompanionBatAccessoryItem extends Item {
 	@Environment(EnvType.CLIENT)
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		tooltip.add(new TranslatableText("item.companion_bats.accessory").formatted(Formatting.GOLD));
-		tooltip.add(new TranslatableText("item.companion_bats.accessory.ability_when_equipped").formatted(Formatting.AQUA));
-		tooltip.add(this.ability.toTranslatedText().formatted(Formatting.GRAY).append(this.abilityLevel > 1 ? " "+this.abilityLevel : ""));
-	}
-
-	public CompanionBatAbility getAbility() {
-		return this.ability;
-	}
-
-	public Integer getAbilityLevel() {
-		return this.abilityLevel;
+		CompanionBatAbilities abilities = new CompanionBatAbilities();
+		abilities.addFromAccessory(this);
+		List<Pair<MutableText, Integer>> list = abilities.toTranslatedList();
+		if (list.size() > 0){
+			tooltip.add(new TranslatableText("item.companion_bats.accessory.ability_when_equipped").formatted(Formatting.AQUA));
+			for (Pair<MutableText, Integer> entry: list) {
+				tooltip.add(entry.getLeft().formatted(Formatting.GRAY).append(entry.getRight() > 1 ? " "+entry.getRight() : ""));
+			}
+		}
 	}
 }

@@ -59,25 +59,31 @@ public class CompanionBatAbilities {
 		}
 	}
 
-	public void addFromAccessory(CompanionBatAccessoryItem accessoryItem){
-		if (accessoryItem != null){
-			this.addAbility(accessoryItem.getAbility(), accessoryItem.getAbilityLevel());
+	public void addFromAccessory(CompanionBatAccessoryItem accessory){
+		if (accessory != null){
+			this.add(accessory.abilityType, accessory.ability, accessory.abilityIncrement == 0 ? 1 : accessory.abilityIncrement, accessory.duration, false);
 		}
 	}
 
 	public void addFromClassLevel(CompanionBatClassLevel classLevel){
-		if (classLevel != null && classLevel.ability != null){
-			if (classLevel.abilityType == null || classLevel.abilityType.equals("ability")) {
-				this.addAbility(CompanionBatAbility.valueOf(classLevel.ability), classLevel.getAbilityIncrement());
-			} else if (classLevel.abilityType.equals("onHitEffect")) {
-				StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(classLevel.ability));
-				this.addOnHitEffect(effect, classLevel.getAbilityIncrement(), classLevel.duration);
-			} else if (classLevel.abilityType.equals("activeEffect")) {
-				StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(classLevel.ability));
-				this.addActiveEffect(effect, classLevel.getAbilityIncrement());
-			} else if (classLevel.abilityType.equals("auraEffect")) {
-				StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(classLevel.ability));
-				this.addAuraEffect(effect, classLevel.getAbilityIncrement());
+		if (classLevel != null){
+			this.add(classLevel.abilityType, classLevel.ability, classLevel.abilityIncrement == 0 ? 1 : classLevel.abilityIncrement, classLevel.duration, classLevel.permanent);
+		}
+	}
+
+	public void add(String abilityType, String ability, int abilityIncrement, int duration, boolean permanent) {
+		if (ability != null) {
+			if (abilityType == null || abilityType.equals("ability")) {
+				this.addAbility(CompanionBatAbility.valueOf(ability), abilityIncrement);
+			} else if (abilityType.equals("onHitEffect")) {
+				StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(ability));
+				this.addOnHitEffect(effect, abilityIncrement, duration);
+			} else if (abilityType.equals("activeEffect")) {
+				StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(ability));
+				this.addActiveEffect(effect, abilityIncrement);
+			} else if (abilityType.equals("auraEffect")) {
+				StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(ability));
+				this.addAuraEffect(effect, abilityIncrement);
 			}
 		}
 	}

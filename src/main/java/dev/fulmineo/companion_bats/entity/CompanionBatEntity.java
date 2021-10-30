@@ -126,8 +126,8 @@ public class CompanionBatEntity extends TameableEntity {
 	private int classLevel = -1;
 	private boolean hasTeleport;
 	private boolean hasPotionGoal;
+	private boolean hasRangedAttackGoal;
 	private boolean hasNaturalRegeneration;
-	private boolean canSwim;
 	private int comboAttackResetTicks = CompanionBats.CONFIG.comboAttackResetTicks;
 	private int comboLevel = 0;
 	private int teleportTicks = CompanionBats.CONFIG.teleportTicks;
@@ -142,8 +142,6 @@ public class CompanionBatEntity extends TameableEntity {
 		this.moveControl = new CompanionBatMoveControl(this, 10);
 		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, -1.0F);
 		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
-		// TODO: Remove penalty when the new class is applied
-		// this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
 		this.setRoosting(false);
 		this.setSitting(false);
 	}
@@ -657,9 +655,9 @@ public class CompanionBatEntity extends TameableEntity {
 
 	public float calculateMovementSpeed(float movementSpeed) {
 		if (this.isSubmergedIn(FluidTags.LAVA)) {
-			return movementSpeed / (this.canSwim ? 1.5F : 3);
+			return movementSpeed * (0.33F * (this.abilities.getValue(CompanionBatAbility.SWIM)+1));
 		} else if (this.isSubmergedIn(FluidTags.WATER)) {
-			return movementSpeed / (this.canSwim ? 1 : 2);
+			return movementSpeed * (0.5F * (this.abilities.getValue(CompanionBatAbility.SWIM)+1));
 		} else {
 			return movementSpeed;
 		}
@@ -795,11 +793,6 @@ public class CompanionBatEntity extends TameableEntity {
 			this.goalSelector.add(5, new CompanionBatTransferItemsToOwnerGoal(this, 2.5F));
 			this.goalSelector.add(6, new CompanionBatRoostGoal(this, 0.75F, 4.0F, CompanionBats.CONFIG.roostStartTicks));
 			if (!this.abilities.hasAbility(CompanionBatAbility.CANNOT_ATTACK)){
-				if (this.abilities.hasAbility(CompanionBatAbility.DYNAMITE)){
-					this.goalSelector.add(1, new CompanionBatRangedAttackGoal(this, 5.0F, 9.0F, this::dynamiteAttack));
-				} else if (this.abilities.hasAbility(CompanionBatAbility.TRIDENT)) {
-					this.goalSelector.add(1, new CompanionBatRangedAttackGoal(this, 1.0F, 12.0F, this::tridentAttack));
-				}
 				this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0D, true));
 				this.targetSelector.add(1, new CompanionBatTrackOwnerAttackerGoal(this));
 				this.targetSelector.add(2, new CompanionBatAttackWithOwnerGoal(this));
@@ -813,10 +806,17 @@ public class CompanionBatEntity extends TameableEntity {
 				}
 			}
 		}
-		if (this.abilities.hasAbility(CompanionBatAbility.EMERGENCY_POTION) || this.abilities.hasAbility(CompanionBatAbility.EFFECT_POTION)) {
-			if (!this.hasPotionGoal){
-				this.goalSelector.add(7, new CompanionBatThrowPotionGoal(this, 3.0F, CompanionBats.CONFIG.emergencyPotionTicks, CompanionBats.CONFIG.effectPotionTicks));
-				this.hasPotionGoal = true;
+		if (!this.hasPotionGoal && (this.abilities.hasAbility(CompanionBatAbility.EMERGENCY_POTION) || this.abilities.hasAbility(CompanionBatAbility.EFFECT_POTION))) {
+			this.goalSelector.add(7, new CompanionBatThrowPotionGoal(this, 3.0F, CompanionBats.CONFIG.emergencyPotionTicks, CompanionBats.CONFIG.effectPotionTicks));
+			this.hasPotionGoal = true;
+		}
+		if (!this.hasRangedAttackGoal && !this.abilities.hasAbility(CompanionBatAbility.CANNOT_ATTACK)){
+			if (this.abilities.hasAbility(CompanionBatAbility.DYNAMITE)){
+				this.goalSelector.add(1, new CompanionBatRangedAttackGoal(this, 5.0F, 9.0F, this::dynamiteAttack));
+				this.hasRangedAttackGoal = true;
+			} else if (this.abilities.hasAbility(CompanionBatAbility.TRIDENT)) {
+				this.goalSelector.add(1, new CompanionBatRangedAttackGoal(this, 1.0F, 12.0F, this::tridentAttack));
+				this.hasRangedAttackGoal = true;
 			}
 		}
 		if (this.abilities.hasAbility(CompanionBatAbility.INCREASED_ARMOR)) {
@@ -839,9 +839,6 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 		if (this.abilities.hasAbility(CompanionBatAbility.NATURAL_REGENERATION)) {
 			this.hasNaturalRegeneration = true;
-		}
-		if (this.abilities.hasAbility(CompanionBatAbility.SWIM)) {
-			this.canSwim = true;
 		}
 		if (this.abilities.hasAbility(CompanionBatAbility.LOOTING)) {
 			ItemStack stack = new ItemStack(Items.STICK);

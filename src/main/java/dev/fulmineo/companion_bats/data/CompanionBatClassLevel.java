@@ -6,9 +6,9 @@ public class CompanionBatClassLevel {
 	public int totalExp;
 	public String abilityType;
 	public String ability;
-	public boolean permanent;
 	public int abilityIncrement;
 	public int duration;
+	public boolean permanent;
 
 	public int getAbilityIncrement() {
 		return this.abilityIncrement == 0 ? 1 : this.abilityIncrement;
@@ -27,9 +27,9 @@ public class CompanionBatClassLevel {
 		nbt.putInt("totalExp", this.totalExp);
 		if (this.abilityType != null) nbt.putString("abilityType", this.abilityType);
 		if (this.ability != null) nbt.putString("ability", this.ability.toString());
-		nbt.putBoolean("permanent", this.permanent);
 		nbt.putInt("abilityIncrement", this.abilityIncrement);
 		nbt.putInt("duration", this.duration);
+		nbt.putBoolean("permanent", this.permanent);
 		return nbt;
 	}
 
@@ -38,9 +38,9 @@ public class CompanionBatClassLevel {
 		level.totalExp = nbt.getInt("totalExp");
 		if (nbt.contains("abilityType")) level.abilityType = nbt.getString("abilityType");
 		if (nbt.contains("ability")) level.ability = nbt.getString("ability");
-		level.permanent = nbt.getBoolean("permanent");
 		level.abilityIncrement = nbt.getInt("abilityIncrement");
 		level.duration = nbt.getInt("duration");
+		level.permanent = nbt.getBoolean("permanent");
 		return level;
 	}
 }

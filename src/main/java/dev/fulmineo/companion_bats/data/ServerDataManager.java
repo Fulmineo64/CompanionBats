@@ -51,7 +51,6 @@ public class ServerDataManager {
 
 
 				for(Identifier id : manager.findResources("bat_classes", path -> path.endsWith(".json"))) {
-					CompanionBats.info(id.toString());
 					try(InputStream stream = manager.getResource(id).getInputStream()) {
 						try {
 							String className = id.getNamespace() + ":" + id.getPath().replace("bat_classes/", "").replace(".json", "");

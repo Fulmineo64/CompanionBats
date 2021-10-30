@@ -1,4 +1,5 @@
 {
 	"name": "wolf_pelt",
+	"abilityType": "ability",
 	"ability": "ATTACK_PASSIVE"
 }

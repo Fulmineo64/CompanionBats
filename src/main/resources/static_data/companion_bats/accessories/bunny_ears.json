@@ -1,4 +1,5 @@
 {
 	"name": "bunny_ears",
+	"abilityType": "ability",
 	"ability": "CANNOT_ATTACK"
 }

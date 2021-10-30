@@ -1,4 +1,5 @@
 {
 	"name": "wither_mask",
+	"abilityType": "ability",
 	"ability": "ATTACK_EVERYONE"
 }

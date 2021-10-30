@@ -1,4 +1,5 @@
 {
 	"name": "pumpkin_bandana",
+	"abilityType": "ability",
 	"ability": "NATURAL_REGENERATION"
 }

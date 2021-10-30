@@ -26,7 +26,7 @@ public class ServerDataManager {
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
 			@Override
 			public Identifier getFabricId() {
-				return new Identifier("guild", "data");
+				return new Identifier(CompanionBats.MOD_ID, "data");
 			}
 
 			@Override

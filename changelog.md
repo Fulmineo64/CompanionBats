@@ -1,3 +1,6 @@
+# 1.18.1
+- Fixed incompatibility with The Guild mod
+
 # 1.18.0
 ## Tweaks and Tridents
 - Reworked the mod to be data-driven, meaning that you'll be able to create your own accessories, armors and classes with just some JSONs and a texture!

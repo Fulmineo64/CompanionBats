@@ -485,7 +485,7 @@ public class CompanionBatEntity extends TameableEntity {
 		return bl;
 	}
 
-	private float getAttackDamage(Entity target) {
+	public float getAttackDamage(Entity target) {
 		float attackDamage = (float) ((int) this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
 		if (this.abilities.hasAbility(CompanionBatAbility.SNEAK_ATTACK) && target instanceof LivingEntity && this.isBehind((LivingEntity) target)) {
 			attackDamage += attackDamage * this.abilities.getValue(CompanionBatAbility.SNEAK_ATTACK) / 4;

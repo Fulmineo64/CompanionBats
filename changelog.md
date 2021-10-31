@@ -1,3 +1,7 @@
+# 1.18.2
+- Changed the attack damage of Tridents from the Trident ability to scale with the Bat's attack damage
+- Added support for Sneak Attacks to the Tridents
+
 # 1.18.1
 - Fixed incompatibility with The Guild mod
 

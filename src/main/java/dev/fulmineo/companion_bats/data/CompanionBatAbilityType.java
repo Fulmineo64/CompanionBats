@@ -5,7 +5,7 @@ import net.minecraft.text.TranslatableText;
 public enum CompanionBatAbilityType {
 	// Inferno
 
-	INCREASED_ATTACK, BURN,
+	INCREASED_ATTACK, BURN, ZEALOUS_FIRE,
 
 	// Vampire
 

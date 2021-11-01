@@ -128,6 +128,7 @@ public class CompanionBatEntity extends TameableEntity {
 	private boolean hasPotionGoal;
 	private boolean hasRangedAttackGoal;
 	private boolean hasNaturalRegeneration;
+	private boolean hasZealousFire;
 	private int comboAttackResetTicks = CompanionBats.CONFIG.comboAttackResetTicks;
 	private int comboLevel = 0;
 	private int teleportTicks = CompanionBats.CONFIG.teleportTicks;
@@ -315,6 +316,13 @@ public class CompanionBatEntity extends TameableEntity {
 					this.abilities.applyActiveEffects(this, this.effectTicks + 20);
 					this.abilities.applyAuraEffects(this, CompanionBats.CONFIG.statusEffectTicks);
 				}
+			}
+
+			if (this.hasZealousFire && this.isOnFire()) {
+				int level = this.abilities.get(CompanionBatAbilityType.ZEALOUS_FIRE);
+				int ticks = this.getFireTicks();
+				this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, ticks, level - 1, false, true));
+				this.setFireTicks(0);
 			}
 		}
 	}
@@ -840,6 +848,13 @@ public class CompanionBatEntity extends TameableEntity {
 		}
 		if (this.abilities.hasAbility(CompanionBatAbilityType.NATURAL_REGENERATION)) {
 			this.hasNaturalRegeneration = true;
+		}
+		if (this.abilities.hasAbility(CompanionBatAbilityType.ZEALOUS_FIRE)) {
+			this.hasZealousFire = true;
+		}
+		if (this.abilities.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
+			this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0F);
+			this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0F);
 		}
 		if (this.abilities.hasAbility(CompanionBatAbilityType.LOOTING)) {
 			ItemStack stack = new ItemStack(Items.STICK);

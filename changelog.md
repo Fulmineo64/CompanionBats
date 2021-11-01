@@ -1,3 +1,8 @@
+# 1.18.3
+- Mini Inferno rework
+- Added the new ability ZEALOUS_FIRE that immediately extinguishes active fires on the bat and grants a corresponding Strength effect based on the ability level
+- Unified the data structure of Companion Bat Abilities for accessories and class levels
+
 # 1.18.2
 - Changed the attack damage of Tridents from the Trident ability to scale with the Bat's attack damage
 - Added support for Sneak Attacks to the Tridents

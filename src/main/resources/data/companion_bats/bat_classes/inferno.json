@@ -5,10 +5,10 @@
 		{ "totalExp": 150, "ability": { "id": "BURN" } },
 		{ "totalExp": 275, "ability": { "id": "INCREASED_ATTACK" } },
 		{ "totalExp": 425, "ability": { "id": "BURN" } },
-		{ "totalExp": 600, "ability": { "name": "fire_berserk", "type": "activeEffect", "id": "strength", "duration": 60, "conditions": [{ "type": "is_on_fire" }] } },
-		{ "totalExp": 800, "ability": { "id": "BURN" } },
-		{ "totalExp": 1025, "ability": { "name": "fire_berserk", "type": "activeEffect", "id": "strength", "duration": 60, "conditions": [{ "type": "is_on_fire" }] } },
-		{ "totalExp": 1275, "ability": { "type": "activeEffect", "id": "fire_resistance" } },
+		{ "totalExp": 600, "ability": { "type": "activeEffect", "id": "fire_resistance" } },
+		{ "totalExp": 800, "ability": { "id": "ZEALOUS_FIRE" } },
+		{ "totalExp": 1025, "ability": { "id": "BURN" } },
+		{ "totalExp": 1275, "ability": { "id": "ZEALOUS_FIRE" }},
 		{ "totalExp": 1600, "ability": { "id": "INCREASED_ATTACK" }, "permanent": true }
 	]
 }

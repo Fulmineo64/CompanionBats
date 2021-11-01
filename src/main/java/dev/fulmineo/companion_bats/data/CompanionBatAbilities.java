@@ -167,6 +167,10 @@ public class CompanionBatAbilities {
 		return auraEffectLevel != null && auraEffectLevel > 0;
 	}
 
+	public boolean hasStatusEffect(StatusEffect effect) {
+		return this.hasActiveEffect(effect) || this.hasAuraEffect(effect);
+	}
+
 	public boolean has(CompanionBatAbility ability) {
 		if (ability.type == null || ability.type == "ability") {
 			return this.hasAbility(CompanionBatAbilityType.valueOf(ability.id));

@@ -1,14 +1,14 @@
 {
 	"levels": [
 		{ "totalExp": 0 },
-		{ "totalExp": 50, "abilityType": "ability", "ability": "SWIM" },
+		{ "totalExp": 50, "ability": { "id": "SWIM" } },
 		{ "totalExp": 150 },
-		{ "totalExp": 275, "abilityType": "ability", "ability": "TRIDENT" },
-		{ "totalExp": 425, "abilityType": "onHitEffect", "ability": "slowness", "duration": 60 },
-		{ "totalExp": 600, "abilityType": "auraEffect", "ability": "conduit_power" },
-		{ "totalExp": 800, "abilityType": "onHitEffect", "ability": "slowness", "duration": 60 },
+		{ "totalExp": 275, "ability": { "id": "TRIDENT" } },
+		{ "totalExp": 425, "ability": { "type": "onHitEffect", "id": "slowness", "duration": 60 } },
+		{ "totalExp": 600, "ability": { "type": "auraEffect", "id": "conduit_power" } },
+		{ "totalExp": 800, "ability": { "type": "onHitEffect", "id": "slowness", "duration": 60 } },
 		{ "totalExp": 1025 },
-		{ "totalExp": 1275, "abilityType": "onHitEffect", "ability": "slowness", "duration": 60 },
-		{ "totalExp": 1600, "abilityType": "ability", "ability": "SWIM", "permanent": true }
+		{ "totalExp": 1275, "ability": { "type": "onHitEffect", "id": "slowness", "duration": 60 } },
+		{ "totalExp": 1600, "ability": { "id": "SWIM" }, "permanent": true }
 	]
 }

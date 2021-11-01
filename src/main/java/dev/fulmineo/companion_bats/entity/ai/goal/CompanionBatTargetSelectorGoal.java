@@ -1,7 +1,7 @@
 package dev.fulmineo.companion_bats.entity.ai.goal;
 
+import dev.fulmineo.companion_bats.data.CompanionBatAbilityType;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
-import dev.fulmineo.companion_bats.CompanionBatAbility;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
@@ -10,9 +10,9 @@ import net.minecraft.entity.passive.PassiveEntity;
 
 public class CompanionBatTargetSelectorGoal extends Goal {
 	private CompanionBatEntity entity;
-	private CompanionBatAbility ability;
+	private CompanionBatAbilityType ability;
 
-	public CompanionBatTargetSelectorGoal(CompanionBatEntity entity, CompanionBatAbility ability) {
+	public CompanionBatTargetSelectorGoal(CompanionBatEntity entity, CompanionBatAbilityType ability) {
 		this.entity = entity;
 		this.ability = ability;
 	}

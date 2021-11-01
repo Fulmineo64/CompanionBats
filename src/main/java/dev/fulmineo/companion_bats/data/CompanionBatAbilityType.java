@@ -1,8 +1,8 @@
-package dev.fulmineo.companion_bats;
+package dev.fulmineo.companion_bats.data;
 
 import net.minecraft.text.TranslatableText;
 
-public enum CompanionBatAbility {
+public enum CompanionBatAbilityType {
 	// Inferno
 
 	INCREASED_ATTACK, BURN,

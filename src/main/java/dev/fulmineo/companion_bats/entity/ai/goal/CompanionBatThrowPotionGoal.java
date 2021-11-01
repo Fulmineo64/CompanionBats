@@ -1,7 +1,7 @@
 package dev.fulmineo.companion_bats.entity.ai.goal;
 
+import dev.fulmineo.companion_bats.data.CompanionBatAbilityType;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
-import dev.fulmineo.companion_bats.CompanionBatAbility;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
@@ -45,8 +45,8 @@ public class CompanionBatThrowPotionGoal extends Goal {
 			if (this.entity.emergencyPotionTicks > 0) this.entity.emergencyPotionTicks--;
 			if (this.entity.effectPotionTicks > 0) this.entity.effectPotionTicks--;
 			if (this.entity.emergencyPotionTicks <= 0 || this.entity.effectPotionTicks <= 0){
-				this.effectPotionLevel = this.entity.abilities.getValue(CompanionBatAbility.EFFECT_POTION);
-				this.emergencyPotionLevel = this.entity.abilities.getValue(CompanionBatAbility.EMERGENCY_POTION);
+				this.effectPotionLevel = this.entity.abilities.getValue(CompanionBatAbilityType.EFFECT_POTION);
+				this.emergencyPotionLevel = this.entity.abilities.getValue(CompanionBatAbilityType.EMERGENCY_POTION);
 				if (this.effectPotionLevel == null || this.effectPotionLevel < 1) this.entity.effectPotionTicks = this.effectPotionCooldown;
 				if (this.emergencyPotionLevel == null || this.emergencyPotionLevel < 1) this.entity.emergencyPotionTicks = this.emergencyPotionCooldown;
 				if (this.entity.emergencyPotionTicks <= 0 || this.entity.effectPotionTicks <= 0){

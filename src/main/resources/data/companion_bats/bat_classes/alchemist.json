@@ -1,14 +1,14 @@
 {
 	"levels": [
 		{ "totalExp": 0 },
-		{ "totalExp": 50, "abilityType": "ability", "ability": "EFFECT_POTION" },
+		{ "totalExp": 50, "ability": { "id": "EFFECT_POTION" } },
 		{ "totalExp": 150 },
-		{ "totalExp": 275, "abilityType": "ability", "ability": "EFFECT_POTION" },
-		{ "totalExp": 425, "abilityType": "ability", "ability": "INCREASED_SPEED" },
-		{ "totalExp": 600, "abilityType": "ability", "ability": "EMERGENCY_POTION" },
-		{ "totalExp": 800, "abilityType": "ability", "ability": "EFFECT_POTION" },
-		{ "totalExp": 1025, "abilityType": "ability", "ability": "INCREASED_SPEED" },
-		{ "totalExp": 1275, "abilityType": "ability", "ability": "EFFECT_POTION" },
-		{ "totalExp": 1600, "abilityType": "ability", "ability": "EMERGENCY_POTION", "permanent": true }
+		{ "totalExp": 275, "ability": { "id": "EFFECT_POTION" } },
+		{ "totalExp": 425, "ability": { "id": "INCREASED_SPEED" } },
+		{ "totalExp": 600, "ability": { "id": "EMERGENCY_POTION" } },
+		{ "totalExp": 800, "ability": { "id": "EFFECT_POTION" } },
+		{ "totalExp": 1025, "ability": { "id": "INCREASED_SPEED" } },
+		{ "totalExp": 1275, "ability": { "id": "EFFECT_POTION" } },
+		{ "totalExp": 1600, "ability": { "id": "EMERGENCY_POTION" }, "permanent": true }
 	]
 }

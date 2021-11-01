@@ -1,5 +1,6 @@
 {
 	"name": "decorative_flower",
-	"abilityType": "ability",
-	"ability": "ATTACK_HOSTILES"
+	"ability": {
+		"id": "ATTACK_HOSTILES"
+	}
 }

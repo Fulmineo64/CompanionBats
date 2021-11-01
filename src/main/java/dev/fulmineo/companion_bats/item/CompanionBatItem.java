@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import dev.fulmineo.companion_bats.CompanionBatAbilities;
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.data.ClientDataManager;
+import dev.fulmineo.companion_bats.data.CompanionBatAbilities;
 import dev.fulmineo.companion_bats.data.EntityData;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.screen.CompanionBatScreenHandler;

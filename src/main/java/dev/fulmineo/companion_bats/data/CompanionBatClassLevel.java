@@ -4,15 +4,8 @@ import net.minecraft.nbt.NbtCompound;
 
 public class CompanionBatClassLevel {
 	public int totalExp;
-	public String abilityType;
-	public String ability;
-	public int abilityIncrement;
-	public int duration;
+	public CompanionBatAbility ability;
 	public boolean permanent;
-
-	public int getAbilityIncrement() {
-		return this.abilityIncrement == 0 ? 1 : this.abilityIncrement;
-	}
 
 	public static int getClassLevelByExp(CompanionBatClassLevel[] classLevels, int exp) {
 		for (int i = classLevels.length - 1; i >= 0; i--) {
@@ -25,10 +18,7 @@ public class CompanionBatClassLevel {
 
 	public NbtCompound writeNbt(NbtCompound nbt) {
 		nbt.putInt("totalExp", this.totalExp);
-		if (this.abilityType != null) nbt.putString("abilityType", this.abilityType);
-		if (this.ability != null) nbt.putString("ability", this.ability.toString());
-		nbt.putInt("abilityIncrement", this.abilityIncrement);
-		nbt.putInt("duration", this.duration);
+		if (this.ability != null) nbt.put("ability", this.ability.writeNbt(new NbtCompound()));
 		nbt.putBoolean("permanent", this.permanent);
 		return nbt;
 	}
@@ -36,10 +26,7 @@ public class CompanionBatClassLevel {
 	public static CompanionBatClassLevel fromNbt(NbtCompound nbt) {
 		CompanionBatClassLevel level = new CompanionBatClassLevel();
 		level.totalExp = nbt.getInt("totalExp");
-		if (nbt.contains("abilityType")) level.abilityType = nbt.getString("abilityType");
-		if (nbt.contains("ability")) level.ability = nbt.getString("ability");
-		level.abilityIncrement = nbt.getInt("abilityIncrement");
-		level.duration = nbt.getInt("duration");
+		if (nbt.contains("ability")) level.ability = CompanionBatAbility.fromNbt(nbt.getCompound("ability"));
 		level.permanent = nbt.getBoolean("permanent");
 		return level;
 	}

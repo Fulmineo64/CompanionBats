@@ -4,8 +4,9 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import dev.fulmineo.companion_bats.CompanionBatAbilities;
 import dev.fulmineo.companion_bats.CompanionBats;
+import dev.fulmineo.companion_bats.data.CompanionBatAbilities;
+import dev.fulmineo.companion_bats.data.CompanionBatAbility;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
@@ -20,18 +21,12 @@ import net.minecraft.util.Pair;
 import net.minecraft.world.World;
 
 public class CompanionBatAccessoryItem extends Item {
-	public String abilityType;
-	public String ability;
-	public int abilityIncrement;
-	public int duration;
+	public CompanionBatAbility ability;
 	public String identifier;
 
-	public CompanionBatAccessoryItem(String identifier, String abilityType, String ability, int abilityIncrement, int duration, Settings settings) {
+	public CompanionBatAccessoryItem(String identifier, CompanionBatAbility ability, Settings settings) {
         super(settings);
-		this.abilityType = abilityType;
 		this.ability = ability;
-		this.abilityIncrement = abilityIncrement;
-		this.duration = duration;
 		this.identifier = identifier;
     }
 

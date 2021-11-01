@@ -1,6 +1,7 @@
 {
 	"name": "plated_boots",
-	"abilityType": "ability",
-	"ability": "INCREASED_ARMOR",
-	"abilityIncrement": 2
+	"ability": {
+		"id": "INCREASED_ARMOR",
+		"increment": 2
+	}
 }

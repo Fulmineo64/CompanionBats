@@ -1,5 +1,6 @@
 {
 	"name": "ankh",
-	"abilityType": "ability",
-	"ability": "MAGIC_PROTECTION"
+	"ability": {
+		"id": "MAGIC_PROTECTION"
+	}
 }

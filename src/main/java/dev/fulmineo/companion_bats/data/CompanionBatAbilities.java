@@ -1,4 +1,4 @@
-package dev.fulmineo.companion_bats;
+package dev.fulmineo.companion_bats.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import dev.fulmineo.companion_bats.data.CompanionBatClass;
-import dev.fulmineo.companion_bats.data.CompanionBatClassLevel;
-import dev.fulmineo.companion_bats.data.EntityData;
+import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import dev.fulmineo.companion_bats.item.CompanionBatAccessoryItem;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
@@ -23,12 +21,12 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 
 public class CompanionBatAbilities {
-	private Map<CompanionBatAbility, Integer> abilities = new HashMap<>();
+	private Map<CompanionBatAbilityType, Integer> abilities = new HashMap<>();
 	public Map<StatusEffect, Pair<Integer, Integer>> onHitEffects = new HashMap<>();
 	public Map<StatusEffect, Integer> activeEffects = new HashMap<>();
 	public Map<StatusEffect, Integer> auraEffects = new HashMap<>();
 
-	private void addAbility(CompanionBatAbility ability, int levelIncrease){
+	private void addAbility(CompanionBatAbilityType ability, int levelIncrease){
 		if (ability != null){
 			Integer current = this.abilities.get(ability);
 			this.abilities.put(ability, (current != null ? current : 0) + levelIncrease);
@@ -61,29 +59,29 @@ public class CompanionBatAbilities {
 
 	public void addFromAccessory(CompanionBatAccessoryItem accessory){
 		if (accessory != null){
-			this.add(accessory.abilityType, accessory.ability, accessory.abilityIncrement == 0 ? 1 : accessory.abilityIncrement, accessory.duration, false);
+			this.add(accessory.ability, false);
 		}
 	}
 
 	public void addFromClassLevel(CompanionBatClassLevel classLevel){
 		if (classLevel != null){
-			this.add(classLevel.abilityType, classLevel.ability, classLevel.abilityIncrement == 0 ? 1 : classLevel.abilityIncrement, classLevel.duration, classLevel.permanent);
+			this.add(classLevel.ability, classLevel.permanent);
 		}
 	}
 
-	public void add(String abilityType, String ability, int abilityIncrement, int duration, boolean permanent) {
+	public void add(CompanionBatAbility ability, boolean permanent) {
 		if (ability != null) {
-			if (abilityType == null || abilityType.equals("ability")) {
-				this.addAbility(CompanionBatAbility.valueOf(ability), abilityIncrement);
-			} else if (abilityType.equals("onHitEffect")) {
-				StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(ability));
-				this.addOnHitEffect(effect, abilityIncrement, duration);
-			} else if (abilityType.equals("activeEffect")) {
-				StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(ability));
-				this.addActiveEffect(effect, abilityIncrement);
-			} else if (abilityType.equals("auraEffect")) {
-				StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(ability));
-				this.addAuraEffect(effect, abilityIncrement);
+			if (ability.type == null || ability.type.equals("ability")) {
+				this.addAbility(CompanionBatAbilityType.valueOf(ability.id), ability.getIncrement());
+			} else if (ability.type.equals("onHitEffect")) {
+				StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(ability.id));
+				this.addOnHitEffect(effect, ability.getIncrement(), ability.duration);
+			} else if (ability.type.equals("activeEffect")) {
+				StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(ability.id));
+				this.addActiveEffect(effect, ability.getIncrement());
+			} else if (ability.type.equals("auraEffect")) {
+				StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(ability.id));
+				this.addAuraEffect(effect, ability.getIncrement());
 			}
 		}
 	}
@@ -112,11 +110,11 @@ public class CompanionBatAbilities {
 		}
 	}
 
-	public Integer get(CompanionBatAbility ability) {
+	public Integer get(CompanionBatAbilityType ability) {
 		return this.abilities.get(ability);
 	}
 
-	public int getValue(CompanionBatAbility ability) {
+	public int getValue(CompanionBatAbilityType ability) {
 		Integer level = this.get(ability);
 		if (level != null) {
 			switch (ability) {
@@ -149,7 +147,7 @@ public class CompanionBatAbilities {
 		return 0;
 	}
 
-	public boolean hasAbility(CompanionBatAbility ability) {
+	public boolean hasAbility(CompanionBatAbilityType ability) {
 		Integer abilityLevel = this.abilities.get(ability);
 		return abilityLevel != null && abilityLevel > 0;
 	}
@@ -169,15 +167,15 @@ public class CompanionBatAbilities {
 		return auraEffectLevel != null && auraEffectLevel > 0;
 	}
 
-	public boolean has(String abilityType, String ability) {
-		if (abilityType == null || abilityType == "ability") {
-			return this.hasAbility(CompanionBatAbility.valueOf(ability));
-		} else if (abilityType == "onHitEffect") {
-			return this.hasOnHitEffect(Registry.STATUS_EFFECT.get(new Identifier(ability)));
-		} else if (abilityType == "activeEffect") {
-			return this.hasActiveEffect(Registry.STATUS_EFFECT.get(new Identifier(ability)));
-		} else if (abilityType == "auraEffect") {
-			return this.hasAuraEffect(Registry.STATUS_EFFECT.get(new Identifier(ability)));
+	public boolean has(CompanionBatAbility ability) {
+		if (ability.type == null || ability.type == "ability") {
+			return this.hasAbility(CompanionBatAbilityType.valueOf(ability.id));
+		} else if (ability.type == "onHitEffect") {
+			return this.hasOnHitEffect(Registry.STATUS_EFFECT.get(new Identifier(ability.id)));
+		} else if (ability.type == "activeEffect") {
+			return this.hasActiveEffect(Registry.STATUS_EFFECT.get(new Identifier(ability.id)));
+		} else if (ability.type == "auraEffect") {
+			return this.hasAuraEffect(Registry.STATUS_EFFECT.get(new Identifier(ability.id)));
 		} else {
 			return false;
 		}
@@ -185,7 +183,7 @@ public class CompanionBatAbilities {
 
 	public List<Pair<MutableText, Integer>> toTranslatedList() {
 		List<Pair<MutableText, Integer>> list = new ArrayList<>();
-		for (Entry<CompanionBatAbility, Integer> entry: this.abilities.entrySet()) {
+		for (Entry<CompanionBatAbilityType, Integer> entry: this.abilities.entrySet()) {
 			list.add(new Pair<MutableText, Integer>(entry.getKey().toTranslatedText(), entry.getValue()));
 		}
 		for (Entry<StatusEffect, Pair<Integer, Integer>> entry: this.onHitEffects.entrySet()) {

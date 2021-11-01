@@ -1,14 +1,14 @@
 {
 	"levels": [
 		{ "totalExp": 0 },
-		{ "totalExp": 50, "abilityType": "ability", "ability": "INCREASED_ARMOR" },
-		{ "totalExp": 150, "abilityType": "ability", "ability": "BLOCK_ATTACK" },
-		{ "totalExp": 275, "abilityType": "ability", "ability": "INCREASED_ARMOR" },
-		{ "totalExp": 425, "abilityType": "ability", "ability": "BLOCK_ATTACK" },
-		{ "totalExp": 600, "abilityType": "ability", "ability": "INCREASED_ARMOR" },
-		{ "totalExp": 800, "abilityType": "ability", "ability": "BLOCK_ATTACK" },
-		{ "totalExp": 1025, "abilityType": "ability", "ability": "INCREASED_ARMOR" },
-		{ "totalExp": 1275, "abilityType": "ability", "ability": "BLOCK_ATTACK" },
-		{ "totalExp": 1600, "abilityType": "ability", "ability": "INCREASED_ARMOR", "permanent": true }
+		{ "totalExp": 50, "ability": { "id": "INCREASED_ARMOR" } },
+		{ "totalExp": 150, "ability": { "id": "BLOCK_ATTACK" } },
+		{ "totalExp": 275, "ability": { "id": "INCREASED_ARMOR" } },
+		{ "totalExp": 425, "ability": { "id": "BLOCK_ATTACK" } },
+		{ "totalExp": 600, "ability": { "id": "INCREASED_ARMOR" } },
+		{ "totalExp": 800, "ability": { "id": "BLOCK_ATTACK" } },
+		{ "totalExp": 1025, "ability": { "id": "INCREASED_ARMOR" } },
+		{ "totalExp": 1275, "ability": { "id": "BLOCK_ATTACK" } },
+		{ "totalExp": 1600, "ability": { "id": "INCREASED_ARMOR" }, "permanent": true }
 	]
 }

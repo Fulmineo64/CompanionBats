@@ -1,14 +1,14 @@
 {
 	"levels": [
 		{ "totalExp": 0 },
-		{ "totalExp": 50, "abilityType": "onHitEffect", "ability": "slowness", "duration": 60 },
-		{ "totalExp": 150, "abilityType": "onHitEffect", "ability": "weakness", "duration": 60 },
+		{ "totalExp": 50, "ability": { "type": "onHitEffect", "id": "slowness", "duration": 60 } },
+		{ "totalExp": 150, "ability": { "type": "onHitEffect", "id": "weakness", "duration": 60 } },
 		{ "totalExp": 275 },
-		{ "totalExp": 425, "abilityType": "onHitEffect", "ability": "slowness", "duration": 60 },
-		{ "totalExp": 600, "abilityType": "onHitEffect", "ability": "wither", "duration": 60 },
+		{ "totalExp": 425, "ability": { "type": "onHitEffect", "id": "slowness", "duration": 60 } },
+		{ "totalExp": 600, "ability": { "type": "onHitEffect", "id": "wither", "duration": 60 } },
 		{ "totalExp": 800 },
-		{ "totalExp": 1025, "abilityType": "onHitEffect", "ability": "slowness", "duration": 60 },
-		{ "totalExp": 1275, "abilityType": "onHitEffect", "ability": "wither", "duration": 60 },
-		{ "totalExp": 1600, "abilityType": "onHitEffect", "ability": "slowness", "duration": 60, "permanent": true }
+		{ "totalExp": 1025, "ability": { "type": "onHitEffect", "id": "slowness", "duration": 60 } },
+		{ "totalExp": 1275, "ability": { "type": "onHitEffect", "id": "wither", "duration": 60 } },
+		{ "totalExp": 1600, "ability": { "type": "onHitEffect", "id": "slowness", "duration": 60 }, "permanent": true }
 	]
 }

@@ -1,14 +1,14 @@
 {
 	"levels": [
 		{ "totalExp": 0 },
-		{ "totalExp": 50, "abilityType": "ability", "ability": "INCREASED_ATTACK" },
-		{ "totalExp": 150, "abilityType": "ability", "ability": "BURN" },
-		{ "totalExp": 275, "abilityType": "ability", "ability": "INCREASED_ATTACK" },
-		{ "totalExp": 425, "abilityType": "ability", "ability": "BURN" },
-		{ "totalExp": 600, "abilityType": "ability", "ability": "INCREASED_ATTACK" },
-		{ "totalExp": 800, "abilityType": "ability", "ability": "BURN" },
-		{ "totalExp": 1025, "abilityType": "ability", "ability": "INCREASED_ATTACK" },
-		{ "totalExp": 1275, "abilityType": "activeEffect", "ability": "fire_resistance" },
-		{ "totalExp": 1600, "abilityType": "ability", "ability": "INCREASED_ATTACK", "permanent": true }
+		{ "totalExp": 50, "ability": { "id": "INCREASED_ATTACK" } },
+		{ "totalExp": 150, "ability": { "id": "BURN" } },
+		{ "totalExp": 275, "ability": { "id": "INCREASED_ATTACK" } },
+		{ "totalExp": 425, "ability": { "id": "BURN" } },
+		{ "totalExp": 600, "ability": { "name": "fire_berserk", "type": "activeEffect", "id": "strength", "duration": 60, "conditions": [{ "type": "is_on_fire" }] } },
+		{ "totalExp": 800, "ability": { "id": "BURN" } },
+		{ "totalExp": 1025, "ability": { "name": "fire_berserk", "type": "activeEffect", "id": "strength", "duration": 60, "conditions": [{ "type": "is_on_fire" }] } },
+		{ "totalExp": 1275, "ability": { "type": "activeEffect", "id": "fire_resistance" } },
+		{ "totalExp": 1600, "ability": { "id": "INCREASED_ATTACK" }, "permanent": true }
 	]
 }

@@ -1,3 +1,6 @@
+# 1.18.4
+- Fixed the Pie O'Echanting crashing Multiplayer worlds
+
 # 1.18.3
 - Mini Inferno rework
 - Added the new ability ZEALOUS_FIRE that immediately extinguishes active fires on the bat and grants a corresponding Strength effect based on the ability level

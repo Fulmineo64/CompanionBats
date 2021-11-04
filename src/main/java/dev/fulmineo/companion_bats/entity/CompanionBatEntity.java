@@ -573,7 +573,7 @@ public class CompanionBatEntity extends TameableEntity {
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (this.world.isClient) {
-			return (itemStack.isOf(Items.MILK_BUCKET) || this.canEat(itemStack)) ? ActionResult.CONSUME : ActionResult.PASS;
+			return (itemStack.isOf(Items.MILK_BUCKET) || this.canEat(itemStack, true)) ? ActionResult.CONSUME : ActionResult.PASS;
 		} else {
 			if (itemStack.isOf(Items.MILK_BUCKET)) {
 				boolean ok = this.clearStatusEffects();
@@ -611,7 +611,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public boolean healWithItem(ItemStack stack) {
-		if (!this.canEat(stack)) return false;
+		if (!this.canEat(stack, false)) return false;
 		if (stack.isOf(CompanionBats.EXPERIENCE_PIE)){
 			this.gainExp(CompanionBats.CONFIG.experiencePieGain);
 		}
@@ -1016,13 +1016,14 @@ public class CompanionBatEntity extends TameableEntity {
 		return this.getEquippedStack(EquipmentSlot.FEET);
 	}
 
-	public boolean canEat(ItemStack stack){
+	public boolean canEat(ItemStack stack, boolean clientSide){
 		if (stack.isOf(CompanionBats.EXPERIENCE_PIE)){
 			if (this.currentClass != null) {
-				CompanionBatClassLevel[] classLevels = ServerDataManager.classes.get(this.currentClass).levels;
+				CompanionBatClassLevel[] classLevels = (clientSide ? ClientDataManager.classes : ServerDataManager.classes).get(this.currentClass).levels;
 				if (this.classExp < classLevels[classLevels.length - 1].totalExp) return true;
 			}
-			return this.isInjured() || (this.exp < ServerDataManager.combatLevels[ServerDataManager.combatLevels.length - 1].totalExp);
+			CompanionBatCombatLevel[] levels = (clientSide ? ClientDataManager.combatLevels : ServerDataManager.combatLevels);
+			return this.isInjured() || (this.exp < levels[levels.length - 1].totalExp);
 		} else {
 			return this.isInjured() && IS_FOOD_ITEM.test(stack);
 		}

@@ -13,9 +13,9 @@ import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiecesHolder;
 import net.minecraft.structure.StructurePlacementData;
@@ -62,8 +62,8 @@ public class CaveHouseGenerator {
 			super(CompanionBats.CAVE_HOUSE_PIECE, 0, manager, identifier, identifier.toString(), createPlacementData(rotation, identifier), getPosOffset(identifier, pos, yOffset));
 		}
 
-		public Piece(ServerWorld world, NbtCompound nbt) {
-			super(CompanionBats.CAVE_HOUSE_PIECE, nbt, world, (identifier) -> {
+		public Piece(StructureContext context, NbtCompound nbt) {
+			super(CompanionBats.CAVE_HOUSE_PIECE, nbt, context.structureManager(), (identifier) -> {
 				return createPlacementData(BlockRotation.valueOf(nbt.getString("Rot")), identifier);
 			});
 		}
@@ -77,8 +77,8 @@ public class CaveHouseGenerator {
 			return newPos;
 		}
 
-		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-			super.writeNbt(world, nbt);
+		protected void writeNbt(StructureContext context, NbtCompound nbt) {
+			super.writeNbt(context, nbt);
 			nbt.putString("Rot", this.placementData.getRotation().name());
 		}
 
@@ -98,15 +98,15 @@ public class CaveHouseGenerator {
 			}
 		}
 
-		public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-			Identifier identifier = new Identifier(this.identifier);
+		public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+			Identifier identifier = new Identifier(this.template);
 			StructurePlacementData structurePlacementData = createPlacementData(this.placementData.getRotation(), identifier);
 			BlockPos blockPos = (BlockPos)CaveHouseGenerator.OFFSETS_FROM_TOP.get(identifier);
 			BlockPos blockPos2 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3 - blockPos.getX(), 0, -blockPos.getZ())));
 			int i = world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
 			BlockPos blockPos3 = this.pos;
 			this.pos = this.pos.add(0, i - 50 - 25, 0);
-			boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+			super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
 			if (identifier.equals(CaveHouseGenerator.TOP_TEMPLATE)) {
 				/*
 				// TODO: AzaleaSaplingGenerator softlocks the entire game
@@ -127,7 +127,6 @@ public class CaveHouseGenerator {
 			}
 
 			this.pos = blockPos3;
-			return bl;
 		}
 	}
 }

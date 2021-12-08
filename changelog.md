@@ -1,3 +1,9 @@
+# 1.18.6
+- Fixed incorrect return value for the generateMixin in SwampHutGeneratorMixin
+
+# 1.18.5
+- Updated to Minecraft 1.18
+
 # 1.18.4
 - Fixed the Pie O'Echanting crashing Multiplayer worlds
 

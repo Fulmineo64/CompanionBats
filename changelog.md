@@ -1,3 +1,6 @@
+# 1.18.7
+- Updated to Minecraft 1.18.1
+
 # 1.18.6
 - Fixed incorrect return value for the generateMixin in SwampHutGeneratorMixin
 

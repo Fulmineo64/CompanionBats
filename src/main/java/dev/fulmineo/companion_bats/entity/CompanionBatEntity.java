@@ -36,6 +36,7 @@ import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -128,7 +129,8 @@ public class CompanionBatEntity extends TameableEntity {
 	private boolean hasPotionGoal;
 	private boolean hasRangedAttackGoal;
 	private boolean hasNaturalRegeneration;
-	private boolean hasZealousFire;
+	private boolean hasFlameEater;
+	private boolean hasAttractFlames;
 	private int comboAttackResetTicks = CompanionBats.CONFIG.comboAttackResetTicks;
 	private int comboLevel = 0;
 	private int teleportTicks = CompanionBats.CONFIG.teleportTicks;
@@ -137,6 +139,8 @@ public class CompanionBatEntity extends TameableEntity {
 	private boolean isSneakAttacking;
 	private boolean guaranteedSneakAttack;
 	private Entity teleportTarget;
+	private NbtCompound itemNbt;
+	private byte itemType;
 
 	public CompanionBatEntity(EntityType<? extends TameableEntity> entityType, World world) {
 		super(entityType, world);
@@ -160,6 +164,7 @@ public class CompanionBatEntity extends TameableEntity {
 		entityData.putGuardMode(this.getGuardMode());
 		this.writeExpToTag(entityData);
 		this.writePotionTicks(entityData);
+		this.writeItemData(tag);
 	}
 
 	public void readCustomDataFromNbt(NbtCompound tag) {
@@ -175,6 +180,7 @@ public class CompanionBatEntity extends TameableEntity {
 		this.setAbilitiesEffects(true);
 		this.setPotionTicks(entityData);
 		this.setGuardMode(entityData.getGuardMode());
+		this.setItemData(tag);
 	}
 
 	protected float getSoundVolume() {
@@ -318,17 +324,51 @@ public class CompanionBatEntity extends TameableEntity {
 				}
 			}
 
-			if (this.hasZealousFire && this.isOnFire()) {
-				int level = this.abilities.get(CompanionBatAbilityType.ZEALOUS_FIRE);
-				int ticks = this.getFireTicks();
-				this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, ticks, level - 1, false, true));
+			if (this.hasAttractFlames) {
+				int fireTicks = this.getFireTicks();
+				LivingEntity owner = this.getOwner();
+				if (owner != null && owner.isOnFire()) {
+					fireTicks += owner.getFireTicks();
+					owner.setFireTicks(0);
+				}
+				if (this.world.getTime() % 10 == 0) {
+					int offset = CompanionBats.CONFIG.attractFlamesBoxSize / 2;
+					BlockPos pos = this.getBlockPos().add(Direction.UP.getVector().multiply(offset)).add(Direction.NORTH.getVector().multiply(offset)).add(Direction.EAST.getVector().multiply(offset));
+					for (int y = 0; y < CompanionBats.CONFIG.attractFlamesBoxSize; y++) {
+						for (int z = 0; z < CompanionBats.CONFIG.attractFlamesBoxSize; z++) {
+							for (int x = 0; x < CompanionBats.CONFIG.attractFlamesBoxSize; x++) {
+								BlockState state = this.world.getBlockState(pos);
+								if (state.isOf(Blocks.FIRE) || state.isOf(Blocks.SOUL_FIRE)) {
+									this.world.removeBlock(pos, false);
+									fireTicks += 60;
+								}
+								pos = pos.west();
+							}
+							pos = pos.south().east(CompanionBats.CONFIG.attractFlamesBoxSize);
+						}
+						pos = pos.down().north(CompanionBats.CONFIG.attractFlamesBoxSize);
+					}
+				}
+				this.setFireTicks(fireTicks);
+			}
+
+			if (this.hasFlameEater && this.isOnFire()) {
+				int level = this.abilities.get(CompanionBatAbilityType.FLAME_EATER);
+				int currentDuration = 0;
+				StatusEffectInstance currentStatus = this.getStatusEffect(StatusEffects.STRENGTH);
+				if (currentStatus != null && currentStatus.getAmplifier() == level -1) currentDuration = currentStatus.getDuration();
+				this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, currentDuration + this.getFireTicks(), level - 1, false, true));
 				this.setFireTicks(0);
 			}
 		}
 	}
 
 	public void onDeath(DamageSource source) {
-		if (!this.returnToPlayerInventory()) super.onDeath(source);
+		if (!this.returnToPlayerInventory()) {
+			ItemStack stack = this.toItemStack();
+			this.dropStack(stack);
+			this.discard();
+		}
 	}
 
 	protected boolean canClimb() {
@@ -849,8 +889,11 @@ public class CompanionBatEntity extends TameableEntity {
 		if (this.abilities.hasAbility(CompanionBatAbilityType.NATURAL_REGENERATION)) {
 			this.hasNaturalRegeneration = true;
 		}
-		if (this.abilities.hasAbility(CompanionBatAbilityType.ZEALOUS_FIRE)) {
-			this.hasZealousFire = true;
+		if (this.abilities.hasAbility(CompanionBatAbilityType.FLAME_EATER)) {
+			this.hasFlameEater = true;
+		}
+		if (this.abilities.hasAbility(CompanionBatAbilityType.ATTRACT_FLAMES)) {
+			this.hasAttractFlames = true;
 		}
 		if (this.abilities.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
 			this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0F);
@@ -986,7 +1029,14 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public ItemStack toItemStack() {
-		ItemStack batItemStack = new ItemStack(CompanionBats.BAT_ITEM);
+		ItemStack batItemStack = new ItemStack(this.itemType == 1 ? CompanionBats.NETHERITE_BAT_ITEM : CompanionBats.BAT_ITEM);
+		NbtCompound nbt = batItemStack.getOrCreateNbt();
+		if (this.itemNbt != null) {
+			for (String key : this.itemNbt.getKeys()) {
+				nbt.put(key, this.itemNbt.get(key));
+			}
+		}
+		batItemStack.setNbt(nbt);
 		if (this.hasCustomName()) {
 			batItemStack.setCustomName(this.getCustomName());
 		}
@@ -1040,6 +1090,28 @@ public class CompanionBatEntity extends TameableEntity {
 	public void setTarget(@Nullable LivingEntity target) {
 		this.scheduleTeleport(target);
 		super.setTarget(target);
+	}
+
+	private void writeItemData(NbtCompound nbt) {
+		NbtCompound itemData = new NbtCompound();
+		itemData.put("Nbt", this.itemNbt);
+		if (this.itemType > 0) itemData.putInt("Type", this.itemType);
+		nbt.put("Item", itemData);
+	}
+
+	private void setItemData(NbtCompound nbt) {
+		if (nbt.contains("Item")) {
+			NbtCompound itemData = nbt.getCompound("Item");
+			this.itemNbt = itemData.getCompound("Nbt");
+			this.itemType = itemData.getByte("Type");
+		}
+	}
+
+	public void setItemDataFromStack(ItemStack itemStack) {
+		this.itemNbt = new NbtCompound();
+		NbtCompound stackNbt = itemStack.getNbt();
+		if (stackNbt.contains("Enchantments")) this.itemNbt.put("Enchantments", stackNbt.get("Enchantments"));
+		if (itemStack.getItem() == CompanionBats.NETHERITE_BAT_ITEM) this.itemType = 1;
 	}
 
 	public static List<CompanionBatEntity> getPlayerBats(ServerPlayerEntity player) {

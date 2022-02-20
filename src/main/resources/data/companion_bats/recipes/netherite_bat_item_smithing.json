@@ -1,0 +1,12 @@
+{
+	"type": "minecraft:smithing",
+	"base": {
+	  "item": "companion_bats:bat_item"
+	},
+	"addition": {
+	  "item": "minecraft:netherite_ingot"
+	},
+	"result": {
+	  "item": "companion_bats:netherite_bat_item"
+	}
+  }

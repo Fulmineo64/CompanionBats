@@ -1,0 +1,25 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		" b ",
+		"csc",
+		" S "
+	],
+	"key": {
+		"b": {
+			"item": "minecraft:blaze_rod"
+		},
+		"c": {
+			"item": "minecraft:coal_block"
+		},
+		"s": {
+			"item": "minecraft:soul_lantern"
+		},
+		"S": {
+			"item": "minecraft:soul_sand"
+		}
+	},
+	"result": {
+		"item": "companion_bats:baleful_lantern"
+	}
+}

@@ -1,7 +1,14 @@
 package dev.fulmineo.companion_bats.item;
 
+import java.util.List;
+
+import org.jetbrains.annotations.Nullable;
+
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -10,6 +17,9 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -50,4 +60,9 @@ public class CompanionBatCommandFluteAttackItem extends Item {
 		return TypedActionResult.success(itemStack);
     }
 
+	@Environment(EnvType.CLIENT)
+	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+		tooltip.add(new TranslatableText("item.companion_bats.command_flute.description.0").formatted(Formatting.GRAY));
+		tooltip.add(new TranslatableText("item.companion_bats.command_flute.description_end").formatted(Formatting.DARK_GRAY));
+	}
 }

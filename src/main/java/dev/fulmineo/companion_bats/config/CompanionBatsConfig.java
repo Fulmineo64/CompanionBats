@@ -45,6 +45,10 @@ public class CompanionBatsConfig implements ConfigData {
 	public int lifestealMultiplier = 10;
 	public int teleportMultiplier = 25;
 
+	// Other values
+
+	public int attractFlamesBoxSize = 7;
+
     public static CompanionBatsConfig getInstance() {
         return AutoConfig.getConfigHolder(CompanionBatsConfig.class).getConfig();
     }

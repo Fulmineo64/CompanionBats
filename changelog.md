@@ -1,3 +1,14 @@
+# 1.19.0
+## Blazing companionship
+- Updated Companion Bat's death system, when defeated while the owner isn't around the bat will drop itself as an item instead of dying.
+- Added new smithing recipe to completely fireproof your Companion Bat in item form.
+- Any enchantments applied to the Companion Bat in item form will now be maintained.
+- Added new accessory, the Baleful Lantern, an ominous artifact that seems to curse the bearer to attract all sorts of flames.
+- Added new ability ATTRACT_FLAMES.
+- Added new setting to configure the radius of the ATTRACT_FLAMES ability.
+- !POSSIBLE BREAKING CHANGE FOR DATAPACKS! Renamed ability ZEALOUS_FIRE to FLAME_EATER for clarity.
+- Added descriptions to the Command Flute modes.
+
 # 1.18.7
 - Updated to Minecraft 1.18.1
 

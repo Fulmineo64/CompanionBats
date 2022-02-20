@@ -3,14 +3,21 @@ package dev.fulmineo.companion_bats.item;
 import java.util.Iterator;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import dev.fulmineo.companion_bats.CompanionBats;
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -47,4 +54,9 @@ public class CompanionBatCommandFluteGuardItem extends Item {
 		return TypedActionResult.success(itemStack);
     }
 
+	@Environment(EnvType.CLIENT)
+	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+		tooltip.add(new TranslatableText("item.companion_bats.command_flute_guard.description.0").formatted(Formatting.GRAY));
+		tooltip.add(new TranslatableText("item.companion_bats.command_flute.description_end").formatted(Formatting.DARK_GRAY));
+	}
 }

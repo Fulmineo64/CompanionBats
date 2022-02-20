@@ -5,7 +5,7 @@ import net.minecraft.text.TranslatableText;
 public enum CompanionBatAbilityType {
 	// Inferno
 
-	INCREASED_ATTACK, BURN, ZEALOUS_FIRE,
+	INCREASED_ATTACK, BURN, FLAME_EATER,
 
 	// Vampire
 
@@ -43,7 +43,7 @@ public enum CompanionBatAbilityType {
 
 	// Accessory
 
-	CANNOT_ATTACK, ATTACK_EVERYONE, ATTACK_HOSTILES, ATTACK_PASSIVE, NATURAL_REGENERATION, MAGIC_PROTECTION;
+	CANNOT_ATTACK, ATTACK_EVERYONE, ATTACK_HOSTILES, ATTACK_PASSIVE, NATURAL_REGENERATION, MAGIC_PROTECTION, ATTRACT_FLAMES;
 
 	public TranslatableText toTranslatedText() {
 		return new TranslatableText("ability.companion_bats."+this.toString());

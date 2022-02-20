@@ -86,6 +86,7 @@ public class CompanionBats implements ModInitializer {
 	public static final ItemGroup GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID,"group"), () -> new ItemStack(Registry.ITEM.get(new Identifier(MOD_ID,"bat_item"))));
 
     public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage(100).group(GROUP));
+    public static final Item NETHERITE_BAT_ITEM = new CompanionBatItem(new FabricItemSettings().fireproof().maxDamage(100).rarity(Rarity.EPIC));
 	public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
 	public static final Item COMMAND_FLUTE_ATTACK = new CompanionBatCommandFluteAttackItem(new FabricItemSettings().maxCount(1).group(GROUP));
 	public static final Item COMMAND_FLUTE_REST = new CompanionBatCommandFluteRestItem(new FabricItemSettings().maxCount(1));
@@ -111,6 +112,7 @@ public class CompanionBats implements ModInitializer {
 		// Items
 
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_item"), 		  	BAT_ITEM);
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "netherite_bat_item"),  NETHERITE_BAT_ITEM);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_flute"), 	 	  	BAT_FLUTE_ITEM);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "command_flute"), 		COMMAND_FLUTE_ATTACK);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "command_flute_rest"), 	COMMAND_FLUTE_REST);

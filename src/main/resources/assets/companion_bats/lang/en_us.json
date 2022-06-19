@@ -127,8 +127,6 @@
 	"advancements.companion_bats.bat_accessory.description": "Obtain a Companion Bat Accessory",
 	"advancements.companion_bats.bundle": "Bundle up!",
 	"advancements.companion_bats.bundle.description": "Equip a Bundle to your Companion Bat to let it pick up items for you",
-	"advancements.companion_bats.cave_house": "Forgotten in the Depths",
-	"advancements.companion_bats.cave_house.description": "Discover an hidden cave house",
 	"text.autoconfig.companion_bats.title": "Companion Bats' configuration",
 	"text.autoconfig.companion_bats.option.baseHealth": "Base Health",
 	"text.autoconfig.companion_bats.option.baseAttack": "Base Attack",

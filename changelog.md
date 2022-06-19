@@ -1,3 +1,7 @@
+# 1.19.1
+- Updated to Minecraft 1.19
+- Removed Cave House feature
+
 # 1.19.0
 ## Blazing companionship
 - Updated Companion Bat's death system, when defeated while the owner isn't around the bat will drop itself as an item instead of dying.

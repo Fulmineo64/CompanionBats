@@ -7,7 +7,6 @@
 		"BatEntityMixin",
 		"BundleItemMixin",
 		"LivingEntityMixin",
-		"StructureFeatureAccessor",
 		"SwampHutGeneratorMixin",
 		"ServerPlayerEntityMixin",
 		"WanderingTraderEntityMixin"

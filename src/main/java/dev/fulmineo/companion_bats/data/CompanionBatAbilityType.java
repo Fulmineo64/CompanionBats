@@ -1,6 +1,7 @@
 package dev.fulmineo.companion_bats.data;
 
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 
 public enum CompanionBatAbilityType {
 	// Inferno
@@ -45,7 +46,7 @@ public enum CompanionBatAbilityType {
 
 	CANNOT_ATTACK, ATTACK_EVERYONE, ATTACK_HOSTILES, ATTACK_PASSIVE, NATURAL_REGENERATION, MAGIC_PROTECTION, ATTRACT_FLAMES;
 
-	public TranslatableText toTranslatedText() {
-		return new TranslatableText("ability.companion_bats."+this.toString());
+	public MutableText toTranslatedText() {
+		return Text.translatable("ability.companion_bats."+this.toString());
 	}
 }

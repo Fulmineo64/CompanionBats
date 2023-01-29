@@ -14,10 +14,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -48,11 +48,11 @@ public class CompanionBatArmorItem extends Item {
 			}
 		}
 
-		tooltip.add(new TranslatableText("item.companion_bats.armor").formatted(Formatting.GOLD));
+		tooltip.add(Text.translatable("item.companion_bats.armor").formatted(Formatting.GOLD));
 
 		List<Pair<MutableText, Integer>> list = abilities.toTranslatedList();
 		if (list.size() > 0){
-			tooltip.add(new TranslatableText("item.companion_bats.armor.abilities").formatted(Formatting.AQUA));
+			tooltip.add(Text.translatable("item.companion_bats.armor.abilities").formatted(Formatting.AQUA));
 			for (Pair<MutableText, Integer> entry: list) {
 				tooltip.add(entry.getLeft().formatted(Formatting.GRAY));
 			}
@@ -60,13 +60,13 @@ public class CompanionBatArmorItem extends Item {
 
 		list = permanentAbilities.toTranslatedList();
 		if (list.size() > 0){
-			tooltip.add(new TranslatableText("item.companion_bats.armor.permanent_ability").formatted(Formatting.AQUA));
+			tooltip.add(Text.translatable("item.companion_bats.armor.permanent_ability").formatted(Formatting.AQUA));
 			for (Pair<MutableText, Integer> entry: list) {
 				tooltip.add(entry.getLeft().formatted(Formatting.GRAY));
 			}
 		}
 
-		tooltip.add((cls.hint != null ? new LiteralText(cls.hint) : new TranslatableText("item.companion_bats."+this.identifier+".hint")).formatted(Formatting.DARK_GRAY).formatted(Formatting.ITALIC));
+		tooltip.add((cls.hint != null ? Text.literal(cls.hint) : Text.translatable("item.companion_bats."+this.identifier+".hint")).formatted(Formatting.DARK_GRAY).formatted(Formatting.ITALIC));
 	}
 
     @Environment(EnvType.CLIENT)

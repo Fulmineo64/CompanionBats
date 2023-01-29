@@ -34,12 +34,12 @@ public class ServerDataManager {
 				classes.clear();
 
 				Identifier combatLevelsId = new Identifier("companion_bats:bat_combat_levels.json");
-				if (!manager.containsResource(combatLevelsId)) {
+				if (manager.getResource(combatLevelsId).isEmpty()) {
 					CompanionBats.info("Missing combat levels");
 					return;
 				}
 
-				try(InputStream stream = manager.getResource(combatLevelsId).getInputStream()) {
+				try(InputStream stream = manager.getResource(combatLevelsId).get().getInputStream()) {
 					try {
 						combatLevels = GSON.fromJson(new String(stream.readAllBytes()), CompanionBatCombatLevel[].class);
 					} catch (Exception e) {
@@ -49,9 +49,8 @@ public class ServerDataManager {
 					CompanionBats.info("Error occurred while loading resource json "+combatLevelsId.toString());
 				}
 
-
-				for(Identifier id : manager.findResources("bat_classes", path -> path.endsWith(".json"))) {
-					try(InputStream stream = manager.getResource(id).getInputStream()) {
+				for(Identifier id : manager.findResources("bat_classes", path -> path.toString().endsWith(".json")).keySet()) {
+					try(InputStream stream = manager.getResource(id).get().getInputStream()) {
 						try {
 							String className = id.getNamespace() + ":" + id.getPath().replace("bat_classes/", "").replace(".json", "");
 							classes.put(className, GSON.fromJson(new String(stream.readAllBytes()), CompanionBatClass.class));

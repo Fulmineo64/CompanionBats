@@ -64,7 +64,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.WolfEntity;
@@ -74,15 +74,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.FluidTags;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -437,7 +436,7 @@ public class CompanionBatEntity extends TameableEntity {
 				return companionBatEntity.getOwner() != owner;
 			} else if (target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity) owner).shouldDamagePlayer((PlayerEntity) target)) {
 				return false;
-			} else if (target instanceof HorseBaseEntity && ((HorseBaseEntity) target).isTame()) {
+			} else if (target instanceof AbstractHorseEntity && ((AbstractHorseEntity) target).isTame()) {
 				return false;
 			} else {
 				return !(target instanceof TameableEntity) || !((TameableEntity) target).isTamed();
@@ -963,18 +962,18 @@ public class CompanionBatEntity extends TameableEntity {
 
 	protected void notifyLevelUp(int level) {
 		if (level > 0) {
-			MutableText message = new TranslatableText("entity.companion_bats.bat.level_up", this.hasCustomName() ? this.getCustomName() : new TranslatableText("entity.companion_bats.bat.your_bat"), level + 1).append("\n");
+			MutableText message = Text.translatable("entity.companion_bats.bat.level_up", this.hasCustomName() ? this.getCustomName() : Text.translatable("entity.companion_bats.bat.your_bat"), level + 1).append("\n");
 			if (ServerDataManager.combatLevels[level].healthBonus > ServerDataManager.combatLevels[level - 1].healthBonus) {
-				message.append(new LiteralText("+").formatted(Formatting.GOLD)).append(" ");
-				message.append(new TranslatableText("entity.companion_bats.bat.level_up_health", (int) (ServerDataManager.combatLevels[level].healthBonus - ServerDataManager.combatLevels[level - 1].healthBonus))).append(" ");
+				message.append(Text.literal("+").formatted(Formatting.GOLD)).append(" ");
+				message.append(Text.translatable("entity.companion_bats.bat.level_up_health", (int) (ServerDataManager.combatLevels[level].healthBonus - ServerDataManager.combatLevels[level - 1].healthBonus))).append(" ");
 			}
 			if (ServerDataManager.combatLevels[level].attackBonus > ServerDataManager.combatLevels[level - 1].attackBonus) {
-				message.append(new LiteralText("+").formatted(Formatting.GOLD)).append(" ");
-				message.append(new TranslatableText("entity.companion_bats.bat.level_up_attack", (int) (ServerDataManager.combatLevels[level].attackBonus - ServerDataManager.combatLevels[level - 1].attackBonus))).append(" ");
+				message.append(Text.literal("+").formatted(Formatting.GOLD)).append(" ");
+				message.append(Text.translatable("entity.companion_bats.bat.level_up_attack", (int) (ServerDataManager.combatLevels[level].attackBonus - ServerDataManager.combatLevels[level - 1].attackBonus))).append(" ");
 			}
 			if (ServerDataManager.combatLevels[level].speedBonus > ServerDataManager.combatLevels[level - 1].speedBonus) {
-				message.append(new LiteralText("+").formatted(Formatting.GOLD)).append(" ");
-				message.append(new TranslatableText("entity.companion_bats.bat.level_up_speed", Math.round(100 - ((CompanionBats.CONFIG.baseSpeed + ServerDataManager.combatLevels[level - 1].speedBonus) / (CompanionBats.CONFIG.baseSpeed + ServerDataManager.combatLevels[level].speedBonus) * 100)))).append(" ");
+				message.append(Text.literal("+").formatted(Formatting.GOLD)).append(" ");
+				message.append(Text.translatable("entity.companion_bats.bat.level_up_speed", Math.round(100 - ((CompanionBats.CONFIG.baseSpeed + ServerDataManager.combatLevels[level - 1].speedBonus) / (CompanionBats.CONFIG.baseSpeed + ServerDataManager.combatLevels[level].speedBonus) * 100)))).append(" ");
 			}
 			((PlayerEntity) this.getOwner()).sendMessage(message, false);
 		}
@@ -982,10 +981,10 @@ public class CompanionBatEntity extends TameableEntity {
 
 	protected void notifyClassLevelUp(int classLevel, CompanionBatClassLevel[] classLevels) {
 		CompanionBatClass cls = ClientDataManager.classes.get(this.currentClass);
-		MutableText message = new TranslatableText(
+		MutableText message = Text.translatable(
 			"entity.companion_bats.bat.class_level_up",
-			this.hasCustomName() ? this.getCustomName() : new TranslatableText("entity.companion_bats.bat.your_bat"),
-			cls != null && cls.label != null ? new LiteralText(cls.label) :  new TranslatableText("class." + this.currentClass.replace(":", ".")),
+			this.hasCustomName() ? this.getCustomName() : Text.translatable("entity.companion_bats.bat.your_bat"),
+			cls != null && cls.label != null ? Text.literal(cls.label) :  Text.translatable("class." + this.currentClass.replace(":", ".")),
 			classLevel + 1
 		);
 		if (classLevels[classLevel].ability != null){
@@ -995,12 +994,12 @@ public class CompanionBatEntity extends TameableEntity {
 			message.append("\n");
 			String obtainedOrLevelUp = "ability_obtained";
 			if (classLevels[classLevel].permanent){
-				message.append(new TranslatableText("entity.companion_bats.bat.permanent_ability").formatted(Formatting.LIGHT_PURPLE)).append(" ");
+				message.append(Text.translatable("entity.companion_bats.bat.permanent_ability").formatted(Formatting.LIGHT_PURPLE)).append(" ");
 			} else {
-				message.append(new TranslatableText("entity.companion_bats.bat.ability").formatted(Formatting.GREEN)).append(" ");
+				message.append(Text.translatable("entity.companion_bats.bat.ability").formatted(Formatting.GREEN)).append(" ");
 				if (this.abilities.has(classLevels[classLevel].ability)) obtainedOrLevelUp = "ability_level_up";
 			}
-			message.append(new TranslatableText("entity.companion_bats.bat."+obtainedOrLevelUp, pair.getLeft()));
+			message.append(Text.translatable("entity.companion_bats.bat."+obtainedOrLevelUp, pair.getLeft()));
 		}
 		((PlayerEntity) this.getOwner()).sendMessage(message, false);
 	}

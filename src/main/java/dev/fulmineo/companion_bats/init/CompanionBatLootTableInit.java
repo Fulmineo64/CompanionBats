@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import dev.fulmineo.companion_bats.CompanionBats;
-import net.fabricmc.fabric.api.loot.v1.FabricLootPoolBuilder;
-import net.fabricmc.fabric.api.loot.v1.event.LootTableLoadingCallback;
 import net.minecraft.loot.provider.number.BinomialLootNumberProvider;
+import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
+import net.minecraft.loot.LootPool;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.util.Identifier;
 
 public class CompanionBatLootTableInit {
-	public static Map<Identifier, FabricLootPoolBuilder> toRegister = new HashMap<>();
+	public static Map<Identifier, LootPool.Builder> toRegister = new HashMap<>();
 
 	private static final Identifier WOODLAND_MANSION_ID = new Identifier("minecraft", "chests/woodland_mansion");
 	private static final Identifier PILLAGER_OUTPOST_ID = new Identifier("minecraft", "chests/pillager_outpost");
@@ -21,18 +21,17 @@ public class CompanionBatLootTableInit {
 	private static final Identifier STRONGHOLD_CORRIDOR_ID = new Identifier("minecraft", "chests/stronghold_corridor");
 
 	public static void init(){
-		LootTableLoadingCallback.EVENT.register((resourceManager, lootManager, id, supplier, setter) -> {
+		LootTableEvents.MODIFY.register((resourceManager, lootManager, id, tableBuilder, source) -> {
 			// Armors
-			FabricLootPoolBuilder pool = toRegister.get(id);
-			if (pool != null) {
-				supplier.pool(pool);
-				toRegister.remove(id);
+			LootPool.Builder poolBuilder = toRegister.get(id);
+			if (source.isBuiltin() && poolBuilder != null) {
+				tableBuilder.pool(poolBuilder);
 			}
 
 			// Pie o' Enchanting
 			if (WOODLAND_MANSION_ID.equals(id) || PILLAGER_OUTPOST_ID.equals(id) || SIMPLE_DUNGEON_ID.equals(id) || ABANDONED_MINESHAFT_ID.equals(id) || SHIPWRECK_TREASURE_ID.equals(id) || STRONGHOLD_CORRIDOR_ID.equals(id)) {
-				FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder().rolls(BinomialLootNumberProvider.create(WOODLAND_MANSION_ID.equals(id) ? 4 : 2, 0.35F)).with(ItemEntry.builder(CompanionBats.EXPERIENCE_PIE));
-				supplier.pool(poolBuilder);
+				poolBuilder = LootPool.builder().rolls(BinomialLootNumberProvider.create(WOODLAND_MANSION_ID.equals(id) ? 4 : 2, 0.35F)).with(ItemEntry.builder(CompanionBats.EXPERIENCE_PIE));
+				tableBuilder.pool(poolBuilder);
 			}
 		});
 	}

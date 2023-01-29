@@ -14,11 +14,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
-import net.minecraft.util.registry.Registry;
 
 public class CompanionBatAbilities {
 	private Map<CompanionBatAbilityType, Integer> abilities = new HashMap<>();
@@ -74,13 +74,13 @@ public class CompanionBatAbilities {
 			if (ability.type == null || ability.type.equals("ability")) {
 				this.addAbility(CompanionBatAbilityType.valueOf(ability.id), ability.getIncrement());
 			} else if (ability.type.equals("onHitEffect")) {
-				StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(ability.id));
+				StatusEffect effect = Registries.STATUS_EFFECT.get(new Identifier(ability.id));
 				this.addOnHitEffect(effect, ability.getIncrement(), ability.duration);
 			} else if (ability.type.equals("activeEffect")) {
-				StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(ability.id));
+				StatusEffect effect = Registries.STATUS_EFFECT.get(new Identifier(ability.id));
 				this.addActiveEffect(effect, ability.getIncrement());
 			} else if (ability.type.equals("auraEffect")) {
-				StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(ability.id));
+				StatusEffect effect = Registries.STATUS_EFFECT.get(new Identifier(ability.id));
 				this.addAuraEffect(effect, ability.getIncrement());
 			}
 		}
@@ -175,11 +175,11 @@ public class CompanionBatAbilities {
 		if (ability.type == null || ability.type == "ability") {
 			return this.hasAbility(CompanionBatAbilityType.valueOf(ability.id));
 		} else if (ability.type == "onHitEffect") {
-			return this.hasOnHitEffect(Registry.STATUS_EFFECT.get(new Identifier(ability.id)));
+			return this.hasOnHitEffect(Registries.STATUS_EFFECT.get(new Identifier(ability.id)));
 		} else if (ability.type == "activeEffect") {
-			return this.hasActiveEffect(Registry.STATUS_EFFECT.get(new Identifier(ability.id)));
+			return this.hasActiveEffect(Registries.STATUS_EFFECT.get(new Identifier(ability.id)));
 		} else if (ability.type == "auraEffect") {
-			return this.hasAuraEffect(Registry.STATUS_EFFECT.get(new Identifier(ability.id)));
+			return this.hasAuraEffect(Registries.STATUS_EFFECT.get(new Identifier(ability.id)));
 		} else {
 			return false;
 		}
@@ -191,13 +191,13 @@ public class CompanionBatAbilities {
 			list.add(new Pair<MutableText, Integer>(entry.getKey().toTranslatedText(), entry.getValue()));
 		}
 		for (Entry<StatusEffect, Pair<Integer, Integer>> entry: this.onHitEffects.entrySet()) {
-			list.add(new Pair<MutableText, Integer>(new TranslatableText("ability.companion_bats.on_hit_effect", new TranslatableText(entry.getKey().getTranslationKey())), entry.getValue().getLeft()));
+			list.add(new Pair<MutableText, Integer>(Text.translatable("ability.companion_bats.on_hit_effect", Text.translatable(entry.getKey().getTranslationKey())), entry.getValue().getLeft()));
 		}
 		for (Entry<StatusEffect, Integer> entry: this.activeEffects.entrySet()) {
-			list.add(new Pair<MutableText, Integer>(new TranslatableText("ability.companion_bats.active_effect", new TranslatableText(entry.getKey().getTranslationKey())), entry.getValue()));
+			list.add(new Pair<MutableText, Integer>(Text.translatable("ability.companion_bats.active_effect", Text.translatable(entry.getKey().getTranslationKey())), entry.getValue()));
 		}
 		for (Entry<StatusEffect, Integer> entry: this.auraEffects.entrySet()) {
-			list.add(new Pair<MutableText, Integer>(new TranslatableText("ability.companion_bats.aura_effect", new TranslatableText(entry.getKey().getTranslationKey())), entry.getValue()));
+			list.add(new Pair<MutableText, Integer>(Text.translatable("ability.companion_bats.aura_effect", Text.translatable(entry.getKey().getTranslationKey())), entry.getValue()));
 		}
 		return list;
 	}

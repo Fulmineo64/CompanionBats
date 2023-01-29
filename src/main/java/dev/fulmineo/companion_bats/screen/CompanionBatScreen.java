@@ -14,9 +14,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Identifier;
 
 import net.minecraft.client.render.GameRenderer;
@@ -98,7 +98,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 	}
 
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, TEXTURE);
 		int i = (this.width - this.backgroundWidth) / 2;
@@ -118,20 +118,20 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		int strideX = 52;
 
 		// Draws the text
-		this.textRenderer.draw(matrices, new TranslatableText("gui.companion_bats.bat.level"), x, y, 0xFFFFFFFF);
-		this.textRenderer.draw(matrices, new TranslatableText("").append(""+(this.level + 1)).append(" [").append(this.maxExpReached ? new TranslatableText("gui.companion_bats.bat.max") : new TranslatableText("").append(this.currentLevelExp+" / "+this.nextLevelExp)).append("]"), x + strideX, y, 0xFFFFFFFF);
+		this.textRenderer.draw(matrices, Text.translatable("gui.companion_bats.bat.level"), x, y, 0xFFFFFFFF);
+		this.textRenderer.draw(matrices, Text.translatable("").append(""+(this.level + 1)).append(" [").append(this.maxExpReached ? Text.translatable("gui.companion_bats.bat.max") : Text.translatable("").append(this.currentLevelExp+" / "+this.nextLevelExp)).append("]"), x + strideX, y, 0xFFFFFFFF);
 
 		y += strideY;
 
 		if (this.currentClass != null){
 			CompanionBatClass cls = ClientDataManager.classes.get(this.currentClass);
-			this.textRenderer.draw(matrices, new TranslatableText("gui.companion_bats.bat.class"), x, y, 0xFFFFFFFF);
-			this.textRenderer.draw(matrices, cls != null && cls.label != null ? new LiteralText(cls.label) : new TranslatableText("class." + this.currentClass.replace(":", ".")), x + strideX, y, 0xFFFFFFFF);
+			this.textRenderer.draw(matrices, Text.translatable("gui.companion_bats.bat.class"), x, y, 0xFFFFFFFF);
+			this.textRenderer.draw(matrices, cls != null && cls.label != null ? Text.literal(cls.label) : Text.translatable("class." + this.currentClass.replace(":", ".")), x + strideX, y, 0xFFFFFFFF);
 
 			y += strideY;
 
-			this.textRenderer.draw(matrices, new TranslatableText("gui.companion_bats.bat.class_level"), x, y, 0xFFFFFFFF);
-			this.textRenderer.draw(matrices, new TranslatableText("").append(""+(this.classLevel + 1)).append(" [").append(this.maxClassExpReached ? new TranslatableText("gui.companion_bats.bat.max") : new TranslatableText("").append(this.currentClassLevelExp+" / "+this.nextClassLevelExp)).append("]"), x + strideX, y, 0xFFFFFFFF);
+			this.textRenderer.draw(matrices, Text.translatable("gui.companion_bats.bat.class_level"), x, y, 0xFFFFFFFF);
+			this.textRenderer.draw(matrices, Text.translatable("").append(""+(this.classLevel + 1)).append(" [").append(this.maxClassExpReached ? Text.translatable("gui.companion_bats.bat.max") : Text.translatable("").append(this.currentClassLevelExp+" / "+this.nextClassLevelExp)).append("]"), x + strideX, y, 0xFFFFFFFF);
 		} else {
 			y += strideY;
 		}

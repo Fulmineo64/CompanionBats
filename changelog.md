@@ -1,6 +1,6 @@
 # 1.19.1
 - Updated to Minecraft 1.19
-- Removed Cave House feature
+- Removed Cave House feature, because porting it wouldn't want to work in any way, might return in the future
 
 # 1.19.0
 ## Blazing companionship

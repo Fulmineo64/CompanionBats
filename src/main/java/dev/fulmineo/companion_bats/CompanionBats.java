@@ -1,8 +1,9 @@
 package dev.fulmineo.companion_bats;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
@@ -13,11 +14,11 @@ import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.registry.Registry;
-
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,29 +59,33 @@ public class CompanionBats implements ModInitializer {
     // Entities
 
     public static final EntityType<CompanionBatEntity> COMPANION_BAT = Registry.register(
-        Registry.ENTITY_TYPE,
+        Registries.ENTITY_TYPE,
         new Identifier(MOD_ID, "bat"),
         FabricEntityTypeBuilder.<CompanionBatEntity>create(SpawnGroup.CREATURE, CompanionBatEntity::new).dimensions(EntityDimensions.fixed(0.75f, 0.75f)).build()
     );
     public static final EntityType<DynamiteEntity> DYNAMITE = Registry.register(
-        Registry.ENTITY_TYPE,
+        Registries.ENTITY_TYPE,
         new Identifier(MOD_ID, "dynamite"),
 		FabricEntityTypeBuilder.<DynamiteEntity>create(SpawnGroup.MISC, DynamiteEntity::new).dimensions(EntityDimensions.fixed(0.25F, 0.25F)).trackRangeChunks(4).trackedUpdateRate(10).build()
 	);
 
     // Items
 
-	public static final ItemGroup GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID,"group"), () -> new ItemStack(Registry.ITEM.get(new Identifier(MOD_ID,"bat_item"))));
-
-    public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage(100).group(GROUP));
+    public static final Item BAT_ITEM = new CompanionBatItem(new FabricItemSettings().maxDamage(100));
     public static final Item NETHERITE_BAT_ITEM = new CompanionBatItem(new FabricItemSettings().fireproof().maxDamage(100).rarity(Rarity.EPIC));
 	public static final Item BAT_FLUTE_ITEM = new CompanionBatFluteItem(new FabricItemSettings().maxCount(1));
-	public static final Item COMMAND_FLUTE_ATTACK = new CompanionBatCommandFluteAttackItem(new FabricItemSettings().maxCount(1).group(GROUP));
+	public static final Item COMMAND_FLUTE_ATTACK = new CompanionBatCommandFluteAttackItem(new FabricItemSettings().maxCount(1));
 	public static final Item COMMAND_FLUTE_REST = new CompanionBatCommandFluteRestItem(new FabricItemSettings().maxCount(1));
 	public static final Item COMMAND_FLUTE_GUARD = new CompanionBatCommandFluteGuardItem(new FabricItemSettings().maxCount(1));
-    public static final Item SPIRIT_SHARD = new Item(new FabricItemSettings().group(GROUP));
-    public static final Item SPIRIT_CRYSTAL = new Item(new FabricItemSettings().group(GROUP));
-    public static final Item EXPERIENCE_PIE = new CompanionBatExperiencePieItem(new FabricItemSettings().food((new FoodComponent.Builder()).hunger(10).saturationModifier(0.5F).build()).rarity(Rarity.UNCOMMON).group(GROUP));
+    public static final Item SPIRIT_SHARD = new Item(new FabricItemSettings());
+    public static final Item SPIRIT_CRYSTAL = new Item(new FabricItemSettings());
+    public static final Item EXPERIENCE_PIE = new CompanionBatExperiencePieItem(new FabricItemSettings().food((new FoodComponent.Builder()).hunger(10).saturationModifier(0.5F).build()).rarity(Rarity.UNCOMMON));
+
+	// Item groups
+
+	public static final ItemGroup ITEM_GROUP = FabricItemGroup.builder(new Identifier(MOD_ID, "group"))
+		.icon(() -> new ItemStack(BAT_ITEM))
+		.build();
 
     @Override
     public void onInitialize() {
@@ -90,15 +95,25 @@ public class CompanionBats implements ModInitializer {
 
 		// Items
 
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_item"), 		  	BAT_ITEM);
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "netherite_bat_item"),  NETHERITE_BAT_ITEM);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bat_flute"), 	 	  	BAT_FLUTE_ITEM);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "command_flute"), 		COMMAND_FLUTE_ATTACK);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "command_flute_rest"), 	COMMAND_FLUTE_REST);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "command_flute_guard"), COMMAND_FLUTE_GUARD);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_shard"), 	  	SPIRIT_SHARD);
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "spirit_crystal"),    	SPIRIT_CRYSTAL);
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "experience_pie"),  	EXPERIENCE_PIE);
+        Registry.register(Registries.ITEM, new Identifier(MOD_ID, "bat_item"), 		  	BAT_ITEM);
+        Registry.register(Registries.ITEM, new Identifier(MOD_ID, "netherite_bat_item"),  NETHERITE_BAT_ITEM);
+		Registry.register(Registries.ITEM, new Identifier(MOD_ID, "bat_flute"), 	 	  	BAT_FLUTE_ITEM);
+		Registry.register(Registries.ITEM, new Identifier(MOD_ID, "command_flute"), 		COMMAND_FLUTE_ATTACK);
+		Registry.register(Registries.ITEM, new Identifier(MOD_ID, "command_flute_rest"), 	COMMAND_FLUTE_REST);
+		Registry.register(Registries.ITEM, new Identifier(MOD_ID, "command_flute_guard"), COMMAND_FLUTE_GUARD);
+		Registry.register(Registries.ITEM, new Identifier(MOD_ID, "spirit_shard"), 	  	SPIRIT_SHARD);
+        Registry.register(Registries.ITEM, new Identifier(MOD_ID, "spirit_crystal"),    	SPIRIT_CRYSTAL);
+        Registry.register(Registries.ITEM, new Identifier(MOD_ID, "experience_pie"),  	EXPERIENCE_PIE);
+
+		// Item groups
+
+		ItemGroupEvents.modifyEntriesEvent(ITEM_GROUP).register(content -> {
+			content.add(BAT_ITEM);
+			content.add(COMMAND_FLUTE_ATTACK);
+			content.add(SPIRIT_SHARD);
+			content.add(SPIRIT_CRYSTAL);
+			content.add(EXPERIENCE_PIE);
+		});
 
 		// Accessories
 

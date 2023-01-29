@@ -9,7 +9,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.World.ExplosionSourceType;
 
 public class DynamiteEntity extends ThrownItemEntity {
 	private float power = 1.0F;
@@ -54,6 +54,6 @@ public class DynamiteEntity extends ThrownItemEntity {
 	}
 
 	private void explode(){
-		this.world.createExplosion(this, this.getX(), this.getBodyY(0.0625D), this.getZ(), this.power, Explosion.DestructionType.NONE);
+		this.world.createExplosion(this, this.getX(), this.getBodyY(0.0625D), this.getZ(), this.power, ExplosionSourceType.NONE);
 	}
 }

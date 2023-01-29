@@ -27,7 +27,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
@@ -58,7 +58,7 @@ public class CompanionBatItem extends Item {
 
                     @Override
                     public Text getDisplayName() {
-                        return new TranslatableText(CompanionBatItem.this.getTranslationKey());
+                        return Text.translatable(CompanionBatItem.this.getTranslationKey());
                     }
 
                     @Override
@@ -86,12 +86,12 @@ public class CompanionBatItem extends Item {
 					tag.putUuid("EntityUUID", batEntity.getUuid());
 					Text customName = batEntity.getCustomName();
 					if (customName != null){
-						tag.putString("EntityName", customName.asString());
-						fluteItemStack.setCustomName(new TranslatableText("item.companion_bats.bat_flute.custom_name", customName.asString()));
+						tag.putString("EntityName", customName.getString());
+						fluteItemStack.setCustomName(Text.translatable("item.companion_bats.bat_flute.custom_name", customName.getContent()));
 					}
                     return TypedActionResult.success(fluteItemStack, world.isClient());
                 } else {
-                    user.sendMessage(new TranslatableText("item.companion_bats.bat_item.exausted", itemStack.hasCustomName() ? itemStack.getName() : new TranslatableText("entity.companion_bats.bat.your_bat")), false);
+                    user.sendMessage(Text.translatable("item.companion_bats.bat_item.exausted", itemStack.hasCustomName() ? itemStack.getName() : Text.translatable("entity.companion_bats.bat.your_bat")), false);
                     return TypedActionResult.fail(itemStack);
                 }
             }
@@ -105,7 +105,7 @@ public class CompanionBatItem extends Item {
 		abilities.setFromNbt(ClientDataManager.classes, new EntityData(stack));
 		List<Pair<MutableText, Integer>> list = abilities.toTranslatedList();
 		if (list.size() > 0){
-			tooltip.add(new TranslatableText("item.companion_bats.bat_item.abilities").formatted(Formatting.AQUA));
+			tooltip.add(Text.translatable("item.companion_bats.bat_item.abilities").formatted(Formatting.AQUA));
 			for (Pair<MutableText, Integer> entry: list) {
 				tooltip.add(entry.getLeft().append(" " + entry.getRight()).formatted(Formatting.GRAY));
 			}

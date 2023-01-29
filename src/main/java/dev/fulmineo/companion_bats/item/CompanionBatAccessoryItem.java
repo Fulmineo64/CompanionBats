@@ -14,7 +14,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -37,12 +37,12 @@ public class CompanionBatAccessoryItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		tooltip.add(new TranslatableText("item.companion_bats.accessory").formatted(Formatting.GOLD));
+		tooltip.add(Text.translatable("item.companion_bats.accessory").formatted(Formatting.GOLD));
 		CompanionBatAbilities abilities = new CompanionBatAbilities();
 		abilities.addFromAccessory(this);
 		List<Pair<MutableText, Integer>> list = abilities.toTranslatedList();
 		if (list.size() > 0){
-			tooltip.add(new TranslatableText("item.companion_bats.accessory.ability_when_equipped").formatted(Formatting.AQUA));
+			tooltip.add(Text.translatable("item.companion_bats.accessory.ability_when_equipped").formatted(Formatting.AQUA));
 			for (Pair<MutableText, Integer> entry: list) {
 				tooltip.add(entry.getLeft().formatted(Formatting.GRAY).append(entry.getRight() > 1 ? " "+entry.getRight() : ""));
 			}

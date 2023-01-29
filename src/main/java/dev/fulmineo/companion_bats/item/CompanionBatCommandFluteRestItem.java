@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -53,8 +53,8 @@ public class CompanionBatCommandFluteRestItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		tooltip.add(new TranslatableText("item.companion_bats.command_flute_rest.description.0").formatted(Formatting.GRAY));
-		tooltip.add(new TranslatableText("item.companion_bats.command_flute_rest.description.1").formatted(Formatting.GRAY));
-		tooltip.add(new TranslatableText("item.companion_bats.command_flute.description_end").formatted(Formatting.DARK_GRAY));
+		tooltip.add(Text.translatable("item.companion_bats.command_flute_rest.description.0").formatted(Formatting.GRAY));
+		tooltip.add(Text.translatable("item.companion_bats.command_flute_rest.description.1").formatted(Formatting.GRAY));
+		tooltip.add(Text.translatable("item.companion_bats.command_flute.description_end").formatted(Formatting.DARK_GRAY));
 	}
 }

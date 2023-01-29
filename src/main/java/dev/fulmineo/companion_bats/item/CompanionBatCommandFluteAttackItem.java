@@ -18,7 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -46,7 +46,7 @@ public class CompanionBatCommandFluteAttackItem extends Item {
 				Vec3d vec3d2 = user.getRotationVec(1.0F);
 				Vec3d vec3d3 = vec3d.add(vec3d2.x * distance, vec3d2.y * distance, vec3d2.z * distance);
 				Box box = user.getBoundingBox().stretch(vec3d2.multiply(distance)).expand(1.0D, 1.0D, 1.0D);
-				EntityHitResult entityHitResult = ProjectileUtil.raycast(user, vec3d, vec3d3, box, (entityx) -> !entityx.isSpectator() && entityx.collides() && entityx instanceof LivingEntity && CompanionBatEntity.canAttackWithOwnerStatic((LivingEntity)entityx, user), distance * distance);
+				EntityHitResult entityHitResult = ProjectileUtil.raycast(user, vec3d, vec3d3, box, (entityx) -> !entityx.isSpectator() && entityx.canHit() && entityx instanceof LivingEntity && CompanionBatEntity.canAttackWithOwnerStatic((LivingEntity)entityx, user), distance * distance);
 				if (entityHitResult != null) {
 					LivingEntity entity = (LivingEntity)entityHitResult.getEntity();
 					entity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 10, 0, false, false));
@@ -62,7 +62,7 @@ public class CompanionBatCommandFluteAttackItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		tooltip.add(new TranslatableText("item.companion_bats.command_flute.description.0").formatted(Formatting.GRAY));
-		tooltip.add(new TranslatableText("item.companion_bats.command_flute.description_end").formatted(Formatting.DARK_GRAY));
+		tooltip.add(Text.translatable("item.companion_bats.command_flute.description.0").formatted(Formatting.GRAY));
+		tooltip.add(Text.translatable("item.companion_bats.command_flute.description_end").formatted(Formatting.DARK_GRAY));
 	}
 }

@@ -3,12 +3,10 @@ package dev.fulmineo.companion_bats.entity.ai.goal;
 import java.util.Optional;
 
 import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
-import dev.fulmineo.companion_bats.item.CompanionBatBundleItem;
+import dev.fulmineo.companion_bats.mixin.BundleItemInvoker;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BundleItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -64,13 +62,13 @@ public class CompanionBatTransferItemsToOwnerGoal extends Goal {
         if (--this.updateCountdownTicks <= 0) {
             this.updateCountdownTicks = 5;
 			this.canContinue = false;
-            Optional<ItemStack> firstStack = ((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsRemoveFirstStack(this.bundleStack);
+            Optional<ItemStack> firstStack = BundleItemInvoker.invokeRemoveFirstStack(this.bundleStack);
 			if (firstStack.isPresent()){
                 if (owner.getInventory().insertStack(firstStack.get())){
 					this.entity.world.playSound(null, this.entity.getBlockPos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.AMBIENT, 0.3F, 2F);
 					this.canContinue = true;
                 } else {
-					((CompanionBatBundleItem)new BundleItem(new Item.Settings())).companionBatsAddToBundle(this.bundleStack, firstStack.get());
+					BundleItemInvoker.invokeAddToBundle(this.bundleStack, firstStack.get());
                 }
             }
         }

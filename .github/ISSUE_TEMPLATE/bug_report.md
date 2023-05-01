@@ -7,9 +7,6 @@ assignees: Fulmineo64
 
 ---
 
-**Modloader**
-Did you experience the issue while playing on Fabric or on Forge?
-
 **Describe the bug**
 A clear and concise description of what the bug is.
 

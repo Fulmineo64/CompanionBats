@@ -43,7 +43,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
                 super.setStack(stack);
                 PlayerEntity player = playerInventory.player;
 				ItemStack batItemStack = player.getStackInHand(hand);
-				if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
+				if (batItemStack.isOf(CompanionBats.BAT_ITEM) || batItemStack.isOf(CompanionBats.NETHERITE_BAT_ITEM)){
 					EntityData entityData = new EntityData(batItemStack);
 					entityData.putAccessory(stack.writeNbt(new NbtCompound()));
 					entityData.toStack(batItemStack);
@@ -66,7 +66,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
                 super.setStack(stack);
                 PlayerEntity player = playerInventory.player;
 				ItemStack batItemStack = player.getStackInHand(hand);
-				if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
+				if (batItemStack.isOf(CompanionBats.BAT_ITEM) || batItemStack.isOf(CompanionBats.NETHERITE_BAT_ITEM)){
 					EntityData entityData = new EntityData(batItemStack);
 					entityData.putArmor(stack.writeNbt(new NbtCompound()));
 					entityData.toStack(batItemStack);
@@ -90,7 +90,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
                 PlayerEntity player = playerInventory.player;
                 if (player.world instanceof ServerWorld){
                     ItemStack batItemStack = player.getStackInHand(hand);
-                    if (batItemStack.isOf(CompanionBats.BAT_ITEM)){
+                    if (batItemStack.isOf(CompanionBats.BAT_ITEM) || batItemStack.isOf(CompanionBats.NETHERITE_BAT_ITEM)){
 						EntityData entityData = new EntityData(batItemStack);
 						entityData.putBundle(stack.writeNbt(new NbtCompound()));
 						entityData.toStack(batItemStack);

@@ -1,3 +1,10 @@
+# 1.19.4
+- Updated to Minecraft 1.19.3
+- Fixed unusable item slots on the Netherite Bat Item
+
+# 1.19.3
+- Updated to Minecraft 1.19.2
+
 # 1.19.2
 - Fixed and optimized bundle logic
 

@@ -92,6 +92,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
 
 public class CompanionBatEntity extends TameableEntity {
@@ -386,7 +387,7 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return super.isInvulnerableTo(damageSource) || ((damageSource.isMagic() || damageSource == DamageSource.WITHER) && this.abilities.hasAbility(CompanionBatAbilityType.MAGIC_PROTECTION));
+		return super.isInvulnerableTo(damageSource) || ((damageSource == this.getDamageSources().magic() || damageSource == this.getDamageSources().wither()) && this.abilities.hasAbility(CompanionBatAbilityType.MAGIC_PROTECTION));
 	}
 
 	public boolean damage(DamageSource source, float amount) {
@@ -399,7 +400,7 @@ public class CompanionBatEntity extends TameableEntity {
 				}
 			}
 
-			if (!source.bypassesArmor() && source != DamageSource.LAVA && this.abilities.hasAbility(CompanionBatAbilityType.BLOCK_ATTACK)) {
+			if (!source.isIndirect() && source != this.getDamageSources().lava() && this.abilities.hasAbility(CompanionBatAbilityType.BLOCK_ATTACK)) {
 				int roll = this.world.random.nextInt(100);
 				if (roll < this.abilities.getValue(CompanionBatAbilityType.BLOCK_ATTACK)) {
 					if (this.abilities.hasAbility(CompanionBatAbilityType.COUNTER_ATTACK) && source.getAttacker() instanceof LivingEntity) {
@@ -520,7 +521,7 @@ public class CompanionBatEntity extends TameableEntity {
 
 	public boolean tryAttack(Entity target) {
 		float targetHealth = target instanceof LivingEntity ? ((LivingEntity) target).getHealth() : 0;
-		boolean bl = target.damage(DamageSource.mob(this), this.getAttackDamage(target));
+		boolean bl = target.damage(this.getDamageSources().mobAttack(this), this.getAttackDamage(target));
 		if (bl) {
 			if (this.isSneakAttacking) {
 				this.world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT , SoundCategory.PLAYERS, 0.5F, this.getSoundPitch() + 2.0F);
@@ -599,7 +600,7 @@ public class CompanionBatEntity extends TameableEntity {
 						while(iterator.hasNext()) {
 							Entity entity = (Entity)iterator.next();
 							entity.onStruckByLightning((ServerWorld)this.world, lightningEntity);
-							entity.damage(DamageSource.LIGHTNING_BOLT, (6.0F + (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)) * abilityLevel);
+							entity.damage(this.getDamageSources().lightningBolt(), (6.0F + (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)) * abilityLevel);
 						}
 					}
 				}
@@ -1050,7 +1051,7 @@ public class CompanionBatEntity extends TameableEntity {
 		Vec3d pos = player.getPos();
 		EntityData entityData = new EntityData(itemStack);
 		entityData.putOwner(player);
-		return (CompanionBatEntity)CompanionBats.COMPANION_BAT.spawnFromItemStack(world, itemStack, player, new BlockPos(pos.x, Math.ceil(pos.y), pos.z), SpawnReason.SPAWN_EGG, false, false);
+		return (CompanionBatEntity)CompanionBats.COMPANION_BAT.spawnFromItemStack(world, itemStack, player, new BlockPos((int)pos.x, (int)Math.ceil(pos.y), (int)pos.z), SpawnReason.SPAWN_EGG, false, false);
 	}
 
 	public ItemStack getAccessory() {
@@ -1112,6 +1113,10 @@ public class CompanionBatEntity extends TameableEntity {
 		if (stackNbt.contains("Enchantments")) this.itemNbt.put("Enchantments", stackNbt.get("Enchantments"));
 		if (itemStack.getItem() == CompanionBats.NETHERITE_BAT_ITEM) this.itemType = 1;
 	}
+
+	public EntityView method_48926() {
+        return this.getWorld();
+    }
 
 	public static List<CompanionBatEntity> getPlayerBats(ServerPlayerEntity player) {
 		List<CompanionBatEntity> entities = new ArrayList<CompanionBatEntity>();

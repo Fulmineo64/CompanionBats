@@ -77,7 +77,7 @@ public class CompanionBatThrowPotionGoal extends Goal {
 				if (distance < this.maxDistanceSquared){
 					Potion potion = null;
 					if (this.entity.emergencyPotionTicks <= 0){
-						if (this.emergencyPotionLevel >= 2 && (this.owner.isOnFire() || this.owner.getRecentDamageSource() != null && this.owner.getRecentDamageSource().isFire()) && !this.owner.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
+						if (this.emergencyPotionLevel >= 2 && (this.owner.isOnFire() || this.owner.getRecentDamageSource() == this.owner.getDamageSources().inFire()) && !this.owner.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
 							potion = Potions.FIRE_RESISTANCE;
 						} else if (this.owner.getHealth() < (this.owner.getMaxHealth() * 40 / 100)) {
 							potion = Potions.STRONG_HEALING;

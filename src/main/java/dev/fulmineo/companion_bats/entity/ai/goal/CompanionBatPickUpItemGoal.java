@@ -48,7 +48,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
             } else if (this.isBundleAvailable()) {
                 this.owner = livingEntity;
 				if (this.owner.handSwinging) return false;
-                this.itemList = this.entity.world.getEntitiesByClass(ItemEntity.class, this.entity.getBoundingBox().expand(12.0D), (itemEntity) -> itemEntity.getThrower() != this.owner.getUuid());
+                this.itemList = this.entity.world.getEntitiesByClass(ItemEntity.class, this.entity.getBoundingBox().expand(12.0D), (itemEntity) -> itemEntity.getOwner() != this.owner);
                 this.itemList.sort(new ProximityComparator());
                 return this.itemList.size() > 0;
             }

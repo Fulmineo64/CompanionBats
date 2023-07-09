@@ -43,7 +43,7 @@ public class CompanionBatTridentEntity extends TridentEntity {
 			f = ((CompanionBatEntity)owner).getAttackDamage(entity);
 		}
 		Entity entity2 = this.getOwner();
-		DamageSource damageSource = DamageSource.trident(this, (Entity)(entity2 == null ? this : entity2));
+		DamageSource damageSource = this.getDamageSources().trident(this, (Entity)(entity2 == null ? this : entity2));
 		if (entity.damage(damageSource, f)) {
 			if (entity.getType() == EntityType.ENDERMAN) {
 				return;

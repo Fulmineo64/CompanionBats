@@ -29,8 +29,8 @@ public class CompanionBatCommandInit {
 						ServerCommandSource source = context.getSource();
 						if (source != null) {
 							ServerPlayerEntity player = source.getPlayerOrThrow();
-							if (player != null && player.getStackInHand(Hand.MAIN_HAND).isOf(CompanionBats.BAT_ITEM)) {
-								ItemStack stack = player.getStackInHand(Hand.MAIN_HAND);
+							ItemStack stack = player.getStackInHand(Hand.MAIN_HAND);
+							if (player != null && (stack.isOf(CompanionBats.BAT_ITEM) || stack.isOf(CompanionBats.NETHERITE_BAT_ITEM))) {
 								EntityData entityData = new EntityData(stack);
 								int exp = IntegerArgumentType.getInteger(context, "exp");
 								CompanionBatCombatLevel maxLevel = ServerDataManager.combatLevels[ServerDataManager.combatLevels.length-1];
@@ -55,8 +55,8 @@ public class CompanionBatCommandInit {
 						ServerCommandSource source = context.getSource();
 						if (source != null) {
 							ServerPlayerEntity player = source.getPlayerOrThrow();
-							if (player != null && player.getStackInHand(Hand.MAIN_HAND).isOf(CompanionBats.BAT_ITEM)) {
-								ItemStack stack = player.getStackInHand(Hand.MAIN_HAND);
+							ItemStack stack = player.getStackInHand(Hand.MAIN_HAND);
+							if (player != null && (stack.isOf(CompanionBats.BAT_ITEM) || stack.isOf(CompanionBats.NETHERITE_BAT_ITEM))) {
 								EntityData entityData = new EntityData(stack);
 								NbtElement armorItem = entityData.getArmor();
 								if (armorItem != null){

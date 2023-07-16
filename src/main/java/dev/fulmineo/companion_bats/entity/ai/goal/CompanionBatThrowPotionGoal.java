@@ -5,6 +5,8 @@ import dev.fulmineo.companion_bats.entity.CompanionBatEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.item.ItemStack;
@@ -77,7 +79,9 @@ public class CompanionBatThrowPotionGoal extends Goal {
 				if (distance < this.maxDistanceSquared){
 					Potion potion = null;
 					if (this.entity.emergencyPotionTicks <= 0){
-						if (this.emergencyPotionLevel >= 2 && (this.owner.isOnFire() || this.owner.getRecentDamageSource() == this.owner.getDamageSources().inFire()) && !this.owner.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
+						DamageSource damageSource = this.owner.getRecentDamageSource();
+						DamageSources damageSources = this.owner.getDamageSources();
+						if (this.emergencyPotionLevel >= 2 && (damageSource == damageSources.inFire() || damageSource == damageSources.onFire() || damageSource == damageSources.lava()) && !this.owner.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
 							potion = Potions.FIRE_RESISTANCE;
 						} else if (this.owner.getHealth() < (this.owner.getMaxHealth() * 40 / 100)) {
 							potion = Potions.STRONG_HEALING;

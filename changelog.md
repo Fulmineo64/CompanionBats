@@ -1,3 +1,9 @@
+# 1.19.5
+- Updated to Minecraft 1.19.4
+- The Magic Protection ability, granted by the Ankh accessory, now guards against the Thorns enchantment
+- Updated commands to work with the Netherite upgraded Bat Item
+- Minor text fixes
+
 # 1.19.4
 - Updated to Minecraft 1.19.3
 - Fixed unusable item slots on the Netherite Bat Item

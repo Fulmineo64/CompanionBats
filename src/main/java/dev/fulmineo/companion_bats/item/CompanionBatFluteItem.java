@@ -31,7 +31,7 @@ public class CompanionBatFluteItem extends Item {
                     return TypedActionResult.success(fluteItemStack);
                 } else {
 					MutableText name = tag.contains("EntityName") ? Text.literal(tag.getString("EntityName")) : Text.translatable("entity.companion_bats.bat.your_bat");
-					user.sendMessage(name.append(Text.translatable("item.companion_bats.bat_flute.fail")), true);
+					user.sendMessage(Text.translatable("item.companion_bats.bat_flute.fail", name), true);
                     return TypedActionResult.fail(fluteItemStack);
                 }
             }

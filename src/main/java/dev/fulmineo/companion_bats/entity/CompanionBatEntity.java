@@ -57,6 +57,7 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -70,10 +71,12 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -387,7 +390,8 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return super.isInvulnerableTo(damageSource) || ((damageSource == this.getDamageSources().magic() || damageSource == this.getDamageSources().wither()) && this.abilities.hasAbility(CompanionBatAbilityType.MAGIC_PROTECTION));
+		DamageSources damageSources = this.getDamageSources();
+		return super.isInvulnerableTo(damageSource) || ((damageSource == damageSources.magic() || damageSource.getSource() instanceof PotionEntity || damageSource == damageSources.wither() || damageSource == damageSources.thorns(damageSource.getAttacker())) && this.abilities.hasAbility(CompanionBatAbilityType.MAGIC_PROTECTION));
 	}
 
 	public boolean damage(DamageSource source, float amount) {
@@ -400,7 +404,7 @@ public class CompanionBatEntity extends TameableEntity {
 				}
 			}
 
-			if (!source.isIndirect() && source != this.getDamageSources().lava() && this.abilities.hasAbility(CompanionBatAbilityType.BLOCK_ATTACK)) {
+			if (!source.isIn(DamageTypeTags.BYPASSES_SHIELD) && source != this.getDamageSources().lava() && this.abilities.hasAbility(CompanionBatAbilityType.BLOCK_ATTACK)) {
 				int roll = this.world.random.nextInt(100);
 				if (roll < this.abilities.getValue(CompanionBatAbilityType.BLOCK_ATTACK)) {
 					if (this.abilities.hasAbility(CompanionBatAbilityType.COUNTER_ATTACK) && source.getAttacker() instanceof LivingEntity) {

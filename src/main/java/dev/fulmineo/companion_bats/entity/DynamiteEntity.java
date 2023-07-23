@@ -36,14 +36,16 @@ public class DynamiteEntity extends ThrownItemEntity {
 
 	protected void onBlockHit(BlockHitResult blockHitResult) {
 		super.onBlockHit(blockHitResult);
-		if (!this.world.isClient) {
+		World world = this.getWorld();
+		if (!world.isClient) {
 			this.explode();
 		}
 	}
 
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
-		if (!this.world.isClient) {
+		World world = this.getWorld();
+		if (!world.isClient) {
 			this.explode();
 			this.discard();
 		}
@@ -54,6 +56,6 @@ public class DynamiteEntity extends ThrownItemEntity {
 	}
 
 	private void explode(){
-		this.world.createExplosion(this, this.getX(), this.getBodyY(0.0625D), this.getZ(), this.power, ExplosionSourceType.NONE);
+		this.getWorld().createExplosion(this, this.getX(), this.getBodyY(0.0625D), this.getZ(), this.power, ExplosionSourceType.NONE);
 	}
 }

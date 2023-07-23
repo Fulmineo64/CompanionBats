@@ -16,7 +16,10 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import org.apache.logging.log4j.Level;
@@ -83,9 +86,7 @@ public class CompanionBats implements ModInitializer {
 
 	// Item groups
 
-	public static final ItemGroup ITEM_GROUP = FabricItemGroup.builder(new Identifier(MOD_ID, "group"))
-		.icon(() -> new ItemStack(BAT_ITEM))
-		.build();
+	public static final RegistryKey<ItemGroup> ITEM_GROUP = RegistryKey.of(RegistryKeys.ITEM_GROUP, new Identifier(CompanionBats.MOD_ID, "group"));
 
     @Override
     public void onInitialize() {
@@ -95,15 +96,16 @@ public class CompanionBats implements ModInitializer {
 
 		// Items
 
-        Registry.register(Registries.ITEM, new Identifier(MOD_ID, "bat_item"), 		  	BAT_ITEM);
-        Registry.register(Registries.ITEM, new Identifier(MOD_ID, "netherite_bat_item"),  NETHERITE_BAT_ITEM);
+		Registry.register(Registries.ITEM_GROUP, ITEM_GROUP, FabricItemGroup.builder().displayName(Text.translatable("itemGroup.companion_bats.group")).icon(() -> new ItemStack(BAT_ITEM)).build());
+        Registry.register(Registries.ITEM, new Identifier(MOD_ID, "bat_item"), 		  		BAT_ITEM);
+        Registry.register(Registries.ITEM, new Identifier(MOD_ID, "netherite_bat_item"),  	NETHERITE_BAT_ITEM);
 		Registry.register(Registries.ITEM, new Identifier(MOD_ID, "bat_flute"), 	 	  	BAT_FLUTE_ITEM);
 		Registry.register(Registries.ITEM, new Identifier(MOD_ID, "command_flute"), 		COMMAND_FLUTE_ATTACK);
 		Registry.register(Registries.ITEM, new Identifier(MOD_ID, "command_flute_rest"), 	COMMAND_FLUTE_REST);
-		Registry.register(Registries.ITEM, new Identifier(MOD_ID, "command_flute_guard"), COMMAND_FLUTE_GUARD);
-		Registry.register(Registries.ITEM, new Identifier(MOD_ID, "spirit_shard"), 	  	SPIRIT_SHARD);
+		Registry.register(Registries.ITEM, new Identifier(MOD_ID, "command_flute_guard"), 	COMMAND_FLUTE_GUARD);
+		Registry.register(Registries.ITEM, new Identifier(MOD_ID, "spirit_shard"), 	  		SPIRIT_SHARD);
         Registry.register(Registries.ITEM, new Identifier(MOD_ID, "spirit_crystal"),    	SPIRIT_CRYSTAL);
-        Registry.register(Registries.ITEM, new Identifier(MOD_ID, "experience_pie"),  	EXPERIENCE_PIE);
+        Registry.register(Registries.ITEM, new Identifier(MOD_ID, "experience_pie"),  		EXPERIENCE_PIE);
 
 		// Item groups
 

@@ -48,7 +48,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
             } else if (this.isBundleAvailable()) {
                 this.owner = livingEntity;
 				if (this.owner.handSwinging) return false;
-                this.itemList = this.entity.world.getEntitiesByClass(ItemEntity.class, this.entity.getBoundingBox().expand(12.0D), (itemEntity) -> itemEntity.getOwner() != this.owner);
+                this.itemList = this.entity.getWorld().getEntitiesByClass(ItemEntity.class, this.entity.getBoundingBox().expand(12.0D), (itemEntity) -> itemEntity.getOwner() != this.owner);
                 this.itemList.sort(new ProximityComparator());
                 return this.itemList.size() > 0;
             }
@@ -76,7 +76,7 @@ public class CompanionBatPickUpItemGoal extends Goal {
                 ItemStack targetStack = this.targetItem.getStack();
                 int added = BundleItemInvoker.invokeAddToBundle(this.bundleStack, targetStack);
                 targetStack.decrement(added);
-                this.entity.world.playSound(null, this.entity.getBlockPos(), SoundEvents.BLOCK_WOOL_PLACE, SoundCategory.AMBIENT, 0.3F, 1F);
+                this.entity.getWorld().playSound(null, this.entity.getBlockPos(), SoundEvents.BLOCK_WOOL_PLACE, SoundCategory.AMBIENT, 0.3F, 1F);
 				this.removeItemFromList(this.targetItem);
                 this.targetNextItem();
             } else {

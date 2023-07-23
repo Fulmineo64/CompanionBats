@@ -65,7 +65,7 @@ public class CompanionBatTransferItemsToOwnerGoal extends Goal {
             Optional<ItemStack> firstStack = BundleItemInvoker.invokeRemoveFirstStack(this.bundleStack);
 			if (firstStack.isPresent()){
                 if (owner.getInventory().insertStack(firstStack.get())){
-					this.entity.world.playSound(null, this.entity.getBlockPos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.AMBIENT, 0.3F, 2F);
+					this.entity.getWorld().playSound(null, this.entity.getBlockPos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.AMBIENT, 0.3F, 2F);
 					this.canContinue = true;
                 } else {
 					BundleItemInvoker.invokeAddToBundle(this.bundleStack, firstStack.get());

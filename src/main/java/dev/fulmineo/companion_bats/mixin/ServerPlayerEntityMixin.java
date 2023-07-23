@@ -50,7 +50,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 			DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
 			for (int i = 0; i < defaultedList.size(); ++i) {
 				if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM) {
-					CompanionBatEntity entity = (CompanionBatEntity) ((ServerWorld) this.world).getEntity(defaultedList.get(i).getNbt().getUuid("EntityUUID"));
+					CompanionBatEntity entity = (CompanionBatEntity) ((ServerWorld) this.getWorld()).getEntity(defaultedList.get(i).getNbt().getUuid("EntityUUID"));
 					if (entity != null){
 						defaultedList.set(i, entity.toItemStack());
 						entity.discard();

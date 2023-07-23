@@ -88,7 +88,7 @@ public class CompanionBatScreenHandler extends ScreenHandler {
             public void setStack(ItemStack stack) {
                 super.setStack(stack);
                 PlayerEntity player = playerInventory.player;
-                if (player.world instanceof ServerWorld){
+                if (player.getWorld() instanceof ServerWorld){
                     ItemStack batItemStack = player.getStackInHand(hand);
                     if (batItemStack.isOf(CompanionBats.BAT_ITEM) || batItemStack.isOf(CompanionBats.NETHERITE_BAT_ITEM)){
 						EntityData entityData = new EntityData(batItemStack);

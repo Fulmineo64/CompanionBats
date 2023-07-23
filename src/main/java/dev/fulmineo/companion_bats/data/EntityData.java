@@ -30,7 +30,7 @@ public class EntityData {
 	}
 
 	public void migrate() {
-		// Migration code from 1.17.x to 2.0.0
+		// Migration code from 1.17.x to 1.18.0
 		// TODO: Remove me after a while
 		if (this.tag.getCompound("ClassExp").getSize() == 0) {
 			NbtCompound classExp = new NbtCompound();

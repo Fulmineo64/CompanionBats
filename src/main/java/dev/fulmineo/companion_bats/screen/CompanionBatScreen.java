@@ -9,8 +9,8 @@ import dev.fulmineo.companion_bats.data.CompanionBatClassLevel;
 import dev.fulmineo.companion_bats.data.CompanionBatCombatLevel;
 import dev.fulmineo.companion_bats.data.EntityData;
 import dev.fulmineo.companion_bats.item.CompanionBatArmorItem;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -48,8 +48,6 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		this.setLevel(entityData);
 		this.setClassLevel(entityData);
 		this.setAttributes(entityData);
-
-		this.passEvents = false;
    	}
 
 	private void setLevel(EntityData entityData){
@@ -95,7 +93,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		this.speed = Math.round(CompanionBatCombatLevel.getLevelSpeed(ClientDataManager.baseSpeed, ClientDataManager.combatLevels, this.level) * 100F) / 100F;
 	}
 
-	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, TEXTURE);
@@ -103,33 +101,34 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		int j = (this.height - this.backgroundHeight) / 2;
 
 		// Draws the background
-		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 
 		// Draws the additional slots
-		this.drawTexture(matrices, i + 7, j + 35 - 18, 0, this.backgroundHeight, 18, 18);
-		this.drawTexture(matrices, i + 7, j + 35, 18, this.backgroundHeight, 18, 18);
-		this.drawTexture(matrices, i + 7, j + 35 + 18, 36, this.backgroundHeight, 18, 18);
+		context.drawTexture(TEXTURE, i + 7, j + 35 - 18, 0, this.backgroundHeight, 18, 18);
+		context.drawTexture(TEXTURE, i + 7, j + 35, 18, this.backgroundHeight, 18, 18);
+		context.drawTexture(TEXTURE, i + 7, j + 35 + 18, 36, this.backgroundHeight, 18, 18);
 
-		float x = i + 28;
-		float y = j + 20;
+		int x = i + 28;
+		int y = j + 20;
 		int strideY = 10;
 		int strideX = 52;
 
 		// Draws the text
-		this.textRenderer.draw(matrices, Text.translatable("gui.companion_bats.bat.level"), x, y, 0xFFFFFFFF);
-		this.textRenderer.draw(matrices, Text.translatable("").append(""+(this.level + 1)).append(" [").append(this.maxExpReached ? Text.translatable("gui.companion_bats.bat.max") : Text.translatable("").append(this.currentLevelExp+" / "+this.nextLevelExp)).append("]"), x + strideX, y, 0xFFFFFFFF);
+		context.drawText(this.textRenderer, Text.translatable("gui.companion_bats.bat.level"), x, y, 0xFFFFFFFF, false);
+		context.drawText(this.textRenderer, Text.translatable("gui.companion_bats.bat.level"), x, y, 0xFFFFFFFF, false);
+		context.drawText(this.textRenderer, Text.translatable("").append(""+(this.level + 1)).append(" [").append(this.maxExpReached ? Text.translatable("gui.companion_bats.bat.max") : Text.translatable("").append(this.currentLevelExp+" / "+this.nextLevelExp)).append("]"), x + strideX, y, 0xFFFFFFFF, false);
 
 		y += strideY;
 
 		if (this.currentClass != null){
 			CompanionBatClass cls = ClientDataManager.classes.get(this.currentClass);
-			this.textRenderer.draw(matrices, Text.translatable("gui.companion_bats.bat.class"), x, y, 0xFFFFFFFF);
-			this.textRenderer.draw(matrices, cls != null && cls.label != null ? Text.literal(cls.label) : Text.translatable("class." + this.currentClass.replace(":", ".")), x + strideX, y, 0xFFFFFFFF);
+			context.drawText(this.textRenderer, Text.translatable("gui.companion_bats.bat.class"), x, y, 0xFFFFFFFF, false);
+			context.drawText(this.textRenderer, cls != null && cls.label != null ? Text.literal(cls.label) : Text.translatable("class." + this.currentClass.replace(":", ".")), x + strideX, y, 0xFFFFFFFF, false);
 
 			y += strideY;
 
-			this.textRenderer.draw(matrices, Text.translatable("gui.companion_bats.bat.class_level"), x, y, 0xFFFFFFFF);
-			this.textRenderer.draw(matrices, Text.translatable("").append(""+(this.classLevel + 1)).append(" [").append(this.maxClassExpReached ? Text.translatable("gui.companion_bats.bat.max") : Text.translatable("").append(this.currentClassLevelExp+" / "+this.nextClassLevelExp)).append("]"), x + strideX, y, 0xFFFFFFFF);
+			context.drawText(this.textRenderer, Text.translatable("gui.companion_bats.bat.class_level"), x, y, 0xFFFFFFFF, false);
+			context.drawText(this.textRenderer, Text.translatable("").append(""+(this.classLevel + 1)).append(" [").append(this.maxClassExpReached ? Text.translatable("gui.companion_bats.bat.max") : Text.translatable("").append(this.currentClassLevelExp+" / "+this.nextClassLevelExp)).append("]"), x + strideX, y, 0xFFFFFFFF, false);
 		} else {
 			y += strideY;
 		}
@@ -138,27 +137,27 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 
 		strideX = 11;
 
-		this.textRenderer.draw(matrices, "❤", x, y, 0xFFFFFFFF);
-		int offset = this.textRenderer.draw(matrices, this.currentHealth+" / "+this.maxHealth, x + strideX, y, 0xFFFFFFFF) - (int)x;
+		context.drawText(this.textRenderer, "❤", x, y, 0xFFFFFFFF, false);
+		int offset = context.drawText(this.textRenderer, this.currentHealth+" / "+this.maxHealth, x + strideX, y, 0xFFFFFFFF, false) - (int)x;
 		int speedOffset = 110 + (String.valueOf(this.speed).length() <= 3 ? 6 : 0);
 
 		int digits = (String.valueOf(this.attack).length() - 2) * 3;
 		offset += ((speedOffset - offset) / 2) - digits - 10;
 
-		this.textRenderer.draw(matrices, "🗡", x + offset , y, 0xFFFFFFFF);
-		this.textRenderer.draw(matrices, ""+this.attack, x + offset + strideX, y, 0xFFFFFFFF);
-
-		this.textRenderer.draw(matrices, "➶", x + speedOffset, y, 0xFFFFFFFF);
-		this.textRenderer.draw(matrices, ""+this.speed, x + speedOffset + strideX - 2, y, 0xFFFFFFFF);
+		context.drawText(this.textRenderer, "🗡", x + offset , y, 0xFFFFFFFF, false);
+		context.drawText(this.textRenderer, ""+this.attack, x + offset + strideX, y, 0xFFFFFFFF, false);
+		
+		context.drawText(this.textRenderer, "🦇", x + speedOffset, y, 0xFFFFFFFF, false);
+		context.drawText(this.textRenderer, ""+this.speed, x + speedOffset + strideX - 2, y, 0xFFFFFFFF, false);
 	}
 
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		ItemStack batItemStack = this.inventory.player.getStackInHand(handler.hand);
 		EntityData entityData = new EntityData(batItemStack);
 		ItemStack armorStack = ItemStack.fromNbt(entityData.getArmor());
 		if (!this.armorStack.getItem().equals(armorStack.getItem())) this.setClassLevel(entityData);
-		this.renderBackground(matrices);
-		super.render(matrices, mouseX, mouseY, delta);
-		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
+		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
+		this.drawMouseoverTooltip(context, mouseX, mouseY);
 	}
  }

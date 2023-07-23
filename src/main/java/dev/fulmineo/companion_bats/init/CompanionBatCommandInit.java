@@ -39,7 +39,7 @@ public class CompanionBatCommandInit {
 								}
 								entityData.putExp(exp);
 							} else {
-								context.getSource().sendFeedback(Text.literal("Item in main hand isn't a companion bat in item form"), false);
+								context.getSource().sendFeedback(() -> Text.literal("Item in main hand isn't a companion bat in item form"), false);
 							}
 						}
 						return 1;
@@ -71,11 +71,11 @@ public class CompanionBatCommandInit {
 										}
 										entityData.putClassExp(className, exp);
 									} else {
-										context.getSource().sendFeedback(Text.literal("No class found to set exp"), false);
+										context.getSource().sendFeedback(() -> Text.literal("No class found to set exp"), false);
 									}
 								}
 							} else {
-								context.getSource().sendFeedback(Text.literal("Item in main hand isn't a companion bat in item form"), false);
+								context.getSource().sendFeedback(() -> Text.literal("Item in main hand isn't a companion bat in item form"), false);
 							}
 						}
 						return 1;

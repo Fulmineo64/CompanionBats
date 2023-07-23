@@ -83,7 +83,7 @@ public class CompanionBatRoostGoal extends Goal {
         if (!this.entity.isRoosting() && this.entity.hangingPosition != null && this.isBundleEmpty()){
             BlockPos blockPos = this.entity.getBlockPos();
             BlockPos blockPos2 = blockPos.up();
-            if (this.entity.world.isAir(this.entity.hangingPosition)){
+            if (this.entity.getWorld().isAir(this.entity.hangingPosition)){
                 this.entity.hangingPosition = null;
             } else {
                 this.navigation.startMovingTo(this.entity.hangingPosition.getX(), this.entity.hangingPosition.getY(), this.entity.hangingPosition.getZ(), this.speed);
@@ -93,7 +93,7 @@ public class CompanionBatRoostGoal extends Goal {
                     Vec3d vec3d2 = vec3d.add(vec3d.x, (Math.signum(e) * 0.699999988079071D - vec3d.y) * 0.10000000149011612D, vec3d.z);
                     this.entity.setVelocity(vec3d2);
                 }
-                if (this.entity.world.getBlockState(blockPos2).isSolidBlock(this.entity.world, blockPos2)) {
+                if (this.entity.getWorld().getBlockState(blockPos2).isSolidBlock(this.entity.getWorld(), blockPos2)) {
                     this.entity.setRoosting(true);
                     this.entity.setYaw((float)this.random.nextInt(360));
                     this.entity.headYaw = this.entity.getYaw();
@@ -105,7 +105,7 @@ public class CompanionBatRoostGoal extends Goal {
     }
 
     private boolean isValidHangingPos(BlockPos pos){
-        return this.entity.world.getBlockState(pos).isSolidBlock(this.entity.world, pos) && this.entity.world.isAir(pos.down());
+        return this.entity.getWorld().getBlockState(pos).isSolidBlock(this.entity.getWorld(), pos) && this.entity.getWorld().isAir(pos.down());
     }
 
     private boolean validateAndSetPos(BlockPos pos){

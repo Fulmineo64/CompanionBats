@@ -17,6 +17,7 @@ import net.minecraft.potion.Potions;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 public class CompanionBatThrowPotionGoal extends Goal {
     private final CompanionBatEntity entity;
@@ -92,7 +93,7 @@ public class CompanionBatThrowPotionGoal extends Goal {
 					if (potion == null && this.entity.effectPotionTicks <= 0){
 						if (this.effectPotionLevel >= 4 && !this.owner.hasStatusEffect(StatusEffects.REGENERATION) && this.owner.getHealth() < (this.owner.getMaxHealth() * 50 / 100)){
 							potion = Potions.REGENERATION;
-						} else if (this.effectPotionLevel >= 2 && (!this.owner.hasStatusEffect(StatusEffects.NIGHT_VISION) || this.owner.getStatusEffect(StatusEffects.NIGHT_VISION).getDuration() <= 400) && this.entity.world.getLightLevel(this.owner.getBlockPos()) <= 7){
+						} else if (this.effectPotionLevel >= 2 && (!this.owner.hasStatusEffect(StatusEffects.NIGHT_VISION) || this.owner.getStatusEffect(StatusEffects.NIGHT_VISION).getDuration() <= 400) && this.entity.getWorld().getLightLevel(this.owner.getBlockPos()) <= 7){
 							potion = Potions.NIGHT_VISION;
 						} else if (!this.owner.hasStatusEffect(StatusEffects.SPEED) || this.owner.getStatusEffect(StatusEffects.SPEED).getDuration() <= 400) {
 							potion = Potions.SWIFTNESS;
@@ -111,15 +112,16 @@ public class CompanionBatThrowPotionGoal extends Goal {
 						double f = this.owner.getZ() + vec3d.z - this.entity.getZ();
 						double g = Math.sqrt(d * d + f * f);
 
-						PotionEntity potionEntity = new PotionEntity(this.entity.world, this.entity);
+						PotionEntity potionEntity = new PotionEntity(this.entity.getWorld(), this.entity);
 						potionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
 						potionEntity.setPitch(potionEntity.getPitch() + 20.0F);
 						potionEntity.setVelocity(d, e + g * 0.2D, f, 0.75F, 8.0F);
 						if (!this.entity.isSilent()) {
-							this.entity.world.playSound(null, this.entity.getX(), this.entity.getY(), this.entity.getZ(), SoundEvents.ENTITY_WITCH_THROW, SoundCategory.PLAYERS, 1.0F, 0.8F + this.entity.world.random.nextFloat() * 0.4F);
+							World world = this.entity.getWorld();
+							world.playSound(null, this.entity.getX(), this.entity.getY(), this.entity.getZ(), SoundEvents.ENTITY_WITCH_THROW, SoundCategory.PLAYERS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
 						}
 
-						this.entity.world.spawnEntity(potionEntity);
+						this.entity.getWorld().spawnEntity(potionEntity);
 						this.owner = null;
 					}
 				}

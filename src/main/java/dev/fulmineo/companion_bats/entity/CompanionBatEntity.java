@@ -264,37 +264,38 @@ public class CompanionBatEntity extends TameableEntity {
 
 	public void tick() {
 		super.tick();
-		if (this.world.isClient){
+		World world = this.getWorld();
+		if (world.isClient){
 			Byte comboParticleLevel = this.dataTracker.get(COMBO_PARTICLE_LEVEL);
 			if (comboParticleLevel > 0) {
 				switch (comboParticleLevel){
 					case 1: {
-						if (this.world.getTime() % 50 == 0) {
-							this.world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+						if (world.getTime() % 50 == 0) {
+							world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
 						}
 						break;
 					}
 					case 2: {
-						if (this.world.getTime() % 25 == 0) {
-							this.world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+						if (world.getTime() % 25 == 0) {
+							world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
 						}
 						break;
 					}
 					case 3: {
-						if (this.world.getTime() % 10 == 0) {
-							this.world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+						if (world.getTime() % 10 == 0) {
+							world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
 						}
 						break;
 					}
 					case 4: {
-						if (this.world.getTime() % 10 == 0) {
-							this.world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
-							this.world.addParticle(ParticleTypes.ELECTRIC_SPARK, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+						if (world.getTime() % 10 == 0) {
+							world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+							world.addParticle(ParticleTypes.ELECTRIC_SPARK, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
 						}
 						break;
 					}
 					case 5: {
-						this.world.addParticle(ParticleTypes.ELECTRIC_SPARK, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
+						world.addParticle(ParticleTypes.ELECTRIC_SPARK, this.getParticleX(0.6D), this.getRandomBodyY(), this.getParticleZ(0.6D), 0.0D, 0.0D, 0.0D);
 					}
 				}
 			}
@@ -334,15 +335,15 @@ public class CompanionBatEntity extends TameableEntity {
 					fireTicks += owner.getFireTicks();
 					owner.setFireTicks(0);
 				}
-				if (this.world.getTime() % 10 == 0) {
+				if (this.getWorld().getTime() % 10 == 0) {
 					int offset = CompanionBats.CONFIG.attractFlamesBoxSize / 2;
 					BlockPos pos = this.getBlockPos().add(Direction.UP.getVector().multiply(offset)).add(Direction.NORTH.getVector().multiply(offset)).add(Direction.EAST.getVector().multiply(offset));
 					for (int y = 0; y < CompanionBats.CONFIG.attractFlamesBoxSize; y++) {
 						for (int z = 0; z < CompanionBats.CONFIG.attractFlamesBoxSize; z++) {
 							for (int x = 0; x < CompanionBats.CONFIG.attractFlamesBoxSize; x++) {
-								BlockState state = this.world.getBlockState(pos);
+								BlockState state = this.getWorld().getBlockState(pos);
 								if (state.isOf(Blocks.FIRE) || state.isOf(Blocks.SOUL_FIRE)) {
-									this.world.removeBlock(pos, false);
+									this.getWorld().removeBlock(pos, false);
 									fireTicks += 60;
 								}
 								pos = pos.west();
@@ -398,27 +399,28 @@ public class CompanionBatEntity extends TameableEntity {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
-			if (!this.world.isClient) {
+			World world = this.getWorld();
+			if (!world.isClient) {
 				if (this.isRoosting()) {
 					this.setRoosting(false);
 				}
 			}
 
 			if (!source.isIn(DamageTypeTags.BYPASSES_SHIELD) && source != this.getDamageSources().lava() && this.abilities.hasAbility(CompanionBatAbilityType.BLOCK_ATTACK)) {
-				int roll = this.world.random.nextInt(100);
+				int roll = world.random.nextInt(100);
 				if (roll < this.abilities.getValue(CompanionBatAbilityType.BLOCK_ATTACK)) {
 					if (this.abilities.hasAbility(CompanionBatAbilityType.COUNTER_ATTACK) && source.getAttacker() instanceof LivingEntity) {
 						LivingEntity target = (LivingEntity) source.getAttacker();
 						LivingEntity owner = this.getOwner();
 						if (target != owner && this.canAttackWithOwner(target, this.getOwner()) && this.isWithinDistanceToAttack(target)){
-							this.world.playSound(null, this.getBlockPos(), SoundEvents.BLOCK_ANVIL_LAND , SoundCategory.PLAYERS, 0.15F, this.getSoundPitch() + 2F);
+							world.playSound(null, this.getBlockPos(), SoundEvents.BLOCK_ANVIL_LAND , SoundCategory.PLAYERS, 0.15F, this.getSoundPitch() + 2F);
 							float targetHealth = target.getHealth();
 							target.damage(source, ((float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) + amount) * this.abilities.getValue(CompanionBatAbilityType.COUNTER_ATTACK) / 4);
 							this.applyOnHitEffects(target, targetHealth, target.getHealth());
 							return false;
 						}
 					}
-					this.world.playSound(null, this.getBlockPos(), SoundEvents.ITEM_SHIELD_BLOCK, SoundCategory.PLAYERS, 0.2F, this.getSoundPitch());
+					world.playSound(null, this.getBlockPos(), SoundEvents.ITEM_SHIELD_BLOCK, SoundCategory.PLAYERS, 0.2F, this.getSoundPitch());
 					return false;
 				}
 			}
@@ -453,15 +455,16 @@ public class CompanionBatEntity extends TameableEntity {
 
 	@Override
 	protected void mobTick() {
-		if (!this.world.isClient){
+		World world = this.getWorld();
+		if (!world.isClient){
 			if (this.isRoosting()) {
 				if (this.getTarget() != null) {
 					this.setRoosting(false);
 				}
-				if (this.hangingPosition == null || !this.world.getBlockState(this.hangingPosition).isSolidBlock(this.world, this.hangingPosition)) {
+				if (this.hangingPosition == null || !world.getBlockState(this.hangingPosition).isSolidBlock(world, this.hangingPosition)) {
 					this.setRoosting(false);
 					if (!this.isSilent()) {
-						this.world.syncWorldEvent((PlayerEntity) null, 1025, this.getBlockPos(), 0);
+						world.syncWorldEvent((PlayerEntity) null, 1025, this.getBlockPos(), 0);
 					}
 				}
 			}
@@ -491,16 +494,17 @@ public class CompanionBatEntity extends TameableEntity {
 			double f = target.getZ() + vec3d.z - this.getZ();
 			double g = Math.sqrt(d * d + f * f);
 
-			DynamiteEntity dynamite = new DynamiteEntity(this.world, this);
+			World world = this.getWorld();
+			DynamiteEntity dynamite = new DynamiteEntity(world, this);
 			dynamite.setPitch(dynamite.getPitch() + 20.0F);
 			dynamite.setPower(this.abilities.getValue(CompanionBatAbilityType.DYNAMITE));
 			dynamite.setVelocity(d, e + g * 0.2D, f, 0.75F, 8.0F);
 
 			if (!this.isSilent()) {
-				this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.PLAYERS, 1.0F, 1F + this.world.random.nextFloat() * 0.4F);
+				world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.PLAYERS, 1.0F, 1F + world.random.nextFloat() * 0.4F);
 			}
 
-			this.world.spawnEntity(dynamite);
+			world.spawnEntity(dynamite);
 			this.setVelocity(d * -0.4, 0, f * -0.4);
 			this.rangedAttackTicks = CompanionBats.CONFIG.dynamiteTicks;
 		}
@@ -509,13 +513,13 @@ public class CompanionBatEntity extends TameableEntity {
 	public void tridentAttack(Entity target) {
 		Box trajectoryBox = new Box(this.getX(), this.getY(), this.getZ(), target.getX(), target.getY(), target.getZ()).expand(1);
 		if (!trajectoryBox.contains(this.getOwner().getPos())) {
-			CompanionBatTridentEntity tridentEntity = new CompanionBatTridentEntity(this.world, this, new ItemStack(Items.TRIDENT));
+			CompanionBatTridentEntity tridentEntity = new CompanionBatTridentEntity(this.getWorld(), this, new ItemStack(Items.TRIDENT));
 			double d = target.getX() - tridentEntity.getX();
 			double e = target.getBodyY(0.3333333333333333D) - tridentEntity.getY();
 			double f = target.getZ() - tridentEntity.getZ();
 			double g = Math.sqrt(d * d + f * f);
 			tridentEntity.setVelocity(d, e + g * 0.20000000298023224D, f, 1.6F, 2.0F);
-			this.world.spawnEntity(tridentEntity);
+			this.getWorld().spawnEntity(tridentEntity);
 			if (!this.isSilent()) {
 				this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
 			}
@@ -528,7 +532,7 @@ public class CompanionBatEntity extends TameableEntity {
 		boolean bl = target.damage(this.getDamageSources().mobAttack(this), this.getAttackDamage(target));
 		if (bl) {
 			if (this.isSneakAttacking) {
-				this.world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT , SoundCategory.PLAYERS, 0.5F, this.getSoundPitch() + 2.0F);
+				this.getWorld().playSound(null, this.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT , SoundCategory.PLAYERS, 0.5F, this.getSoundPitch() + 2.0F);
 			}
 			this.applyDamageEffects(this, target);
 			this.applyOnHitEffects(target, targetHealth, (target instanceof LivingEntity ? ((LivingEntity) target).getHealth() : 0));
@@ -592,18 +596,18 @@ public class CompanionBatEntity extends TameableEntity {
 				BlockPos blockPos = this.getTarget().getBlockPos();
 				int abilityLevel = this.abilities.get(CompanionBatAbilityType.COMBO_ATTACK);
 				for (int i = 0; i < abilityLevel; i++){
-					LightningEntity lightningEntity = (LightningEntity)EntityType.LIGHTNING_BOLT.create(this.world);
+					LightningEntity lightningEntity = (LightningEntity)EntityType.LIGHTNING_BOLT.create(this.getWorld());
 					lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
 					lightningEntity.setCosmetic(true);
-					this.world.spawnEntity(lightningEntity);
+					this.getWorld().spawnEntity(lightningEntity);
 
 					if (i == 0){
-						List<Entity> list = this.world.getOtherEntities(this, new Box(blockPos.getX() - 3.0D, blockPos.getY() - 3.0D, blockPos.getZ() - 3.0D, blockPos.getX() + 3.0D, blockPos.getY() + 6.0D + 3.0D, blockPos.getZ() + 3.0D), entity -> entity.isAlive() && !(entity instanceof LightningEntity) && entity != this && entity != this.getOwner());
+						List<Entity> list = this.getWorld().getOtherEntities(this, new Box(blockPos.getX() - 3.0D, blockPos.getY() - 3.0D, blockPos.getZ() - 3.0D, blockPos.getX() + 3.0D, blockPos.getY() + 6.0D + 3.0D, blockPos.getZ() + 3.0D), entity -> entity.isAlive() && !(entity instanceof LightningEntity) && entity != this && entity != this.getOwner());
 						Iterator<Entity> iterator = list.iterator();
 
 						while(iterator.hasNext()) {
 							Entity entity = (Entity)iterator.next();
-							entity.onStruckByLightning((ServerWorld)this.world, lightningEntity);
+							entity.onStruckByLightning((ServerWorld)this.getWorld(), lightningEntity);
 							entity.damage(this.getDamageSources().lightningBolt(), (6.0F + (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)) * abilityLevel);
 						}
 					}
@@ -616,13 +620,14 @@ public class CompanionBatEntity extends TameableEntity {
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (this.world.isClient) {
+		World world = this.getWorld();
+		if (world.isClient) {
 			return (itemStack.isOf(Items.MILK_BUCKET) || this.canEat(itemStack, true)) ? ActionResult.CONSUME : ActionResult.PASS;
 		} else {
 			if (itemStack.isOf(Items.MILK_BUCKET)) {
 				boolean ok = this.clearStatusEffects();
 				if (ok) {
-					this.world.sendEntityStatus(this, (byte)8);
+					world.sendEntityStatus(this, (byte)8);
 					if (!player.getAbilities().creativeMode) {
 						player.setStackInHand(hand, new ItemStack(Items.BUCKET));
 					}
@@ -635,7 +640,7 @@ public class CompanionBatEntity extends TameableEntity {
 				if (!player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
-				this.world.sendEntityStatus(this, (byte)8);
+				world.sendEntityStatus(this, (byte)8);
 				return ActionResult.SUCCESS;
 			} else if (IS_FOOD_ITEM.test(itemStack) && player == this.getOwner()){
 				ItemStack fluteStack = this.getFluteItemStack();
@@ -699,7 +704,7 @@ public class CompanionBatEntity extends TameableEntity {
 				double d = this.random.nextGaussian() * 0.01D;
 				double e = this.random.nextGaussian() * 0.01D;
 				double f = this.random.nextGaussian() * 0.01D;
-				this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(0.5D), this.getRandomBodyY(), this.getParticleZ(1.0D), d, e, f);
+				this.getWorld().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(0.5D), this.getRandomBodyY(), this.getParticleZ(1.0D), d, e, f);
 			}
 		} else {
 			super.handleStatus(status);
@@ -717,7 +722,8 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public boolean returnToPlayerInventory() {
-		if (this.world.isClient) return false;
+		World world = this.getWorld();
+		if (world.isClient) return false;
 		ServerPlayerEntity player = (ServerPlayerEntity) this.getOwner();
 		if (player != null) {
 			PlayerInventory inventory = player.getInventory();
@@ -924,7 +930,7 @@ public class CompanionBatEntity extends TameableEntity {
 		Direction looking = entity.getHorizontalFacing().getOpposite();
 		boolean success = this.teleport(entity.getX() + looking.getOffsetX(), entity.getEyeY(), entity.getZ() + looking.getOffsetZ(), true);
 		if (success) {
-			if (!this.isSilent()) this.world.playSound((PlayerEntity) null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 0.25F, this.getSoundPitch() + 1.0F);
+			if (!this.isSilent()) this.getWorld().playSound((PlayerEntity) null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 0.25F, this.getSoundPitch() + 1.0F);
 			if (entity instanceof LivingEntity && this.canAttackWithOwner((LivingEntity) entity, this.getOwner())){
 				this.guaranteedSneakAttack = true;
 				this.tryAttack(entity);
@@ -1132,7 +1138,7 @@ public class CompanionBatEntity extends TameableEntity {
 				DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
 				for (int i = 0; i < defaultedList.size(); ++i) {
 					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM) {
-						ServerWorld serverWorld = (ServerWorld)player.world;
+						ServerWorld serverWorld = (ServerWorld)player.getWorld();
 						Entity entity = serverWorld.getEntity(defaultedList.get(i).getNbt().getUuid("EntityUUID"));
 						if (entity != null){
 							entities.add((CompanionBatEntity)entity);

@@ -1,3 +1,7 @@
+# 1.19.6
+- Updated to Minecraft 1.20
+- Changed speed icon in UI (➶ -> 🦇)
+
 # 1.19.5
 - Updated to Minecraft 1.19.4
 - The Magic Protection ability, granted by the Ankh accessory, now guards against the Thorns enchantment

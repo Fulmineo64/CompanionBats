@@ -25,7 +25,8 @@ public abstract class BatEntityMixin extends AmbientEntity {
 
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
-        if (this.world.isClient){
+        World world = this.getWorld();
+        if (world.isClient){
             return CompanionBatEntity.IS_TAMING_ITEM.test(itemStack) ? ActionResult.CONSUME : ActionResult.PASS;
         } else {
             if (CompanionBatEntity.IS_TAMING_ITEM.test(itemStack)) {

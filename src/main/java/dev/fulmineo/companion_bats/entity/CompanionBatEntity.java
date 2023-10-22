@@ -1058,10 +1058,13 @@ public class CompanionBatEntity extends TameableEntity {
 	}
 
 	public static CompanionBatEntity spawnFromItemStack(ServerWorld world, ItemStack itemStack, PlayerEntity player){
-		Vec3d pos = player.getPos();
 		EntityData entityData = new EntityData(itemStack);
 		entityData.putOwner(player);
-		return (CompanionBatEntity)CompanionBats.COMPANION_BAT.spawnFromItemStack(world, itemStack, player, new BlockPos((int)pos.x, (int)Math.ceil(pos.y), (int)pos.z), SpawnReason.SPAWN_EGG, false, false);
+		BlockPos blockPos = player.getBlockPos();
+		if (player.getPos().getY()-blockPos.getY() != 0) {
+			blockPos = blockPos.up();
+		}
+		return (CompanionBatEntity)CompanionBats.COMPANION_BAT.spawnFromItemStack(world, itemStack, player, blockPos, SpawnReason.SPAWN_EGG, false, false);
 	}
 
 	public ItemStack getAccessory() {
@@ -1138,7 +1141,7 @@ public class CompanionBatEntity extends TameableEntity {
 				DefaultedList<ItemStack> defaultedList = (DefaultedList<ItemStack>) iterator.next();
 				for (int i = 0; i < defaultedList.size(); ++i) {
 					if (defaultedList.get(i).getItem() == CompanionBats.BAT_FLUTE_ITEM) {
-						ServerWorld serverWorld = (ServerWorld)player.getWorld();
+						ServerWorld serverWorld = player.getServerWorld();
 						Entity entity = serverWorld.getEntity(defaultedList.get(i).getNbt().getUuid("EntityUUID"));
 						if (entity != null){
 							entities.add((CompanionBatEntity)entity);

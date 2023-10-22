@@ -1,3 +1,7 @@
+# 1.19.7
+- Updated to Minecraft 1.20.1
+- Fixed the Companion Bat clipping into blocks when spawning it
+
 # 1.19.6
 - Updated to Minecraft 1.20
 - Changed speed icon in UI (➶ -> 🦇)

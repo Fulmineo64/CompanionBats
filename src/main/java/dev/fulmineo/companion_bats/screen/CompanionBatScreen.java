@@ -156,7 +156,7 @@ public class CompanionBatScreen extends HandledScreen<CompanionBatScreenHandler>
 		EntityData entityData = new EntityData(batItemStack);
 		ItemStack armorStack = ItemStack.fromNbt(entityData.getArmor());
 		if (!this.armorStack.getItem().equals(armorStack.getItem())) this.setClassLevel(entityData);
-		this.renderBackground(context);
+		this.renderBackground(context, mouseX, mouseY, delta);
 		super.render(context, mouseX, mouseY, delta);
 		this.drawMouseoverTooltip(context, mouseX, mouseY);
 	}
